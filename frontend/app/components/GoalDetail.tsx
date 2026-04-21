@@ -83,7 +83,7 @@ export function GoalDetail() {
 
   if (loadError) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-zinc-50">
+      <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50">
         <TopNav />
         <main className="max-w-5xl mx-auto px-8 py-16">
           <div className="text-xs text-red-400 font-medium">{loadError}</div>
@@ -94,7 +94,7 @@ export function GoalDetail() {
 
   if (!goal) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-zinc-50">
+      <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50">
         <TopNav />
         <main className="max-w-5xl mx-auto px-8 py-16 text-xs font-bold text-zinc-500 uppercase tracking-widest">
           Loading…
@@ -110,7 +110,7 @@ export function GoalDetail() {
   const initialMinutes = Math.floor(elapsed / 60);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black">
+    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black">
       <TopNav
         right={
           <Link
@@ -133,12 +133,12 @@ export function GoalDetail() {
 
         <div className="flex flex-col lg:flex-row gap-16 xl:gap-24">
           <div className="flex-1 lg:max-w-xl">
-            <h1 className="text-3xl md:text-5xl font-medium tracking-tighter text-zinc-50 mb-8 leading-[1.1]">
+            <h1 className="text-3xl md:text-5xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50 mb-8 leading-[1.1]">
               {goal.title}
             </h1>
 
-            <div className="py-12 border-y border-white/10 my-12 flex justify-start items-center">
-              <div className="text-[100px] md:text-[140px] font-medium tracking-tighter leading-none tabular-nums text-zinc-50 font-mono">
+            <div className="py-12 border-y border-zinc-200 dark:border-white/10 my-12 flex justify-start items-center">
+              <div className="text-[100px] md:text-[140px] font-medium tracking-tighter leading-none tabular-nums text-zinc-900 dark:text-zinc-50 font-mono">
                 {formatClock(elapsed)}
               </div>
             </div>
@@ -148,7 +148,7 @@ export function GoalDetail() {
                 onClick={handleStartPause}
                 className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-widest uppercase transition-colors focus:outline-none ${
                   timerRunning
-                    ? "bg-zinc-800 text-zinc-50 hover:bg-zinc-700"
+                    ? "bg-zinc-200 text-zinc-900 hover:bg-zinc-300 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-700"
                     : "bg-[#ccff00] text-black hover:bg-[#b3e600]"
                 }`}
               >
@@ -164,7 +164,7 @@ export function GoalDetail() {
               </button>
               <button
                 onClick={handleStopAndLog}
-                className="flex-1 flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-widest uppercase border border-white/20 hover:border-white/50 text-zinc-50 transition-colors focus:outline-none"
+                className="flex-1 flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-widest uppercase border border-zinc-300 dark:border-white/20 hover:border-zinc-500 dark:hover:border-white/50 text-zinc-900 dark:text-zinc-50 transition-colors focus:outline-none"
               >
                 Log session
               </button>
@@ -172,10 +172,10 @@ export function GoalDetail() {
           </div>
 
           <div className="flex-1 space-y-16">
-            <div className="flex gap-12 border-b border-white/10 pb-8">
+            <div className="flex gap-12 border-b border-zinc-200 dark:border-white/10 pb-8">
               <div>
                 <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Target</div>
-                <div className="text-2xl font-medium tracking-tighter text-zinc-50">
+                <div className="text-2xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50">
                   {targetHours}
                   <span className="text-zinc-500 font-light">h</span>
                 </div>
@@ -189,7 +189,7 @@ export function GoalDetail() {
               </div>
               <div>
                 <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Remaining</div>
-                <div className="text-2xl font-medium tracking-tighter text-zinc-50">
+                <div className="text-2xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50">
                   {remainingHours}
                   <span className="text-zinc-500 font-light">h</span>
                 </div>
@@ -213,18 +213,18 @@ export function GoalDetail() {
                   {sessions.map((session) => (
                     <div
                       key={session.id}
-                      className="py-6 border-b border-white/5 hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl flex flex-col sm:flex-row gap-4 justify-between group"
+                      className="py-6 border-b border-zinc-100 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl flex flex-col sm:flex-row gap-4 justify-between group"
                     >
                       <div className="flex-shrink-0 flex sm:flex-col gap-4 sm:gap-1">
-                        <div className="text-xs font-bold uppercase tracking-widest text-zinc-400">
+                        <div className="text-xs font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">
                           {formatDate(session.logged_at)}
                         </div>
                         <div className="text-xl font-medium tracking-tighter text-[#ccff00]">
                           {formatDuration(session.duration_minutes)}
                         </div>
                       </div>
-                      <div className="flex-1 text-sm text-zinc-400 font-light leading-relaxed max-w-sm">
-                        {session.notes || <span className="text-zinc-600">No notes</span>}
+                      <div className="flex-1 text-sm text-zinc-600 dark:text-zinc-400 font-light leading-relaxed max-w-sm">
+                        {session.notes || <span className="text-zinc-400 dark:text-zinc-600">No notes</span>}
                       </div>
                       <div className="flex gap-2 flex-shrink-0 self-start">
                         <button

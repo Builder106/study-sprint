@@ -31,7 +31,7 @@ export function Dashboard() {
   }, [goals]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black">
+    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black">
       <TopNav
         right={
           <Link
@@ -51,10 +51,10 @@ export function Dashboard() {
               <Activity className="w-4 h-4" />
               Welcome back
             </div>
-            <h1 className="text-4xl md:text-5xl font-medium tracking-tighter text-zinc-50">
+            <h1 className="text-4xl md:text-5xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50">
               Your sprints.
             </h1>
-            <p className="text-zinc-400 mt-2 font-light text-lg">
+            <p className="text-zinc-600 dark:text-zinc-400 mt-2 font-light text-lg">
               Ready to conquer your goals today?
             </p>
           </div>
@@ -72,7 +72,7 @@ export function Dashboard() {
               <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">
                 Hours Logged
               </div>
-              <div className="text-3xl font-medium tracking-tighter text-zinc-50">
+              <div className="text-3xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50">
                 {stats.hours}
               </div>
             </div>
@@ -92,8 +92,8 @@ export function Dashboard() {
         )}
 
         {goals && goals.length === 0 && (
-          <div className="border border-white/10 rounded-2xl py-16 px-8 text-center space-y-4">
-            <div className="text-sm text-zinc-400 font-light">No goals yet.</div>
+          <div className="border border-zinc-200 dark:border-white/10 rounded-2xl py-16 px-8 text-center space-y-4">
+            <div className="text-sm text-zinc-600 dark:text-zinc-400 font-light">No goals yet.</div>
             <Link
               to="/goals/new"
               className="inline-flex items-center gap-2 py-3 px-6 rounded-full text-xs font-bold tracking-widest uppercase bg-[#ccff00] text-black hover:bg-[#b3e600] transition-colors"
@@ -104,17 +104,17 @@ export function Dashboard() {
         )}
 
         {goals && goals.length > 0 && (
-          <div className="border-t border-white/10">
+          <div className="border-t border-zinc-200 dark:border-white/10">
             {goals.map((goal) => {
               const percent = progressPercent(goal.logged_minutes, goal.target_hours);
               const logged = minutesToHours(goal.logged_minutes);
               const target = Number(goal.target_hours);
               return (
                 <Link to={`/goal/${goal.id}`} key={goal.id} className="block group">
-                  <div className="py-8 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8 group-hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl">
+                  <div className="py-8 border-b border-zinc-200 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8 group-hover:bg-zinc-50 dark:group-hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl">
                     <div className="flex-1 space-y-3">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
-                        <h3 className="text-xl md:text-2xl font-medium tracking-tight text-zinc-50 group-hover:text-[#ccff00] transition-colors">
+                        <h3 className="text-xl md:text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 group-hover:text-[#ccff00] transition-colors">
                           {goal.title}
                         </h3>
                         <div className="flex-shrink-0">
@@ -124,7 +124,7 @@ export function Dashboard() {
 
                       <div className="flex gap-6 text-sm text-zinc-500 font-light">
                         <span>
-                          Target: <span className="text-zinc-300">{target}h</span>
+                          Target: <span className="text-zinc-700 dark:text-zinc-300">{target}h</span>
                         </span>
                         <span>
                           Logged: <span className="text-[#ccff00]">{logged}h</span>
@@ -141,7 +141,7 @@ export function Dashboard() {
                       </div>
                     </div>
 
-                    <div className="hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-white/10 group-hover:border-[#ccff00] group-hover:text-[#ccff00] transition-colors">
+                    <div className="hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-zinc-200 dark:border-white/10 group-hover:border-[#ccff00] group-hover:text-[#ccff00] transition-colors">
                       <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
                     </div>
                   </div>

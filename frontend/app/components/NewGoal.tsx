@@ -44,7 +44,7 @@ export function NewGoal() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-zinc-50 font-sans">
+    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans">
       <TopNav />
       <main className="max-w-2xl mx-auto px-8 py-16">
         <Link
@@ -69,7 +69,7 @@ export function NewGoal() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Finish calculus review"
-              className="w-full bg-transparent border-b border-white/20 py-3 text-lg focus:outline-none focus:border-[#ccff00]"
+              className="w-full bg-transparent border-b border-zinc-300 dark:border-white/20 py-3 text-lg focus:outline-none focus:border-[#ccff00]"
             />
           </div>
 
@@ -82,7 +82,7 @@ export function NewGoal() {
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
               placeholder="What does success look like?"
-              className="w-full bg-transparent border border-white/20 p-4 rounded-xl text-sm font-light focus:outline-none focus:border-[#ccff00] resize-none"
+              className="w-full bg-transparent border border-zinc-300 dark:border-white/20 p-4 rounded-xl text-sm font-light focus:outline-none focus:border-[#ccff00] resize-none"
             />
           </div>
 
@@ -98,7 +98,7 @@ export function NewGoal() {
                 required
                 value={targetHours}
                 onChange={(e) => setTargetHours(e.target.value)}
-                className="w-full bg-transparent border-b border-white/20 py-3 text-lg focus:outline-none focus:border-[#ccff00]"
+                className="w-full bg-transparent border-b border-zinc-300 dark:border-white/20 py-3 text-lg focus:outline-none focus:border-[#ccff00]"
               />
             </div>
             <div className="space-y-3">
@@ -109,7 +109,7 @@ export function NewGoal() {
                 type="date"
                 value={targetDate}
                 onChange={(e) => setTargetDate(e.target.value)}
-                className="w-full bg-transparent border-b border-white/20 py-3 text-lg focus:outline-none focus:border-[#ccff00]"
+                className="w-full bg-transparent border-b border-zinc-300 dark:border-white/20 py-3 text-lg focus:outline-none focus:border-[#ccff00]"
               />
             </div>
           </div>
@@ -122,7 +122,7 @@ export function NewGoal() {
               value={subjects}
               onChange={(e) => setSubjects(e.target.value)}
               placeholder="Math, Computer Science"
-              className="w-full bg-transparent border-b border-white/20 py-3 text-lg focus:outline-none focus:border-[#ccff00]"
+              className="w-full bg-transparent border-b border-zinc-300 dark:border-white/20 py-3 text-lg focus:outline-none focus:border-[#ccff00]"
             />
           </div>
 

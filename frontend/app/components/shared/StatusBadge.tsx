@@ -8,8 +8,8 @@ const STYLES: Record<GoalStatus, { wrap: string; dot: string; label: string }> =
     label: "Active",
   },
   Paused: {
-    wrap: "text-zinc-400 border border-white/10",
-    dot: "fill-zinc-600 text-transparent",
+    wrap: "text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-white/10",
+    dot: "fill-zinc-500 text-transparent",
     label: "Paused",
   },
   Completed: {

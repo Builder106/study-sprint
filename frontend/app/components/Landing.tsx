@@ -33,8 +33,8 @@ export function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black flex flex-col">
-      <header className="px-8 py-6 flex justify-between items-center border-b border-white/10">
+    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black flex flex-col">
+      <header className="px-8 py-6 flex justify-between items-center border-b border-zinc-200 dark:border-white/10">
         <div className="font-medium text-lg tracking-tight flex items-center gap-2">
           <div className="w-4 h-4 bg-[#ccff00] rounded-full"></div>
           StudySprint
@@ -48,7 +48,7 @@ export function Landing() {
             Track time.<br />
             <span className="text-[#ccff00]">Study smarter.</span>
           </h1>
-          <p className="text-xl text-zinc-400 max-w-md font-light leading-relaxed">
+          <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-md font-light leading-relaxed">
             Minimalist time tracking designed for deep focus. No distractions, just progress.
           </p>
         </div>
@@ -66,7 +66,7 @@ export function Landing() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-zinc-50 placeholder:text-zinc-700 focus:outline-none focus:border-[#ccff00] transition-colors rounded-none"
+                className="w-full bg-transparent border-b border-zinc-300 dark:border-white/20 px-0 py-3 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:outline-none focus:border-[#ccff00] transition-colors rounded-none"
               />
             </div>
 
@@ -81,7 +81,7 @@ export function Landing() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-zinc-50 placeholder:text-zinc-700 focus:outline-none focus:border-[#ccff00] transition-colors rounded-none"
+                className="w-full bg-transparent border-b border-zinc-300 dark:border-white/20 px-0 py-3 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:outline-none focus:border-[#ccff00] transition-colors rounded-none"
               />
             </div>
 
@@ -108,7 +108,7 @@ export function Landing() {
             <div className="text-center">
               <Link
                 to="/register"
-                className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+                className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
               >
                 Create an account
               </Link>
