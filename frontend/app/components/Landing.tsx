@@ -1,0 +1,121 @@
+import { Link, useNavigate } from "react-router";
+import { ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import { useAuth } from "@/lib/auth";
+import { ApiError } from "@/lib/api";
+
+export function Landing() {
+  const navigate = useNavigate();
+  const { user, login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (user) navigate("/dashboard", { replace: true });
+  }, [user, navigate]);
+
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      await login(email, password);
+      navigate("/dashboard", { replace: true });
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : "Sign-in failed";
+      setError(message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black flex flex-col">
+      <header className="px-8 py-6 flex justify-between items-center border-b border-white/10">
+        <div className="font-medium text-lg tracking-tight flex items-center gap-2">
+          <div className="w-4 h-4 bg-[#ccff00] rounded-full"></div>
+          StudySprint
+        </div>
+      </header>
+
+      <main className="flex-1 flex flex-col lg:flex-row items-center justify-center max-w-7xl mx-auto w-full px-8 py-16 gap-16 lg:gap-24">
+        <div className="flex-1 w-full space-y-8">
+          <h1 className="text-6xl md:text-8xl font-medium tracking-tighter leading-[1.05]">
+            Plan goals.<br />
+            Track time.<br />
+            <span className="text-[#ccff00]">Study smarter.</span>
+          </h1>
+          <p className="text-xl text-zinc-400 max-w-md font-light leading-relaxed">
+            Minimalist time tracking designed for deep focus. No distractions, just progress.
+          </p>
+        </div>
+
+        <div className="w-full max-w-sm">
+          <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+            <div className="space-y-3">
+              <label className="text-xs uppercase tracking-widest text-zinc-500 font-medium">
+                Email address
+              </label>
+              <input
+                type="email"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-zinc-50 placeholder:text-zinc-700 focus:outline-none focus:border-[#ccff00] transition-colors rounded-none"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-xs uppercase tracking-widest text-zinc-500 font-medium">
+                Password
+              </label>
+              <input
+                type="password"
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-zinc-50 placeholder:text-zinc-700 focus:outline-none focus:border-[#ccff00] transition-colors rounded-none"
+              />
+            </div>
+
+            {error && (
+              <div className="text-xs text-red-400 font-medium" role="alert">
+                {error}
+              </div>
+            )}
+
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full bg-[#ccff00] text-black h-14 rounded-full text-sm font-medium flex items-center justify-center gap-2 hover:bg-[#b3e600] transition-colors disabled:opacity-50"
+              >
+                {submitting ? "Signing in…" : (
+                  <>
+                    Sign In <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="text-center">
+              <Link
+                to="/register"
+                className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                Create an account
+              </Link>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  );
+}
