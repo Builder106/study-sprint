@@ -16,6 +16,10 @@ const origins = (process.env.CLIENT_ORIGIN || "http://localhost:5173")
 app.use(cors({ origin: origins, credentials: false }));
 app.use(express.json({ limit: "1mb" }));
 
+app.get("/", (_req, res) => {
+   res.json({ api: "StudySprint", version: "0.1.0", status: "ok" });
+});
+
 app.get("/api/health", (_req, res) => {
    res.json({ ok: true, uptime: process.uptime() });
 });
