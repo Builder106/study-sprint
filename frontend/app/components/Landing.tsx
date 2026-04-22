@@ -1,13 +1,15 @@
 import { Link, useNavigate } from "react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth";
 import { ApiError } from "@/lib/api";
 
 export function Landing() {
   const navigate = useNavigate();
   const { user, login } = useAuth();
+  const { resolvedTheme, setTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +41,13 @@ export function Landing() {
           <div className="w-4 h-4 bg-[#ccff00] rounded-full"></div>
           StudySprint
         </div>
+        <button
+          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          aria-label="Toggle theme"
+          className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+        >
+          {resolvedTheme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
       </header>
 
       <main className="flex-1 flex flex-col lg:flex-row items-center justify-center max-w-7xl mx-auto w-full px-8 py-16 gap-16 lg:gap-24">
