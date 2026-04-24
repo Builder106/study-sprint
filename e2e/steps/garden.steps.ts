@@ -9,10 +9,9 @@ When("I navigate to the garden page", async ({ page }) => {
 });
 
 Then("I should see the XP progress bar", async ({ page }) => {
-  // The XP bar is a div with bg-[#ccff00] inside a progress track.
-  await expect(page.locator(".bg-\\[\\#ccff00\\]").first()).toBeVisible({
-    timeout: 8_000,
-  });
+  // The progress track always renders; the fill may be zero-width for a new account.
+  // Check for the "X / Y XP" fraction text which is always present.
+  await expect(page.getByText(/\d+ \/ \d+ XP/)).toBeVisible({ timeout: 8_000 });
 });
 
 Then("I should see the current level displayed", async ({ page }) => {

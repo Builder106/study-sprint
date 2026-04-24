@@ -3,25 +3,29 @@ import { expect } from "@playwright/test";
 
 const { When, Then } = createBdd();
 
+// SessionModal is a custom fixed-overlay component with no role="dialog".
+// Locate it by the heading text it always renders.
+const modalHeading = (page: import("@playwright/test").Page) =>
+  page.getByRole("heading", { name: /Log Study Session|Edit Session/ });
+
 When("I open the log session modal", async ({ page }) => {
   await page.getByRole("button", { name: "Log session" }).click();
-  await expect(page.getByRole("dialog")).toBeVisible({ timeout: 5_000 });
+  await expect(modalHeading(page)).toBeVisible({ timeout: 5_000 });
 });
 
 When(
   "I set the session duration to {string}",
   async ({ page }, duration: string) => {
-    const input = page.getByRole("dialog").locator('input[type="number"]');
-    await input.fill(duration);
+    await page.locator('input[type="number"]').first().fill(duration);
   },
 );
 
 When("I save the session", async ({ page }) => {
-  await page.getByRole("dialog").getByRole("button", { name: /save/i }).click();
+  await page.getByRole("button", { name: /Save session|Save changes/ }).click();
 });
 
 Then("the session modal should close", async ({ page }) => {
-  await expect(page.getByRole("dialog")).not.toBeVisible({ timeout: 8_000 });
+  await expect(modalHeading(page)).not.toBeVisible({ timeout: 8_000 });
 });
 
 Then("the recent sessions list should be visible", async ({ page }) => {
@@ -33,12 +37,12 @@ Then("the recent sessions list should be visible", async ({ page }) => {
 Then(
   "I should see the session duration error {string}",
   async ({ page }, message: string) => {
-    await expect(
-      page.getByRole("dialog").locator('[role="alert"]'),
-    ).toContainText(message, { timeout: 5_000 });
+    await expect(page.locator('[role="alert"]')).toContainText(message, {
+      timeout: 5_000,
+    });
   },
 );
 
 Then("the session modal should remain open", async ({ page }) => {
-  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(modalHeading(page)).toBeVisible();
 });

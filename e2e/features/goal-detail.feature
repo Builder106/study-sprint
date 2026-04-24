@@ -9,9 +9,12 @@ Feature: Goal Detail — Panel, Timer, Focus Tools, Calendar (#12, #13, #16, #17
 
   # Issue #12 — Slide-out details panel
   Scenario: Opening the slide-out details panel
-    When I click the "Details" button
     Then the goal details panel should be visible
     And I should see the "Target" metadata in the panel
+
+  Scenario: Closing and reopening the details panel via the Details button
+    When I close and reopen the details panel
+    Then the goal details panel should be visible
 
   # Issue #16 — Smart timer modes
   Scenario: Switching the timer to Pomodoro mode
