@@ -121,6 +121,8 @@ When(
 When(
   "I click {string} in the context menu",
   async ({ page }, label: string) => {
+    // Accept any confirm() dialog that fires as a result of this action (e.g. delete confirmation).
+    page.once("dialog", (dialog) => dialog.accept());
     await page.getByRole("menuitem", { name: label }).click();
   },
 );
