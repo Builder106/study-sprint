@@ -17,6 +17,10 @@ export default defineConfig({
     },
   },
 
+  // Static assets live under frontend/public, not the Vite default of ./public.
+  // Without this override the favicon at /logo.svg would 404.
+  publicDir: path.resolve(__dirname, './frontend/public'),
+
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
 })
