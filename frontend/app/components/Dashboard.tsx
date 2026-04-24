@@ -1,6 +1,20 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Plus, ChevronRight, Activity, BarChart3, Sparkles, Leaf, Users } from "lucide-react";
+import {
+  Plus,
+  ChevronRight,
+  Activity,
+  BarChart3,
+  Sparkles,
+  Leaf,
+  Users,
+  Pause,
+  Play,
+  CheckCircle,
+  Copy,
+  Trash2,
+  ExternalLink,
+} from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { minutesToHours, progressPercent } from "@/lib/format";
 import type { Goal, GoalStatus } from "@/lib/types";
@@ -9,6 +23,14 @@ import { ProgressBar } from "./shared/ProgressBar";
 import { TopNav } from "./shared/TopNav";
 import { SyllabusImport } from "./SyllabusImport";
 import { GoogleCalendarBadge } from "./shared/GoogleCalendarBadge";
+import {
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuPortal,
+  ContextMenuRoot,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "./shared/ContextMenuPrimitives";
 
 type StatusFilter = "All" | GoalStatus;
 type SortKey = "recent" | "logged" | "remaining" | "progress";
@@ -22,6 +44,7 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 ];
 
 export function Dashboard() {
+  const navigate = useNavigate();
   const [goals, setGoals] = useState<Goal[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
@@ -36,6 +59,38 @@ export function Dashboard() {
       .catch((err: unknown) =>
         setError(err instanceof ApiError ? err.message : "Failed to load goals"),
       );
+  };
+
+  const setGoalStatus = async (goal: Goal, status: GoalStatus) => {
+    try {
+      const res = await api.updateGoal(goal.id, { status });
+      setGoals((prev) =>
+        prev ? prev.map((g) => (g.id === goal.id ? res.goal : g)) : prev,
+      );
+    } catch (err) {
+      setBanner(err instanceof ApiError ? err.message : "Failed to update goal");
+    }
+  };
+
+  const deleteGoalFromMenu = async (goal: Goal) => {
+    if (!confirm(`Delete "${goal.title}"? This removes all sessions too.`)) return;
+    try {
+      await api.deleteGoal(goal.id);
+      setGoals((prev) => (prev ? prev.filter((g) => g.id !== goal.id) : prev));
+      setBanner(`Deleted "${goal.title}".`);
+    } catch (err) {
+      setBanner(err instanceof ApiError ? err.message : "Failed to delete goal");
+    }
+  };
+
+  const copyGoalLink = async (goal: Goal) => {
+    const url = `${window.location.origin}/goal/${goal.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setBanner("Link copied.");
+    } catch {
+      setBanner(url);
+    }
   };
 
   useEffect(() => {
@@ -285,42 +340,102 @@ export function Dashboard() {
               const logged = minutesToHours(goal.logged_minutes);
               const target = Number(goal.target_hours);
               return (
-                <Link to={`/goal/${goal.id}`} key={goal.id} className="block group">
-                  <div className="py-8 border-b border-zinc-200 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8 group-hover:bg-zinc-50 dark:group-hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl">
-                    <div className="flex-1 space-y-3">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
-                        <h3 className="text-xl md:text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 group-hover:text-[#ccff00] transition-colors">
-                          {goal.title}
-                        </h3>
-                        <div className="flex-shrink-0">
-                          <StatusBadge status={goal.status} />
+                <ContextMenuRoot key={goal.id}>
+                  <ContextMenuTrigger asChild>
+                    <Link to={`/goal/${goal.id}`} className="block group">
+                      <div className="py-8 border-b border-zinc-200 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8 group-hover:bg-zinc-50 dark:group-hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl">
+                        <div className="flex-1 space-y-3">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+                            <h3 className="text-xl md:text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 group-hover:text-[#ccff00] transition-colors">
+                              {goal.title}
+                            </h3>
+                            <div className="flex-shrink-0">
+                              <StatusBadge status={goal.status} />
+                            </div>
+                          </div>
+
+                          <div className="flex gap-6 text-sm text-zinc-500 font-light">
+                            <span>
+                              Target: <span className="text-zinc-700 dark:text-zinc-300">{target}h</span>
+                            </span>
+                            <span>
+                              Logged: <span className="text-[#ccff00]">{logged}h</span>
+                            </span>
+                          </div>
+
+                          <div className="w-full max-w-xl flex items-center gap-4 mt-2">
+                            <div className="flex-1">
+                              <ProgressBar percent={percent} />
+                            </div>
+                            <span className="text-xs font-medium text-zinc-500 tabular-nums w-10 text-right">
+                              {percent}%
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-zinc-200 dark:border-white/10 group-hover:border-[#ccff00] group-hover:text-[#ccff00] transition-colors">
+                          <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
                         </div>
                       </div>
-
-                      <div className="flex gap-6 text-sm text-zinc-500 font-light">
-                        <span>
-                          Target: <span className="text-zinc-700 dark:text-zinc-300">{target}h</span>
-                        </span>
-                        <span>
-                          Logged: <span className="text-[#ccff00]">{logged}h</span>
-                        </span>
-                      </div>
-
-                      <div className="w-full max-w-xl flex items-center gap-4 mt-2">
-                        <div className="flex-1">
-                          <ProgressBar percent={percent} />
-                        </div>
-                        <span className="text-xs font-medium text-zinc-500 tabular-nums w-10 text-right">
-                          {percent}%
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-zinc-200 dark:border-white/10 group-hover:border-[#ccff00] group-hover:text-[#ccff00] transition-colors">
-                      <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
-                    </div>
-                  </div>
-                </Link>
+                    </Link>
+                  </ContextMenuTrigger>
+                  <ContextMenuPortal>
+                    <ContextMenuContent>
+                      <ContextMenuItem
+                        icon={<ExternalLink className="w-full h-full" />}
+                        onSelect={() => navigate(`/goal/${goal.id}`)}
+                      >
+                        Open
+                      </ContextMenuItem>
+                      {goal.status === "Active" && (
+                        <ContextMenuItem
+                          icon={<Pause className="w-full h-full" />}
+                          onSelect={() => setGoalStatus(goal, "Paused")}
+                        >
+                          Pause
+                        </ContextMenuItem>
+                      )}
+                      {goal.status === "Paused" && (
+                        <ContextMenuItem
+                          icon={<Play className="w-full h-full" />}
+                          onSelect={() => setGoalStatus(goal, "Active")}
+                        >
+                          Resume
+                        </ContextMenuItem>
+                      )}
+                      {goal.status === "Completed" && (
+                        <ContextMenuItem
+                          icon={<Play className="w-full h-full" />}
+                          onSelect={() => setGoalStatus(goal, "Active")}
+                        >
+                          Reactivate
+                        </ContextMenuItem>
+                      )}
+                      {goal.status !== "Completed" && (
+                        <ContextMenuItem
+                          icon={<CheckCircle className="w-full h-full" />}
+                          onSelect={() => setGoalStatus(goal, "Completed")}
+                        >
+                          Mark complete
+                        </ContextMenuItem>
+                      )}
+                      <ContextMenuItem
+                        icon={<Copy className="w-full h-full" />}
+                        onSelect={() => copyGoalLink(goal)}
+                      >
+                        Copy link
+                      </ContextMenuItem>
+                      <ContextMenuSeparator />
+                      <ContextMenuItem
+                        icon={<Trash2 className="w-full h-full" />}
+                        danger
+                        onSelect={() => deleteGoalFromMenu(goal)}
+                      >
+                        Delete goal
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenuPortal>
+                </ContextMenuRoot>
               );
             })}
           </div>

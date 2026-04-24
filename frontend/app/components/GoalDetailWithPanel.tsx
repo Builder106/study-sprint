@@ -1,7 +1,19 @@
 import { Link, useNavigate, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { ArrowLeft, Play, Pause, X, Edit2, Check, Calendar, CheckCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  Play,
+  Pause,
+  X,
+  Edit2,
+  Check,
+  Calendar,
+  CheckCheck,
+  Pencil,
+  Trash2,
+  Copy,
+} from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import {
   formatDate,
@@ -15,6 +27,14 @@ import { TopNav } from "./shared/TopNav";
 import { SessionModal } from "./shared/SessionModal";
 import { TimerCard } from "./shared/TimerCard";
 import { FocusTools, clearFocusNotes, readFocusNotes } from "./shared/FocusTools";
+import {
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuPortal,
+  ContextMenuRoot,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "./shared/ContextMenuPrimitives";
 
 export function GoalDetailWithPanel() {
   const { id } = useParams();
@@ -27,6 +47,7 @@ export function GoalDetailWithPanel() {
   const [showModal, setShowModal] = useState(false);
   const [modalInitialMinutes, setModalInitialMinutes] = useState<number | undefined>(undefined);
   const [modalInitialNotes, setModalInitialNotes] = useState<string>("");
+  const [editingSession, setEditingSession] = useState<StudySession | null>(null);
   const [googleConnected, setGoogleConnected] = useState(false);
   const [exportingSessionId, setExportingSessionId] = useState<number | null>(null);
 
@@ -73,6 +94,31 @@ export function GoalDetailWithPanel() {
     }
   };
 
+  const openEditSession = (session: StudySession) => {
+    setEditingSession(session);
+    setShowModal(true);
+  };
+
+  const deleteSession = async (session: StudySession) => {
+    if (!confirm("Delete this session?")) return;
+    try {
+      await api.deleteSession(session.id);
+      setSessions((prev) => prev.filter((s) => s.id !== session.id));
+      reload().catch(() => {});
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : "Failed to delete session");
+    }
+  };
+
+  const copySessionNotes = async (session: StudySession) => {
+    if (!session.notes) return;
+    try {
+      await navigator.clipboard.writeText(session.notes);
+    } catch {
+      // Clipboard API may be unavailable in insecure contexts; silently ignore.
+    }
+  };
+
   useEffect(() => {
     if (!goal) return;
     setForm({
@@ -110,7 +156,9 @@ export function GoalDetailWithPanel() {
     setShowModal(false);
     setModalInitialMinutes(undefined);
     setModalInitialNotes("");
-    if (id) clearFocusNotes(id);
+    const wasEdit = editingSession !== null;
+    setEditingSession(null);
+    if (id && !wasEdit) clearFocusNotes(id);
     reload().catch(() => {});
   };
 
@@ -282,44 +330,82 @@ export function GoalDetailWithPanel() {
                   ) : (
                     <div className="space-y-0">
                       {sessions.slice(0, 6).map((session) => (
-                        <div
-                          key={session.id}
-                          className="py-6 border-b border-zinc-100 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl flex flex-col gap-2 group"
-                        >
-                          <div className="flex gap-4 justify-between items-baseline">
-                            <div className="text-xl font-medium tracking-tighter text-[#ccff00]">
-                              {formatDuration(session.duration_minutes)}
-                            </div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                              {formatDate(session.logged_at)}
-                            </div>
-                          </div>
-                          {session.notes && (
-                            <div className="text-sm text-zinc-600 dark:text-zinc-400 font-light leading-relaxed">
-                              {session.notes}
-                            </div>
-                          )}
-                          {googleConnected && (
-                            <div className="flex justify-end">
-                              {session.gcal_event_id ? (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#ccff00]">
-                                  <CheckCheck className="w-3 h-3" /> On calendar
-                                </span>
-                              ) : (
-                                <button
-                                  onClick={() => exportToCalendar(session.id)}
-                                  disabled={exportingSessionId === session.id}
-                                  className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors disabled:opacity-50"
-                                >
-                                  <Calendar className="w-3 h-3" />
-                                  {exportingSessionId === session.id
-                                    ? "Exporting…"
-                                    : "Add to Calendar"}
-                                </button>
+                        <ContextMenuRoot key={session.id}>
+                          <ContextMenuTrigger asChild>
+                            <div
+                              className="py-6 border-b border-zinc-100 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl flex flex-col gap-2 group"
+                            >
+                              <div className="flex gap-4 justify-between items-baseline">
+                                <div className="text-xl font-medium tracking-tighter text-[#ccff00]">
+                                  {formatDuration(session.duration_minutes)}
+                                </div>
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                                  {formatDate(session.logged_at)}
+                                </div>
+                              </div>
+                              {session.notes && (
+                                <div className="text-sm text-zinc-600 dark:text-zinc-400 font-light leading-relaxed">
+                                  {session.notes}
+                                </div>
+                              )}
+                              {googleConnected && (
+                                <div className="flex justify-end">
+                                  {session.gcal_event_id ? (
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#ccff00]">
+                                      <CheckCheck className="w-3 h-3" /> On calendar
+                                    </span>
+                                  ) : (
+                                    <button
+                                      onClick={() => exportToCalendar(session.id)}
+                                      disabled={exportingSessionId === session.id}
+                                      className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors disabled:opacity-50"
+                                    >
+                                      <Calendar className="w-3 h-3" />
+                                      {exportingSessionId === session.id
+                                        ? "Exporting…"
+                                        : "Add to Calendar"}
+                                    </button>
+                                  )}
+                                </div>
                               )}
                             </div>
-                          )}
-                        </div>
+                          </ContextMenuTrigger>
+                          <ContextMenuPortal>
+                            <ContextMenuContent>
+                              <ContextMenuItem
+                                icon={<Pencil className="w-full h-full" />}
+                                onSelect={() => openEditSession(session)}
+                              >
+                                Edit session
+                              </ContextMenuItem>
+                              {session.notes && (
+                                <ContextMenuItem
+                                  icon={<Copy className="w-full h-full" />}
+                                  onSelect={() => copySessionNotes(session)}
+                                >
+                                  Copy notes
+                                </ContextMenuItem>
+                              )}
+                              {googleConnected && !session.gcal_event_id && (
+                                <ContextMenuItem
+                                  icon={<Calendar className="w-full h-full" />}
+                                  onSelect={() => exportToCalendar(session.id)}
+                                  disabled={exportingSessionId === session.id}
+                                >
+                                  Add to Calendar
+                                </ContextMenuItem>
+                              )}
+                              <ContextMenuSeparator />
+                              <ContextMenuItem
+                                icon={<Trash2 className="w-full h-full" />}
+                                danger
+                                onSelect={() => deleteSession(session)}
+                              >
+                                Delete session
+                              </ContextMenuItem>
+                            </ContextMenuContent>
+                          </ContextMenuPortal>
+                        </ContextMenuRoot>
                       ))}
                     </div>
                   )}
@@ -525,10 +611,12 @@ export function GoalDetailWithPanel() {
           goalId={goal.id}
           initialMinutes={modalInitialMinutes}
           initialNotes={modalInitialNotes}
+          session={editingSession}
           onClose={() => {
             setShowModal(false);
             setModalInitialMinutes(undefined);
             setModalInitialNotes("");
+            setEditingSession(null);
           }}
           onSaved={onSessionSaved}
         />
