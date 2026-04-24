@@ -177,11 +177,22 @@ export function GoalDetailWithPanel() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black flex flex-col">
-      <TopNav />
+      <TopNav
+        right={
+          !showPanel ? (
+            <button
+              onClick={() => setShowPanel(true)}
+              className="text-[10px] font-bold uppercase tracking-widest text-[#ccff00] border border-[#ccff00]/20 bg-[#ccff00]/10 px-3 py-1.5 rounded-full hover:bg-[#ccff00]/20 transition-colors"
+            >
+              Details
+            </button>
+          ) : null
+        }
+      />
 
       <div className="flex flex-1 relative overflow-hidden">
         <main
-          className={`flex-1 px-8 py-12 lg:py-16 transition-all overflow-y-auto ${
+          className={`flex-1 px-8 py-12 lg:py-16 transition-all duration-300 ease-out overflow-y-auto ${
             showPanel ? "mr-[380px] xl:mr-[460px]" : ""
           }`}
         >
@@ -196,19 +207,9 @@ export function GoalDetailWithPanel() {
 
             <div className="flex flex-col lg:flex-row gap-16 xl:gap-24">
               <div className="flex-1 lg:max-w-xl">
-                <div className="flex items-start justify-between gap-4 mb-8">
-                  <h1 className="text-3xl md:text-5xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50 leading-[1.1]">
-                    {goal.title}
-                  </h1>
-                  {!showPanel && (
-                    <button
-                      onClick={() => setShowPanel(true)}
-                      className="text-[10px] font-bold uppercase tracking-widest text-[#ccff00] border border-[#ccff00]/20 bg-[#ccff00]/10 px-3 py-1.5 rounded-full hover:bg-[#ccff00]/20 transition-colors whitespace-nowrap"
-                    >
-                      Details
-                    </button>
-                  )}
-                </div>
+                <h1 className="text-3xl md:text-5xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50 leading-[1.1] mb-8">
+                  {goal.title}
+                </h1>
 
                 <div className="py-12 border-y border-zinc-200 dark:border-white/10 my-12 flex justify-start items-center">
                   <div className="text-[80px] sm:text-[100px] xl:text-[120px] font-medium tracking-tighter leading-none tabular-nums text-zinc-900 dark:text-zinc-50 font-mono">
@@ -314,13 +315,19 @@ export function GoalDetailWithPanel() {
           </div>
         </main>
 
-        {showPanel && (
-          <aside className="w-[380px] xl:w-[460px] bg-white dark:bg-[#0a0a0a] border-l border-zinc-200 dark:border-white/10 absolute right-0 top-0 bottom-0 flex flex-col z-20 shadow-2xl">
+        <aside
+          aria-label="Goal details panel"
+          aria-hidden={!showPanel}
+          className={`w-[380px] xl:w-[460px] bg-white dark:bg-[#0a0a0a] border-l border-zinc-200 dark:border-white/10 absolute right-0 top-0 bottom-0 flex flex-col z-20 shadow-2xl transition-transform duration-300 ease-out ${
+            showPanel ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
             <div className="px-8 py-8 border-b border-zinc-200 dark:border-white/10 flex justify-between items-center">
               <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-widest">Goal Details</h3>
               <button
                 onClick={() => setShowPanel(false)}
                 aria-label="Close panel"
+                tabIndex={showPanel ? 0 : -1}
                 className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors rounded-full"
               >
                 <X className="w-5 h-5" />
@@ -496,8 +503,7 @@ export function GoalDetailWithPanel() {
                 </>
               )}
             </div>
-          </aside>
-        )}
+        </aside>
       </div>
 
       {showModal && (

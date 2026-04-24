@@ -1,11 +1,15 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate, useParams } from "react-router";
 import { Landing } from "./components/Landing";
 import { Register } from "./components/Register";
 import { Dashboard } from "./components/Dashboard";
-import { GoalDetail } from "./components/GoalDetail";
 import { GoalDetailWithPanel } from "./components/GoalDetailWithPanel";
 import { NewGoal } from "./components/NewGoal";
 import { ProtectedRoute } from "./components/shared/ProtectedRoute";
+
+function RedirectToGoal() {
+  const { id } = useParams();
+  return <Navigate to={`/goal/${id}`} replace />;
+}
 
 export const router = createBrowserRouter([
   { path: "/", Component: Landing },
@@ -30,16 +34,9 @@ export const router = createBrowserRouter([
     path: "/goal/:id",
     element: (
       <ProtectedRoute>
-        <GoalDetail />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/goal/:id/details",
-    element: (
-      <ProtectedRoute>
         <GoalDetailWithPanel />
       </ProtectedRoute>
     ),
   },
+  { path: "/goal/:id/details", element: <RedirectToGoal /> },
 ]);
