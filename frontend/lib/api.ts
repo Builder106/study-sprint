@@ -150,4 +150,42 @@ export const api = {
          };
       }>("/api/analytics/summary");
    },
+
+   async parseSyllabus(input: { text?: string; file?: File }) {
+      const base = API_BASE;
+      const headers = new Headers();
+      const token = getToken();
+      if (token) headers.set("Authorization", `Bearer ${token}`);
+      let body: BodyInit;
+      if (input.file) {
+         const form = new FormData();
+         form.append("pdf", input.file);
+         if (input.text) form.append("text", input.text);
+         body = form;
+      } else {
+         headers.set("Content-Type", "application/json");
+         body = JSON.stringify({ text: input.text ?? "" });
+      }
+      const res = await fetch(`${base}/api/syllabus/parse`, {
+         method: "POST",
+         headers,
+         body,
+      });
+      const data = res.headers.get("content-type")?.includes("application/json")
+         ? await res.json()
+         : null;
+      if (!res.ok) {
+         throw new ApiError(res.status, data?.error || `Request failed (${res.status})`);
+      }
+      return data as {
+         goals: {
+            title: string;
+            description: string;
+            target_hours: number;
+            target_date: string | null;
+            subjects: string[];
+         }[];
+         model: string;
+      };
+   },
 };

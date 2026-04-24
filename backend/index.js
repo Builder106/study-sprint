@@ -7,6 +7,7 @@ import goalsRoutes from "./routes/goals.js";
 import sessionsRoutes from "./routes/sessions.js";
 import subjectsRoutes from "./routes/subjects.js";
 import analyticsRoutes from "./routes/analytics.js";
+import syllabusRoutes from "./routes/syllabus.js";
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/api/goals", goalsRoutes);
 app.use("/api", sessionsRoutes);
 app.use("/api/subjects", subjectsRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/syllabus", syllabusRoutes);
 
 app.use((err, _req, res, _next) => {
    console.error(err);

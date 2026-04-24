@@ -1,12 +1,13 @@
 import { Link } from "react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Plus, ChevronRight, Activity, BarChart3 } from "lucide-react";
+import { Plus, ChevronRight, Activity, BarChart3, Sparkles } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { minutesToHours, progressPercent } from "@/lib/format";
 import type { Goal, GoalStatus } from "@/lib/types";
 import { StatusBadge } from "./shared/StatusBadge";
 import { ProgressBar } from "./shared/ProgressBar";
 import { TopNav } from "./shared/TopNav";
+import { SyllabusImport } from "./SyllabusImport";
 
 type StatusFilter = "All" | GoalStatus;
 type SortKey = "recent" | "logged" | "remaining" | "progress";
@@ -24,14 +25,20 @@ export function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
   const [sortKey, setSortKey] = useState<SortKey>("recent");
+  const [showImport, setShowImport] = useState(false);
+  const [banner, setBanner] = useState<string | null>(null);
 
-  useEffect(() => {
-    api
+  const loadGoals = () => {
+    return api
       .listGoals()
       .then((res) => setGoals(res.goals))
       .catch((err: unknown) =>
         setError(err instanceof ApiError ? err.message : "Failed to load goals"),
       );
+  };
+
+  useEffect(() => {
+    loadGoals();
   }, []);
 
   const stats = useMemo(() => {
@@ -88,6 +95,14 @@ export function Dashboard() {
               <BarChart3 className="w-4 h-4" />
               <span className="hidden sm:inline">Analytics</span>
             </Link>
+            <button
+              onClick={() => setShowImport(true)}
+              aria-label="Import from syllabus"
+              className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span className="hidden sm:inline">Import</span>
+            </button>
             <Link
               to="/goals/new"
               aria-label="New goal"
@@ -100,6 +115,21 @@ export function Dashboard() {
       />
 
       <main className="max-w-5xl mx-auto px-8 py-16">
+        {banner && (
+          <div
+            role="status"
+            className="mb-8 px-4 py-3 rounded-xl border border-[#ccff00]/30 bg-[#ccff00]/10 text-[#ccff00] text-xs font-bold uppercase tracking-widest flex items-center justify-between"
+          >
+            <span>{banner}</span>
+            <button
+              onClick={() => setBanner(null)}
+              className="text-[#ccff00] hover:opacity-80"
+              aria-label="Dismiss"
+            >
+              ×
+            </button>
+          </div>
+        )}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4">
@@ -259,6 +289,17 @@ export function Dashboard() {
           </div>
         )}
       </main>
+
+      {showImport && (
+        <SyllabusImport
+          onClose={() => setShowImport(false)}
+          onCreated={(count) => {
+            setShowImport(false);
+            setBanner(`Created ${count} goal${count === 1 ? "" : "s"} from syllabus.`);
+            loadGoals();
+          }}
+        />
+      )}
     </div>
   );
 }
