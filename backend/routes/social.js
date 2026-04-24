@@ -17,6 +17,17 @@ function slugify(input) {
     .slice(0, 50);
 }
 
+// "/profiles/me" must come before "/profiles/:username" or Express
+// matches username = "me" and falls into the public lookup below.
+router.get("/profiles/me", requireAuth, async (req, res) => {
+  const { rows } = await pool.query(
+    `SELECT id, email, username, display_name, bio, is_public
+     FROM users WHERE id = $1`,
+    [req.userId],
+  );
+  res.json({ user: rows[0] });
+});
+
 // Profile lookup (public — no auth needed)
 router.get("/profiles/:username", async (req, res) => {
   const { username } = req.params;
@@ -111,15 +122,6 @@ router.put("/profiles/me", async (req, res) => {
     `UPDATE users SET ${updates.join(", ")} WHERE id = $${idx}
      RETURNING id, email, username, display_name, bio, is_public`,
     values,
-  );
-  res.json({ user: rows[0] });
-});
-
-router.get("/profiles/me", async (req, res) => {
-  const { rows } = await pool.query(
-    `SELECT id, email, username, display_name, bio, is_public
-     FROM users WHERE id = $1`,
-    [req.userId],
   );
   res.json({ user: rows[0] });
 });
