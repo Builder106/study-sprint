@@ -106,7 +106,10 @@ router.get("/:id", async (req, res) => {
   res.json({ goal });
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", updateGoalHandler);
+router.patch("/:id", updateGoalHandler);
+
+async function updateGoalHandler(req, res) {
   const goalId = Number(req.params.id);
   const existing = await loadGoal(goalId, req.userId);
   if (!existing) return res.status(404).json({ error: "Goal not found" });
@@ -184,7 +187,7 @@ router.put("/:id", async (req, res) => {
   } finally {
     client.release();
   }
-});
+}
 
 router.delete("/:id", async (req, res) => {
   const goalId = Number(req.params.id);

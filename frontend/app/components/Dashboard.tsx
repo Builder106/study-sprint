@@ -15,12 +15,14 @@ import {
   Trash2,
   ExternalLink,
 } from "lucide-react";
+import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
 import { minutesToHours, progressPercent } from "@/lib/format";
 import type { Goal, GoalStatus } from "@/lib/types";
 import { StatusBadge } from "./shared/StatusBadge";
 import { ProgressBar } from "./shared/ProgressBar";
 import { TopNav } from "./shared/TopNav";
+import { Spinner } from "./shared/Spinner";
 import { SyllabusImport } from "./SyllabusImport";
 import { GoogleCalendarBadge } from "./shared/GoogleCalendarBadge";
 import {
@@ -50,7 +52,6 @@ export function Dashboard() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
   const [sortKey, setSortKey] = useState<SortKey>("recent");
   const [showImport, setShowImport] = useState(false);
-  const [banner, setBanner] = useState<string | null>(null);
 
   const loadGoals = () => {
     return api
@@ -67,8 +68,9 @@ export function Dashboard() {
       setGoals((prev) =>
         prev ? prev.map((g) => (g.id === goal.id ? res.goal : g)) : prev,
       );
+      toast.success(`Marked "${goal.title}" as ${status}.`);
     } catch (err) {
-      setBanner(err instanceof ApiError ? err.message : "Failed to update goal");
+      toast.error(err instanceof ApiError ? err.message : "Failed to update goal");
     }
   };
 
@@ -77,9 +79,9 @@ export function Dashboard() {
     try {
       await api.deleteGoal(goal.id);
       setGoals((prev) => (prev ? prev.filter((g) => g.id !== goal.id) : prev));
-      setBanner(`Deleted "${goal.title}".`);
+      toast.success(`Deleted "${goal.title}".`);
     } catch (err) {
-      setBanner(err instanceof ApiError ? err.message : "Failed to delete goal");
+      toast.error(err instanceof ApiError ? err.message : "Failed to delete goal");
     }
   };
 
@@ -87,9 +89,9 @@ export function Dashboard() {
     const url = `${window.location.origin}/goal/${goal.id}`;
     try {
       await navigator.clipboard.writeText(url);
-      setBanner("Link copied.");
+      toast.success("Link copied.");
     } catch {
-      setBanner(url);
+      toast.message(url);
     }
   };
 
@@ -100,9 +102,9 @@ export function Dashboard() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const status = params.get("google");
-    if (status === "connected") setBanner("Google Calendar connected.");
-    else if (status === "denied") setBanner("Google Calendar connection cancelled.");
-    else if (status === "error") setBanner("Google Calendar connection failed. Try again.");
+    if (status === "connected") toast.success("Google Calendar connected.");
+    else if (status === "denied") toast.message("Google Calendar connection cancelled.");
+    else if (status === "error") toast.error("Google Calendar connection failed. Try again.");
     if (status) {
       params.delete("google");
       const qs = params.toString();
@@ -204,21 +206,6 @@ export function Dashboard() {
       />
 
       <main className="max-w-5xl mx-auto px-8 py-16">
-        {banner && (
-          <div
-            role="status"
-            className="mb-8 px-4 py-3 rounded-xl border border-[#ccff00]/30 bg-[#ccff00]/10 text-[#ccff00] text-xs font-bold uppercase tracking-widest flex items-center justify-between"
-          >
-            <span>{banner}</span>
-            <button
-              onClick={() => setBanner(null)}
-              className="text-[#ccff00] hover:opacity-80"
-              aria-label="Dismiss"
-            >
-              ×
-            </button>
-          </div>
-        )}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4">
@@ -263,8 +250,8 @@ export function Dashboard() {
         )}
 
         {goals === null && !error && (
-          <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest py-16">
-            Loading goals…
+          <div className="py-16">
+            <Spinner label="Loading goals" />
           </div>
         )}
 
@@ -447,7 +434,7 @@ export function Dashboard() {
           onClose={() => setShowImport(false)}
           onCreated={(count) => {
             setShowImport(false);
-            setBanner(`Created ${count} goal${count === 1 ? "" : "s"} from syllabus.`);
+            toast.success(`Created ${count} goal${count === 1 ? "" : "s"} from syllabus.`);
             loadGoals();
           }}
         />

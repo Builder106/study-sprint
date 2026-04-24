@@ -4,6 +4,7 @@ import { ArrowLeft, Flame, Sparkles, Trophy, Zap } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { TopNav } from "./shared/TopNav";
 import { VirtualPlant, type PlantStage } from "./shared/VirtualPlant";
+import { Spinner } from "./shared/Spinner";
 
 type Profile = Awaited<ReturnType<typeof api.gamificationProfile>>;
 
@@ -56,11 +57,7 @@ export function Garden() {
           <div className="text-xs text-red-400 font-medium" role="alert">{error}</div>
         )}
 
-        {!profile && !error && (
-          <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest">
-            Loading garden…
-          </div>
-        )}
+        {!profile && !error && <Spinner label="Loading garden" />}
 
         {profile && (
           <>

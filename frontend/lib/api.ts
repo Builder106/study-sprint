@@ -199,6 +199,12 @@ export const api = {
       );
    },
 
+   resetAccount() {
+      return request<{ ok: boolean; message: string }>("/api/admin/reset", {
+         method: "POST",
+      });
+   },
+
    getMyProfile() {
       return request<{
          user: {

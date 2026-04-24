@@ -5,6 +5,7 @@ import { ArrowLeft, Lock, LogOut, RefreshCw, Users } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { formatDate, formatDuration } from "@/lib/format";
 import { TopNav } from "./shared/TopNav";
+import { Spinner } from "./shared/Spinner";
 
 type Data = Awaited<ReturnType<typeof api.getRoom>>;
 
@@ -140,8 +141,8 @@ export function StudyRoom() {
     return (
       <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans">
         <TopNav />
-        <main className="max-w-3xl mx-auto px-8 py-16 text-xs font-bold uppercase tracking-widest text-zinc-500">
-          Loading room…
+        <main className="max-w-3xl mx-auto px-8 py-16">
+          <Spinner label="Loading room" />
         </main>
       </div>
     );

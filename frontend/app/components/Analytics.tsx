@@ -21,6 +21,7 @@ import {
 } from "recharts";
 import { api, ApiError } from "@/lib/api";
 import { TopNav } from "./shared/TopNav";
+import { Spinner } from "./shared/Spinner";
 
 type Summary = Awaited<ReturnType<typeof api.analyticsSummary>>;
 
@@ -136,11 +137,7 @@ export function Analytics() {
           </div>
         )}
 
-        {!data && !error && (
-          <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest">
-            Loading analytics…
-          </div>
-        )}
+        {!data && !error && <Spinner label="Loading analytics" />}
 
         {data && (
           <>

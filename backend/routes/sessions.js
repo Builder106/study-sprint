@@ -66,7 +66,10 @@ router.post("/goals/:goalId/sessions", async (req, res) => {
   res.status(201).json({ session: rows[0] });
 });
 
-router.put("/sessions/:id", async (req, res) => {
+router.put("/sessions/:id", updateSessionHandler);
+router.patch("/sessions/:id", updateSessionHandler);
+
+async function updateSessionHandler(req, res) {
   const sessionId = Number(req.params.id);
   const { duration_minutes, notes, quality } = req.body ?? {};
 
@@ -118,7 +121,7 @@ router.put("/sessions/:id", async (req, res) => {
     values,
   );
   res.json({ session: rows[0] });
-});
+}
 
 router.delete("/sessions/:id", async (req, res) => {
   const sessionId = Number(req.params.id);

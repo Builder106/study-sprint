@@ -14,6 +14,7 @@ import {
   Trash2,
   Copy,
 } from "lucide-react";
+import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
 import {
   formatDate,
@@ -27,6 +28,7 @@ import { TopNav } from "./shared/TopNav";
 import { SessionModal } from "./shared/SessionModal";
 import { TimerCard } from "./shared/TimerCard";
 import { FocusTools, clearFocusNotes, readFocusNotes } from "./shared/FocusTools";
+import { Spinner } from "./shared/Spinner";
 import {
   ContextMenuContent,
   ContextMenuItem,
@@ -88,7 +90,7 @@ export function GoalDetailWithPanel() {
         ),
       );
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Calendar export failed");
+      toast.error(err instanceof ApiError ? err.message : "Calendar export failed");
     } finally {
       setExportingSessionId(null);
     }
@@ -106,7 +108,7 @@ export function GoalDetailWithPanel() {
       setSessions((prev) => prev.filter((s) => s.id !== session.id));
       reload().catch(() => {});
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Failed to delete session");
+      toast.error(err instanceof ApiError ? err.message : "Failed to delete session");
     }
   };
 
@@ -169,7 +171,7 @@ export function GoalDetailWithPanel() {
       const res = await api.updateGoal(goal.id, { status: nextStatus });
       setGoal(res.goal);
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Failed to update goal");
+      toast.error(err instanceof ApiError ? err.message : "Failed to update goal");
     }
   };
 
@@ -179,7 +181,7 @@ export function GoalDetailWithPanel() {
       const res = await api.updateGoal(goal.id, { status: "Completed" });
       setGoal(res.goal);
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Failed to update goal");
+      toast.error(err instanceof ApiError ? err.message : "Failed to update goal");
     }
   };
 
@@ -190,7 +192,7 @@ export function GoalDetailWithPanel() {
       await api.deleteGoal(goal.id);
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Failed to delete goal");
+      toast.error(err instanceof ApiError ? err.message : "Failed to delete goal");
     }
   };
 
@@ -237,8 +239,8 @@ export function GoalDetailWithPanel() {
     return (
       <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50">
         <TopNav />
-        <main className="max-w-5xl mx-auto px-8 py-16 text-xs font-bold text-zinc-500 uppercase tracking-widest">
-          Loading…
+        <main className="max-w-5xl mx-auto px-8 py-16">
+          <Spinner label="Loading goal" />
         </main>
       </div>
     );
