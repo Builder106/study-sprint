@@ -151,6 +151,34 @@ export const api = {
       }>("/api/analytics/summary");
    },
 
+   gamificationProfile() {
+      return request<{
+         level: number;
+         xp: number;
+         xp_into_level: number;
+         xp_for_next_level: number;
+         progress_to_next: number;
+         pet_stage:
+            | "seed"
+            | "sprout"
+            | "sapling"
+            | "young_tree"
+            | "mature_tree"
+            | "blooming";
+         current_streak_days: number;
+         longest_streak_days: number;
+         total_sessions: number;
+         total_minutes: number;
+         mastered_count: number;
+         achievements: {
+            id: string;
+            label: string;
+            description: string;
+            unlocked: boolean;
+         }[];
+      }>("/api/gamification/profile");
+   },
+
    googleStatus() {
       return request<{ configured: boolean; connected: boolean }>(
          "/api/integrations/google/status",

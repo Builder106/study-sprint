@@ -9,6 +9,7 @@ import subjectsRoutes from "./routes/subjects.js";
 import analyticsRoutes from "./routes/analytics.js";
 import syllabusRoutes from "./routes/syllabus.js";
 import integrationsRoutes from "./routes/integrations.js";
+import gamificationRoutes from "./routes/gamification.js";
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use("/api/subjects", subjectsRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/syllabus", syllabusRoutes);
 app.use("/api/integrations", integrationsRoutes);
+app.use("/api/gamification", gamificationRoutes);
 
 app.use((err, _req, res, _next) => {
    console.error(err);
