@@ -2,8 +2,8 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "types": ["node", "@playwright/test"],
-    "moduleResolution": "node",
-    "module": "CommonJS",
+    "moduleResolution": "node16",
+    "module": "Node16",
     "allowImportingTsExtensions": false
   },
   "include": ["./**/*.ts", "../playwright.config.ts"]
