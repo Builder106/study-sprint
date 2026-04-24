@@ -68,7 +68,7 @@ export function Register() {
             Create account.
           </h1>
 
-          <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+          <form className="flex flex-col gap-8" onSubmit={onSubmit} noValidate>
             <div className="space-y-3">
               <label className="text-xs uppercase tracking-widest text-zinc-500 font-medium">
                 Email address

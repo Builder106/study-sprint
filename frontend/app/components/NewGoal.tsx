@@ -62,7 +62,7 @@ export function NewGoal() {
           New sprint.
         </h1>
 
-        <form onSubmit={onSubmit} className="space-y-10">
+        <form onSubmit={onSubmit} className="space-y-10" noValidate>
           <div className="space-y-3">
             <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
               Title
