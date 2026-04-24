@@ -4,7 +4,6 @@ import type { FormEvent } from "react";
 import { ArrowLeft, Play, Pause, X, Edit2, Check } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import {
-  formatClock,
   formatDate,
   formatDuration,
   minutesToHours,
@@ -14,6 +13,7 @@ import type { Goal, GoalStatus, StudySession } from "@/lib/types";
 import { ProgressBar } from "./shared/ProgressBar";
 import { TopNav } from "./shared/TopNav";
 import { SessionModal } from "./shared/SessionModal";
+import { TimerCard } from "./shared/TimerCard";
 
 export function GoalDetailWithPanel() {
   const { id } = useParams();
@@ -24,8 +24,7 @@ export function GoalDetailWithPanel() {
 
   const [showPanel, setShowPanel] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [timerRunning, setTimerRunning] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
+  const [modalInitialMinutes, setModalInitialMinutes] = useState<number | undefined>(undefined);
 
   const [editing, setEditing] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
@@ -61,16 +60,15 @@ export function GoalDetailWithPanel() {
     });
   }, [goal]);
 
-  useEffect(() => {
-    if (!timerRunning) return;
-    const interval = setInterval(() => setElapsed((prev) => prev + 1), 1000);
-    return () => clearInterval(interval);
-  }, [timerRunning]);
-
   const reload = async () => {
     if (!id) return;
     const g = await api.getGoal(id);
     setGoal(g.goal);
+  };
+
+  const openLogSession = (suggestedMinutes: number) => {
+    setModalInitialMinutes(suggestedMinutes > 0 ? suggestedMinutes : undefined);
+    setShowModal(true);
   };
 
   const onSessionSaved = (saved: StudySession) => {
@@ -84,7 +82,7 @@ export function GoalDetailWithPanel() {
       return [saved, ...prev];
     });
     setShowModal(false);
-    setElapsed(0);
+    setModalInitialMinutes(undefined);
     reload().catch(() => {});
   };
 
@@ -211,41 +209,7 @@ export function GoalDetailWithPanel() {
                   {goal.title}
                 </h1>
 
-                <div className="py-12 border-y border-zinc-200 dark:border-white/10 my-12 flex justify-start items-center">
-                  <div className="text-[80px] sm:text-[100px] xl:text-[120px] font-medium tracking-tighter leading-none tabular-nums text-zinc-900 dark:text-zinc-50 font-mono">
-                    {formatClock(elapsed)}
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4 mb-16">
-                  <button
-                    onClick={() => setTimerRunning(!timerRunning)}
-                    className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-full text-xs sm:text-sm font-bold tracking-widest uppercase transition-colors focus:outline-none ${
-                      timerRunning
-                        ? "bg-zinc-200 text-zinc-900 hover:bg-zinc-300 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-700"
-                        : "bg-[#ccff00] text-black hover:bg-[#b3e600]"
-                    }`}
-                  >
-                    {timerRunning ? (
-                      <>
-                        <Pause className="w-4 h-4" fill="currentColor" /> Pause
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-4 h-4" fill="currentColor" /> Start Timer
-                      </>
-                    )}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setTimerRunning(false);
-                      setShowModal(true);
-                    }}
-                    className="flex-1 flex items-center justify-center gap-3 py-4 rounded-full text-xs sm:text-sm font-bold tracking-widest uppercase border border-zinc-300 dark:border-white/20 hover:border-zinc-500 dark:hover:border-white/50 text-zinc-900 dark:text-zinc-50 transition-colors focus:outline-none"
-                  >
-                    Log session
-                  </button>
-                </div>
+                <TimerCard onLogSession={openLogSession} />
               </div>
 
               <div className="flex-1 space-y-16 max-w-sm xl:max-w-md">
@@ -509,7 +473,11 @@ export function GoalDetailWithPanel() {
       {showModal && (
         <SessionModal
           goalId={goal.id}
-          onClose={() => setShowModal(false)}
+          initialMinutes={modalInitialMinutes}
+          onClose={() => {
+            setShowModal(false);
+            setModalInitialMinutes(undefined);
+          }}
           onSaved={onSessionSaved}
         />
       )}

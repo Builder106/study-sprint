@@ -13,13 +13,23 @@ async function assertGoalOwnership(goalId, userId) {
   return rows.length > 0;
 }
 
+const QUALITY_REVIEW_DAYS = { 1: 1, 2: 2, 3: 4, 4: 7, 5: 14 };
+
+function nextReviewFromQuality(quality, baseDate = new Date()) {
+  const days = QUALITY_REVIEW_DAYS[quality];
+  if (!days) return null;
+  const d = new Date(baseDate);
+  d.setDate(d.getDate() + days);
+  return d.toISOString();
+}
+
 router.get("/goals/:goalId/sessions", async (req, res) => {
   const goalId = Number(req.params.goalId);
   if (!(await assertGoalOwnership(goalId, req.userId))) {
     return res.status(404).json({ error: "Goal not found" });
   }
   const { rows } = await pool.query(
-    `SELECT id, goal_id, duration_minutes, notes, logged_at
+    `SELECT id, goal_id, duration_minutes, notes, logged_at, quality, next_review_at
      FROM study_sessions
      WHERE goal_id = $1
      ORDER BY logged_at DESC`,
@@ -33,23 +43,32 @@ router.post("/goals/:goalId/sessions", async (req, res) => {
   if (!(await assertGoalOwnership(goalId, req.userId))) {
     return res.status(404).json({ error: "Goal not found" });
   }
-  const { duration_minutes, notes, logged_at } = req.body ?? {};
+  const { duration_minutes, notes, logged_at, quality } = req.body ?? {};
   const mins = Number(duration_minutes);
   if (!Number.isFinite(mins) || mins <= 0) {
     return res.status(400).json({ error: "duration_minutes must be greater than 0" });
   }
+  let qualityValue = null;
+  if (quality !== undefined && quality !== null && quality !== "") {
+    const q = Number(quality);
+    if (!Number.isInteger(q) || q < 1 || q > 5) {
+      return res.status(400).json({ error: "quality must be an integer 1-5" });
+    }
+    qualityValue = q;
+  }
+  const reviewAt = qualityValue ? nextReviewFromQuality(qualityValue) : null;
   const { rows } = await pool.query(
-    `INSERT INTO study_sessions (goal_id, duration_minutes, notes, logged_at)
-     VALUES ($1, $2, $3, COALESCE($4, NOW()))
-     RETURNING id, goal_id, duration_minutes, notes, logged_at`,
-    [goalId, Math.round(mins), notes ?? null, logged_at ?? null],
+    `INSERT INTO study_sessions (goal_id, duration_minutes, notes, logged_at, quality, next_review_at)
+     VALUES ($1, $2, $3, COALESCE($4, NOW()), $5, $6)
+     RETURNING id, goal_id, duration_minutes, notes, logged_at, quality, next_review_at`,
+    [goalId, Math.round(mins), notes ?? null, logged_at ?? null, qualityValue, reviewAt],
   );
   res.status(201).json({ session: rows[0] });
 });
 
 router.put("/sessions/:id", async (req, res) => {
   const sessionId = Number(req.params.id);
-  const { duration_minutes, notes } = req.body ?? {};
+  const { duration_minutes, notes, quality } = req.body ?? {};
 
   const { rows: owned } = await pool.query(
     `SELECT s.id FROM study_sessions s
@@ -74,13 +93,28 @@ router.put("/sessions/:id", async (req, res) => {
     updates.push(`notes = $${idx++}`);
     values.push(notes);
   }
+  if (quality !== undefined) {
+    if (quality === null || quality === "") {
+      updates.push(`quality = NULL`);
+      updates.push(`next_review_at = NULL`);
+    } else {
+      const q = Number(quality);
+      if (!Number.isInteger(q) || q < 1 || q > 5) {
+        return res.status(400).json({ error: "quality must be an integer 1-5" });
+      }
+      updates.push(`quality = $${idx++}`);
+      values.push(q);
+      updates.push(`next_review_at = $${idx++}`);
+      values.push(nextReviewFromQuality(q));
+    }
+  }
   if (updates.length === 0) return res.status(400).json({ error: "No updates provided" });
 
   values.push(sessionId);
   const { rows } = await pool.query(
     `UPDATE study_sessions SET ${updates.join(", ")}
      WHERE id = $${idx}
-     RETURNING id, goal_id, duration_minutes, notes, logged_at`,
+     RETURNING id, goal_id, duration_minutes, notes, logged_at, quality, next_review_at`,
     values,
   );
   res.json({ session: rows[0] });

@@ -19,12 +19,16 @@ export interface Goal {
   subjects: string[];
 }
 
+export type SessionQuality = 1 | 2 | 3 | 4 | 5;
+
 export interface StudySession {
   id: number;
   goal_id: number;
   duration_minutes: number;
   notes: string | null;
   logged_at: string;
+  quality: SessionQuality | null;
+  next_review_at: string | null;
 }
 
 export interface AuthResponse {

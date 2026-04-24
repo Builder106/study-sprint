@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { Clock, X } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
-import type { StudySession } from "@/lib/types";
+import type { SessionQuality, StudySession } from "@/lib/types";
 
 interface Props {
   goalId: number | string;
@@ -11,6 +11,14 @@ interface Props {
   onClose: () => void;
   onSaved: (session: StudySession) => void;
 }
+
+const QUALITY_LABELS: Record<SessionQuality, { label: string; days: number }> = {
+  1: { label: "Poor", days: 1 },
+  2: { label: "Okay", days: 2 },
+  3: { label: "Good", days: 4 },
+  4: { label: "Great", days: 7 },
+  5: { label: "Mastered", days: 14 },
+};
 
 export function SessionModal({ goalId, initialMinutes, session, onClose, onSaved }: Props) {
   const [hours, setHours] = useState<string>(
@@ -21,6 +29,7 @@ export function SessionModal({ goalId, initialMinutes, session, onClose, onSaved
         : "1.0",
   );
   const [notes, setNotes] = useState<string>(session?.notes ?? "");
+  const [quality, setQuality] = useState<SessionQuality | null>(session?.quality ?? null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [durationError, setDurationError] = useState<string | null>(null);
@@ -46,8 +55,8 @@ export function SessionModal({ goalId, initialMinutes, session, onClose, onSaved
     setSubmitting(true);
     try {
       const res = session
-        ? await api.updateSession(session.id, { duration_minutes: minutes, notes })
-        : await api.createSession(goalId, { duration_minutes: minutes, notes });
+        ? await api.updateSession(session.id, { duration_minutes: minutes, notes, quality })
+        : await api.createSession(goalId, { duration_minutes: minutes, notes, quality });
       onSaved(res.session);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Failed to save session");
@@ -125,6 +134,54 @@ export function SessionModal({ goalId, initialMinutes, session, onClose, onSaved
               rows={4}
               className="w-full bg-transparent border border-zinc-300 dark:border-white/20 p-4 text-zinc-900 dark:text-zinc-50 text-sm font-light focus:outline-none focus:border-[#ccff00] transition-colors rounded-xl resize-none"
             />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                How did it go? (optional)
+              </label>
+              {quality !== null && (
+                <button
+                  type="button"
+                  onClick={() => setQuality(null)}
+                  className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 uppercase tracking-widest"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div
+              className="grid grid-cols-5 gap-2"
+              role="radiogroup"
+              aria-label="Session quality"
+            >
+              {([1, 2, 3, 4, 5] as SessionQuality[]).map((q) => {
+                const selected = quality === q;
+                return (
+                  <button
+                    key={q}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => setQuality(q)}
+                    className={`py-3 px-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-colors ${
+                      selected
+                        ? "border-[#ccff00] bg-[#ccff00]/10 text-[#ccff00]"
+                        : "border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50"
+                    }`}
+                  >
+                    {QUALITY_LABELS[q].label}
+                  </button>
+                );
+              })}
+            </div>
+            {quality !== null && (
+              <p className="text-[10px] text-zinc-500 font-medium tracking-wide">
+                Next review suggested in {QUALITY_LABELS[quality].days}{" "}
+                {QUALITY_LABELS[quality].days === 1 ? "day" : "days"}.
+              </p>
+            )}
           </div>
 
           {error && (

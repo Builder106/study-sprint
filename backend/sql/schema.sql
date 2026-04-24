@@ -39,3 +39,8 @@ CREATE TABLE IF NOT EXISTS study_sessions (
 );
 
 CREATE INDEX IF NOT EXISTS study_sessions_goal_id_idx ON study_sessions(goal_id);
+
+ALTER TABLE study_sessions
+  ADD COLUMN IF NOT EXISTS quality INTEGER CHECK (quality BETWEEN 1 AND 5);
+ALTER TABLE study_sessions
+  ADD COLUMN IF NOT EXISTS next_review_at TIMESTAMPTZ;

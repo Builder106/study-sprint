@@ -111,7 +111,12 @@ export const api = {
    },
    createSession(
       goalId: number | string,
-      input: { duration_minutes: number; notes?: string; logged_at?: string },
+      input: {
+         duration_minutes: number;
+         notes?: string;
+         logged_at?: string;
+         quality?: number | null;
+      },
    ) {
       return request<{ session: StudySession }>(`/api/goals/${goalId}/sessions`, {
          method: "POST",
@@ -120,7 +125,7 @@ export const api = {
    },
    updateSession(
       sessionId: number | string,
-      input: Partial<{ duration_minutes: number; notes: string }>,
+      input: Partial<{ duration_minutes: number; notes: string; quality: number | null }>,
    ) {
       return request<{ session: StudySession }>(`/api/sessions/${sessionId}`, {
          method: "PUT",
