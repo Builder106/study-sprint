@@ -12,14 +12,12 @@ const upload = multer({
 });
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-// Fallback chain: OpenRouter tries each in order until one succeeds.
-// Capped at 3 — OpenRouter rejects longer arrays with a 400.
-// All must support structured outputs (json_schema + strict).
-const DEFAULT_MODELS = [
-  "qwen/qwen3-next-80b-a3b-instruct:free",
-  "meta-llama/llama-3.3-70b-instruct:free",
-  "google/gemini-2.0-flash-exp:free",
-];
+// openrouter/free meta-router: picks randomly from free models that
+// support our requested features (structured outputs filter applies),
+// which spreads load across the pool and dodges single-model 429s.
+// OPENROUTER_MODEL env can override with a specific model or a
+// comma-separated fallback chain (max 3, OpenRouter limit).
+const DEFAULT_MODELS = ["openrouter/free"];
 const MAX_INPUT_CHARS = 20000;
 
 const SYSTEM_PROMPT = `You extract structured study goals from course syllabi.
