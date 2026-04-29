@@ -16,16 +16,43 @@ const DEFAULT_MODEL = "openai/gpt-oss-120b:free";
 const MAX_INPUT_CHARS = 20000;
 
 const SYSTEM_PROMPT = `You extract structured study goals from course syllabi.
-Respond ONLY with a JSON object in this exact shape:
-{"goals": [{"title": string, "description": string, "target_hours": number, "target_date": string|null, "subjects": string[]}]}
 Rules:
 - title: 3-80 chars, concrete ("Master integration techniques", not "Study calculus")
 - description: 1-2 sentences explaining scope
 - target_hours: realistic (5-50 per goal)
 - target_date: a YYYY-MM-DD date if mentioned in the syllabus (exam, deadline, end of term), otherwise null
 - subjects: 1-3 short tags (e.g. "Calculus", "Data Structures")
-- aim for 3-8 goals that partition the course meaningfully
-Do not include any prose outside the JSON object.`;
+- aim for 3-8 goals that partition the course meaningfully`;
+
+const GOALS_SCHEMA = {
+  type: "object",
+  properties: {
+    goals: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          title: { type: "string", description: "Concrete goal title, 3-80 chars" },
+          description: { type: "string", description: "1-2 sentences explaining scope" },
+          target_hours: { type: "number", description: "Realistic estimate, 5-50" },
+          target_date: {
+            type: ["string", "null"],
+            description: "YYYY-MM-DD if a deadline is mentioned, else null",
+          },
+          subjects: {
+            type: "array",
+            items: { type: "string" },
+            description: "1-3 short tags like 'Calculus' or 'Data Structures'",
+          },
+        },
+        required: ["title", "description", "target_hours", "target_date", "subjects"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["goals"],
+  additionalProperties: false,
+};
 
 router.post("/parse", upload.single("pdf"), async (req, res) => {
   let text = typeof req.body?.text === "string" ? req.body.text : "";
@@ -74,7 +101,18 @@ router.post("/parse", upload.single("pdf"), async (req, res) => {
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: trimmed },
         ],
-        response_format: { type: "json_object" },
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: "study_goals",
+            strict: true,
+            schema: GOALS_SCHEMA,
+          },
+        },
+        // Only route to providers that genuinely honor structured outputs,
+        // so we don't get plain-text or fenced JSON back from a free-tier
+        // provider that ignored response_format.
+        provider: { require_parameters: true },
         temperature: 0.3,
         max_tokens: 2000,
       }),
