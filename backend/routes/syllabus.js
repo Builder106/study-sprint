@@ -12,7 +12,7 @@ const upload = multer({
 });
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL = "openai/gpt-oss-120b:free";
+const DEFAULT_MODEL = "qwen/qwen3-next-80b-a3b-instruct:free";
 const MAX_INPUT_CHARS = 20000;
 
 const SYSTEM_PROMPT = `You extract structured study goals from course syllabi.
