@@ -6,6 +6,7 @@ import { api, ApiError } from "@/lib/api";
 import { formatDate, formatDuration } from "@/lib/format";
 import { TopNav } from "./shared/TopNav";
 import { Spinner } from "./shared/Spinner";
+import { useConfirm } from "./shared/ConfirmDialog";
 
 type Data = Awaited<ReturnType<typeof api.getRoom>>;
 
@@ -14,6 +15,7 @@ const REFRESH_MS = 15000;
 export function StudyRoom() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [data, setData] = useState<Data | null>(null);
   const [needsJoin, setNeedsJoin] = useState<{ hasPasscode: boolean } | null>(null);
   const [passcode, setPasscode] = useState("");
@@ -74,7 +76,12 @@ export function StudyRoom() {
 
   const onLeave = async () => {
     if (!slug) return;
-    if (!confirm("Leave this room?")) return;
+    const ok = await confirm({
+      title: "Leave this room?",
+      description: "You can rejoin anytime from the community page.",
+      confirmLabel: "Leave",
+    });
+    if (!ok) return;
     try {
       await api.leaveRoom(slug);
       navigate("/community");

@@ -14,17 +14,21 @@ import {
   Copy,
   Trash2,
   ExternalLink,
+  Check,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
 import { minutesToHours, progressPercent } from "@/lib/format";
 import type { Goal, GoalStatus } from "@/lib/types";
+import { useConfirm } from "./shared/ConfirmDialog";
 import { StatusBadge } from "./shared/StatusBadge";
 import { ProgressBar } from "./shared/ProgressBar";
 import { TopNav } from "./shared/TopNav";
 import { Spinner } from "./shared/Spinner";
 import { SyllabusImport } from "./SyllabusImport";
 import { GoogleCalendarBadge } from "./shared/GoogleCalendarBadge";
+import { UpcomingCalendarEvents } from "./shared/UpcomingCalendarEvents";
 import {
   ContextMenuContent,
   ContextMenuItem,
@@ -33,6 +37,14 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "./shared/ContextMenuPrimitives";
+import {
+  SelectContent,
+  SelectItem,
+  SelectPortal,
+  SelectRoot,
+  SelectTrigger,
+  SelectValue,
+} from "./shared/SelectPrimitives";
 
 type StatusFilter = "All" | GoalStatus;
 type SortKey = "recent" | "logged" | "remaining" | "progress";
@@ -47,11 +59,75 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 
 export function Dashboard() {
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [goals, setGoals] = useState<Goal[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
   const [sortKey, setSortKey] = useState<SortKey>("recent");
   const [showImport, setShowImport] = useState(false);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [googleConnected, setGoogleConnected] = useState(false);
+  const [eventsRefreshKey, setEventsRefreshKey] = useState(0);
+
+  const toggleSelected = (id: number) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const exitSelectMode = () => {
+    setSelectMode(false);
+    setSelectedIds(new Set());
+  };
+
+  const bulkUpdateStatus = async (status: GoalStatus) => {
+    const ids = [...selectedIds];
+    if (ids.length === 0) return;
+    const results = await Promise.allSettled(
+      ids.map((id) => api.updateGoal(id, { status })),
+    );
+    const ok = results.filter((r) => r.status === "fulfilled").length;
+    const failed = results.length - ok;
+    setGoals((prev) =>
+      prev
+        ? prev.map((g) => {
+            const idx = ids.indexOf(g.id);
+            if (idx < 0) return g;
+            const r = results[idx];
+            return r.status === "fulfilled" ? r.value.goal : g;
+          })
+        : prev,
+    );
+    if (failed === 0) toast.success(`Updated ${ok} goal${ok === 1 ? "" : "s"} to ${status}.`);
+    else toast.error(`Updated ${ok}, failed ${failed}.`);
+    exitSelectMode();
+  };
+
+  const bulkDelete = async () => {
+    const ids = [...selectedIds];
+    if (ids.length === 0) return;
+    const ok = await confirm({
+      title: `Delete ${ids.length} goal${ids.length === 1 ? "" : "s"}?`,
+      description: "This removes all associated sessions too. This cannot be undone.",
+      confirmLabel: "Delete",
+      tone: "danger",
+    });
+    if (!ok) return;
+    const results = await Promise.allSettled(ids.map((id) => api.deleteGoal(id)));
+    const succeeded = results
+      .map((r, i) => (r.status === "fulfilled" ? ids[i] : null))
+      .filter((v): v is number => v !== null);
+    const failed = ids.length - succeeded.length;
+    setGoals((prev) => (prev ? prev.filter((g) => !succeeded.includes(g.id)) : prev));
+    if (failed === 0)
+      toast.success(`Deleted ${succeeded.length} goal${succeeded.length === 1 ? "" : "s"}.`);
+    else toast.error(`Deleted ${succeeded.length}, failed ${failed}.`);
+    exitSelectMode();
+  };
 
   const loadGoals = () => {
     return api
@@ -75,7 +151,13 @@ export function Dashboard() {
   };
 
   const deleteGoalFromMenu = async (goal: Goal) => {
-    if (!confirm(`Delete "${goal.title}"? This removes all sessions too.`)) return;
+    const ok = await confirm({
+      title: `Delete "${goal.title}"?`,
+      description: "This removes all sessions too.",
+      confirmLabel: "Delete",
+      tone: "danger",
+    });
+    if (!ok) return;
     try {
       await api.deleteGoal(goal.id);
       setGoals((prev) => (prev ? prev.filter((g) => g.id !== goal.id) : prev));
@@ -221,7 +303,7 @@ export function Dashboard() {
           </div>
 
           <div className="flex flex-col items-end gap-4">
-            <GoogleCalendarBadge />
+            <GoogleCalendarBadge onChange={setGoogleConnected} />
             <div className="flex gap-8 text-right">
               <div>
                 <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">
@@ -242,6 +324,16 @@ export function Dashboard() {
             </div>
           </div>
         </div>
+
+        {googleConnected && (
+          <UpcomingCalendarEvents
+            refreshKey={eventsRefreshKey}
+            onImported={() => {
+              loadGoals();
+              setEventsRefreshKey((k) => k + 1);
+            }}
+          />
+        )}
 
         {error && (
           <div className="mb-8 text-xs text-red-400 font-medium" role="alert">
@@ -297,20 +389,40 @@ export function Dashboard() {
                 );
               })}
             </div>
-            <label className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-              Sort
-              <select
-                value={sortKey}
-                onChange={(e) => setSortKey(e.target.value as SortKey)}
-                className="bg-transparent border border-zinc-200 dark:border-white/10 rounded-full px-3 py-1.5 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:border-[#ccff00]"
+            <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+              <button
+                onClick={() => {
+                  if (selectMode) exitSelectMode();
+                  else setSelectMode(true);
+                }}
+                aria-pressed={selectMode}
+                className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border transition-colors ${
+                  selectMode
+                    ? "border-[#ccff00] bg-[#ccff00]/10 text-[#ccff00]"
+                    : "border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50"
+                }`}
               >
-                {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value} className="bg-white dark:bg-[#0a0a0a]">
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+                {selectMode ? "Done" : "Select"}
+              </button>
+              <span id="sort-label">Sort</span>
+              <SelectRoot
+                value={sortKey}
+                onValueChange={(v) => setSortKey(v as SortKey)}
+              >
+                <SelectTrigger aria-labelledby="sort-label">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectPortal>
+                  <SelectContent>
+                    {SORT_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
+            </div>
           </div>
         )}
 
@@ -326,6 +438,77 @@ export function Dashboard() {
               const percent = progressPercent(goal.logged_minutes, goal.target_hours);
               const logged = minutesToHours(goal.logged_minutes);
               const target = Number(goal.target_hours);
+              const checked = selectedIds.has(goal.id);
+              const rowInner = (
+                <div className={`py-8 border-b border-zinc-200 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8 transition-colors -mx-4 px-4 rounded-xl ${
+                  selectMode
+                    ? checked
+                      ? "bg-[#ccff00]/5"
+                      : "hover:bg-zinc-50 dark:hover:bg-white/[0.02]"
+                    : "group-hover:bg-zinc-50 dark:group-hover:bg-white/[0.02]"
+                }`}>
+                  {selectMode && (
+                    <div className="flex-shrink-0 self-start md:self-center">
+                      <span
+                        aria-hidden
+                        className={`flex items-center justify-center w-5 h-5 rounded-md border transition-colors ${
+                          checked
+                            ? "border-[#ccff00] bg-[#ccff00] text-black"
+                            : "border-zinc-300 dark:border-white/20"
+                        }`}
+                      >
+                        {checked && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex-1 space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+                      <h3 className={`text-xl md:text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 transition-colors ${selectMode ? "" : "group-hover:text-[#ccff00]"}`}>
+                        {goal.title}
+                      </h3>
+                      <div className="flex-shrink-0">
+                        <StatusBadge status={goal.status} />
+                      </div>
+                    </div>
+                    <div className="flex gap-6 text-sm text-zinc-500 font-light">
+                      <span>
+                        Target: <span className="text-zinc-700 dark:text-zinc-300">{Number(goal.target_hours)}h</span>
+                      </span>
+                      <span>
+                        Logged: <span className="text-[#ccff00]">{minutesToHours(goal.logged_minutes)}h</span>
+                      </span>
+                    </div>
+                    <div className="w-full max-w-xl flex items-center gap-4 mt-2">
+                      <div className="flex-1">
+                        <ProgressBar percent={percent} />
+                      </div>
+                      <span className="text-xs font-medium text-zinc-500 tabular-nums w-10 text-right">
+                        {percent}%
+                      </span>
+                    </div>
+                  </div>
+                  {!selectMode && (
+                    <div className="hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-zinc-200 dark:border-white/10 group-hover:border-[#ccff00] group-hover:text-[#ccff00] transition-colors">
+                      <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                    </div>
+                  )}
+                </div>
+              );
+
+              if (selectMode) {
+                return (
+                  <button
+                    key={goal.id}
+                    type="button"
+                    onClick={() => toggleSelected(goal.id)}
+                    aria-pressed={checked}
+                    className="block w-full text-left"
+                  >
+                    {rowInner}
+                  </button>
+                );
+              }
+
               return (
                 <ContextMenuRoot key={goal.id}>
                   <ContextMenuTrigger asChild>
@@ -428,6 +611,59 @@ export function Dashboard() {
           </div>
         )}
       </main>
+
+      {selectMode && (() => {
+        const selected = goals?.filter((g) => selectedIds.has(g.id)) ?? [];
+        const allCompleted =
+          selected.length > 0 && selected.every((g) => g.status === "Completed");
+        const activateLabel = allCompleted ? "Reactivate" : "Resume";
+        return (
+        <div
+          role="toolbar"
+          aria-label="Bulk actions"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-white dark:bg-[#0a0a0a] border border-zinc-200 dark:border-white/10 shadow-2xl backdrop-blur-md"
+        >
+          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 px-2">
+            {selectedIds.size} selected
+          </span>
+          <button
+            disabled={selectedIds.size === 0}
+            onClick={() => bulkUpdateStatus("Paused")}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <Pause className="w-3 h-3" /> Pause
+          </button>
+          <button
+            disabled={selectedIds.size === 0}
+            onClick={() => bulkUpdateStatus("Active")}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <Play className="w-3 h-3" /> {activateLabel}
+          </button>
+          <button
+            disabled={selectedIds.size === 0}
+            onClick={() => bulkUpdateStatus("Completed")}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <CheckCircle className="w-3 h-3" /> Complete
+          </button>
+          <button
+            disabled={selectedIds.size === 0}
+            onClick={bulkDelete}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <Trash2 className="w-3 h-3" /> Delete
+          </button>
+          <button
+            onClick={exitSelectMode}
+            aria-label="Exit selection mode"
+            className="flex items-center justify-center w-7 h-7 rounded-full border border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+        );
+      })()}
 
       {showImport && (
         <SyllabusImport

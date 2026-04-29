@@ -4,13 +4,16 @@ import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'sonner';
 import App from './app/App';
 import { AuthProvider } from './lib/auth';
+import { ConfirmProvider } from './app/components/shared/ConfirmDialog';
 import './styles/index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
    <React.StrictMode>
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
          <AuthProvider>
-            <App />
+            <ConfirmProvider>
+               <App />
+            </ConfirmProvider>
             <Toaster
                position="bottom-right"
                theme="system"

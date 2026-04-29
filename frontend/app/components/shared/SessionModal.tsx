@@ -95,7 +95,7 @@ export function SessionModal({
           </button>
         </div>
 
-        <form onSubmit={onSubmit} className="p-8 space-y-8">
+        <form onSubmit={onSubmit} className="p-8 space-y-8" noValidate>
           <div className="space-y-4">
             <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
               Duration (hours)

@@ -29,6 +29,7 @@ import { SessionModal } from "./shared/SessionModal";
 import { TimerCard } from "./shared/TimerCard";
 import { FocusTools, clearFocusNotes, readFocusNotes } from "./shared/FocusTools";
 import { Spinner } from "./shared/Spinner";
+import { useConfirm } from "./shared/ConfirmDialog";
 import {
   ContextMenuContent,
   ContextMenuItem,
@@ -41,6 +42,7 @@ import {
 export function GoalDetailWithPanel() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [goal, setGoal] = useState<Goal | null>(null);
   const [sessions, setSessions] = useState<StudySession[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -102,7 +104,13 @@ export function GoalDetailWithPanel() {
   };
 
   const deleteSession = async (session: StudySession) => {
-    if (!confirm("Delete this session?")) return;
+    const ok = await confirm({
+      title: "Delete this session?",
+      description: "This permanently removes the session from your log.",
+      confirmLabel: "Delete",
+      tone: "danger",
+    });
+    if (!ok) return;
     try {
       await api.deleteSession(session.id);
       setSessions((prev) => prev.filter((s) => s.id !== session.id));
@@ -187,7 +195,13 @@ export function GoalDetailWithPanel() {
 
   const deleteGoal = async () => {
     if (!goal) return;
-    if (!confirm(`Delete goal "${goal.title}"? This removes all sessions too.`)) return;
+    const ok = await confirm({
+      title: `Delete goal "${goal.title}"?`,
+      description: "This removes all sessions too.",
+      confirmLabel: "Delete",
+      tone: "danger",
+    });
+    if (!ok) return;
     try {
       await api.deleteGoal(goal.id);
       navigate("/dashboard", { replace: true });

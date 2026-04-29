@@ -1,3 +1,5 @@
+import { AnimatePresence, motion } from "motion/react";
+
 export type PlantStage =
   | "seed"
   | "sprout"
@@ -16,7 +18,21 @@ const GROUND = (
   <ellipse cx="60" cy="102" rx="52" ry="6" fill="currentColor" opacity="0.15" />
 );
 
+const PIVOT = { transformOrigin: "60px 100px" } as const;
+
+const STAGES: Record<PlantStage, () => React.ReactElement> = {
+  seed: Seed,
+  sprout: Sprout,
+  sapling: Sapling,
+  young_tree: YoungTree,
+  mature_tree: MatureTree,
+  blooming: BloomingTree,
+};
+
 export function VirtualPlant({ stage, size = 120, className }: Props) {
+  const StageGlyph = STAGES[stage];
+  const swayAmount = stage === "seed" ? 0 : stage === "sprout" ? 1 : 1.8;
+
   return (
     <svg
       viewBox="0 0 120 120"
@@ -27,12 +43,28 @@ export function VirtualPlant({ stage, size = 120, className }: Props) {
       aria-label={`Your study plant, ${stage.replace("_", " ")}`}
     >
       {GROUND}
-      {stage === "seed" && <Seed />}
-      {stage === "sprout" && <Sprout />}
-      {stage === "sapling" && <Sapling />}
-      {stage === "young_tree" && <YoungTree />}
-      {stage === "mature_tree" && <MatureTree />}
-      {stage === "blooming" && <BloomingTree />}
+      <AnimatePresence mode="wait">
+        <motion.g
+          key={stage}
+          initial={{ opacity: 0, scale: 0.35 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.35 }}
+          transition={{ type: "spring", stiffness: 160, damping: 13, mass: 0.9 }}
+          style={PIVOT}
+        >
+          <motion.g
+            animate={
+              swayAmount > 0
+                ? { rotate: [-swayAmount, swayAmount, -swayAmount] }
+                : undefined
+            }
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            style={PIVOT}
+          >
+            <StageGlyph />
+          </motion.g>
+        </motion.g>
+      </AnimatePresence>
     </svg>
   );
 }
