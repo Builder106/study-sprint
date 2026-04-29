@@ -120,21 +120,13 @@ router.post("/parse", upload.single("pdf"), async (req, res) => {
     });
   }
 
-  let parsed;
-  try {
-    parsed = JSON.parse(content);
-  } catch {
-    // Try to salvage the first JSON object
-    const match = content.match(/\{[\s\S]*\}/);
-    if (match) {
-      try {
-        parsed = JSON.parse(match[0]);
-      } catch {
-        return res.status(502).json({ error: "LLM returned non-JSON content" });
-      }
-    } else {
-      return res.status(502).json({ error: "LLM returned non-JSON content" });
-    }
+  const parsed = extractJsonObject(content);
+  if (!parsed) {
+    console.error("openrouter non-JSON content:", content.slice(0, 800));
+    const preview = content.slice(0, 200).replace(/\s+/g, " ").trim();
+    return res.status(502).json({
+      error: `LLM returned non-JSON content. Preview: ${preview}`,
+    });
   }
 
   const rawGoals = Array.isArray(parsed?.goals) ? parsed.goals : [];
@@ -161,6 +153,28 @@ function clampNumber(value, min, max, fallback) {
   const n = Number(value);
   if (!Number.isFinite(n)) return fallback;
   return Math.max(min, Math.min(max, Math.round(n * 10) / 10));
+}
+
+function extractJsonObject(content) {
+  const tryParse = (s) => {
+    try { return JSON.parse(s); } catch { return null; }
+  };
+  // 1. straight parse
+  let parsed = tryParse(content);
+  if (parsed) return parsed;
+  // 2. strip markdown code fence: ```json ... ``` or ``` ... ```
+  const fence = content.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fence) {
+    parsed = tryParse(fence[1].trim());
+    if (parsed) return parsed;
+  }
+  // 3. greedy first-{ to last-} (handles leading/trailing prose)
+  const obj = content.match(/\{[\s\S]*\}/);
+  if (obj) {
+    parsed = tryParse(obj[0]);
+    if (parsed) return parsed;
+  }
+  return null;
 }
 
 function validateDate(value) {
