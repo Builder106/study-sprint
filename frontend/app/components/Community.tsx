@@ -9,12 +9,20 @@ import {
   Lock,
   ExternalLink,
   Check,
+  Sparkles,
 } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { formatDuration } from "@/lib/format";
 import { TopNav } from "./shared/TopNav";
 
 type Me = Awaited<ReturnType<typeof api.getMyProfile>>["user"];
+
+function initials(name: string): string {
+  const parts = name.trim().split(/[\s_-]+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 export function Community() {
   const navigate = useNavigate();
@@ -46,10 +54,15 @@ export function Community() {
     load();
   }, []);
 
+  const totalWeeklyMinutes = board.reduce((sum, e) => sum + e.weekly_minutes, 0);
+  const champion = board[0];
+  const rest = board.slice(1);
+  const hasUsername = !!me?.username;
+
   return (
     <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans">
       <TopNav />
-      <main className="max-w-5xl mx-auto px-8 py-16 space-y-16">
+      <main className="max-w-6xl mx-auto px-8 py-12 space-y-12">
         <Link
           to="/dashboard"
           className="inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] transition-colors group"
@@ -58,138 +71,282 @@ export function Community() {
           Back
         </Link>
 
-        <div>
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4">
+        {/* Hero */}
+        <section className="relative overflow-hidden rounded-3xl bg-[#ccff00] text-black p-10 md:p-14">
+          <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest mb-8">
             <Users className="w-4 h-4" />
             Community
           </div>
-          <h1 className="text-4xl md:text-5xl font-medium tracking-tighter">Study together.</h1>
-        </div>
+          <h1 className="text-6xl md:text-8xl font-medium tracking-tighter leading-[0.9]">
+            Study<br />together.
+          </h1>
+          <p className="mt-6 max-w-md text-base md:text-lg font-light leading-relaxed">
+            See who's putting in the hours. Spin up rooms with friends. Stay accountable.
+          </p>
+
+          <div className="mt-12 flex flex-wrap items-end gap-x-12 gap-y-6">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">
+                This week
+              </div>
+              <div className="text-3xl md:text-4xl font-medium tracking-tighter tabular-nums">
+                {totalWeeklyMinutes > 0 ? formatDuration(totalWeeklyMinutes) : "0m"}
+              </div>
+            </div>
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">
+                On the board
+              </div>
+              <div className="text-3xl md:text-4xl font-medium tracking-tighter tabular-nums">
+                {board.length}
+              </div>
+            </div>
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">
+                Your rooms
+              </div>
+              <div className="text-3xl md:text-4xl font-medium tracking-tighter tabular-nums">
+                {rooms.length}
+              </div>
+            </div>
+          </div>
+
+          {board.length > 0 && (
+            <div className="absolute right-10 top-10 hidden md:flex -space-x-3">
+              {board.slice(0, 5).map((e) => (
+                <div
+                  key={e.username}
+                  title={e.display_name || e.username}
+                  className="w-12 h-12 rounded-full bg-black text-[#ccff00] flex items-center justify-center text-xs font-bold tracking-tighter ring-2 ring-[#ccff00]"
+                >
+                  {initials(e.display_name || e.username)}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         {error && (
           <div className="text-xs text-red-400 font-medium" role="alert">{error}</div>
         )}
 
+        {/* Profile */}
         {me && (
-          <section className="p-6 rounded-2xl border border-zinc-200 dark:border-white/10 space-y-4">
-            <div className="flex items-start justify-between gap-4">
-              <div>
+          hasUsername ? (
+            <section className="p-6 md:p-8 rounded-2xl border border-zinc-200 dark:border-white/10 flex items-center gap-6">
+              <div
+                className={`w-20 h-20 rounded-full flex items-center justify-center text-xl font-bold tracking-tighter shrink-0 ${
+                  me.is_public
+                    ? "bg-[#ccff00] text-black"
+                    : "bg-zinc-100 dark:bg-white/10 text-zinc-500"
+                }`}
+              >
+                {initials(me.display_name || me.username || "?")}
+              </div>
+              <div className="flex-1 min-w-0">
                 <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">
                   Your profile
                 </div>
-                {me.username ? (
-                  <>
-                    <div className="text-2xl font-medium tracking-tighter">
-                      {me.display_name || me.username}{" "}
-                      <span className="text-zinc-500 font-light">@{me.username}</span>
-                    </div>
-                    <div className="text-xs text-zinc-500 mt-1 flex items-center gap-2">
-                      {me.is_public ? (
-                        <>
-                          <span className="inline-flex items-center gap-1 text-[#ccff00]">
-                            <Check className="w-3 h-3" /> Public
-                          </span>
-                          <Link
-                            to={`/u/${me.username}`}
-                            className="inline-flex items-center gap-1 hover:text-[#ccff00]"
-                          >
-                            <ExternalLink className="w-3 h-3" /> View profile
-                          </Link>
-                        </>
-                      ) : (
-                        <span className="text-zinc-500">Private (hidden from leaderboards)</span>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-sm text-zinc-600 dark:text-zinc-400 font-light">
-                    Pick a username to unlock profiles and leaderboards.
-                  </div>
+                <div className="text-2xl font-medium tracking-tighter truncate">
+                  {me.display_name || me.username}
+                  <span className="text-zinc-500 font-light"> @{me.username}</span>
+                </div>
+                {me.bio && (
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400 font-light leading-relaxed mt-1 line-clamp-2">
+                    {me.bio}
+                  </p>
                 )}
+                <div className="text-xs text-zinc-500 mt-2 flex items-center gap-3 flex-wrap">
+                  {me.is_public ? (
+                    <>
+                      <span className="inline-flex items-center gap-1 text-[#ccff00] font-medium">
+                        <Check className="w-3 h-3" /> Public
+                      </span>
+                      <Link
+                        to={`/u/${me.username}`}
+                        className="inline-flex items-center gap-1 hover:text-[#ccff00]"
+                      >
+                        <ExternalLink className="w-3 h-3" /> View profile
+                      </Link>
+                    </>
+                  ) : (
+                    <span>Private (hidden from leaderboards)</span>
+                  )}
+                </div>
               </div>
               <button
                 onClick={() => setEditingProfile(true)}
-                className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] border border-zinc-300 dark:border-white/20 px-3 py-1.5 rounded-full hover:border-[#ccff00] transition-colors"
+                className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] border border-zinc-300 dark:border-white/20 px-4 py-2 rounded-full hover:border-[#ccff00] transition-colors shrink-0"
               >
                 Edit
               </button>
-            </div>
-            {me.bio && (
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 font-light leading-relaxed">
-                {me.bio}
-              </p>
-            )}
-          </section>
+            </section>
+          ) : (
+            <section className="p-6 md:p-8 rounded-2xl border-2 border-dashed border-[#ccff00] bg-[#ccff00]/5 flex items-center justify-between gap-6 flex-wrap">
+              <div className="flex items-center gap-5 min-w-0">
+                <div className="w-16 h-16 rounded-full bg-[#ccff00] text-black flex items-center justify-center shrink-0">
+                  <Sparkles className="w-7 h-7" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">
+                    Set up your profile
+                  </div>
+                  <div className="text-lg md:text-xl font-medium tracking-tighter">
+                    Pick a username to unlock profiles and leaderboards.
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setEditingProfile(true)}
+                className="text-xs font-bold uppercase tracking-widest bg-[#ccff00] text-black px-5 py-3 rounded-full hover:bg-[#b3e600] transition-colors shrink-0"
+              >
+                Get started
+              </button>
+            </section>
+          )
         )}
 
+        {/* Leaderboard */}
         <section className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
               <Trophy className="w-4 h-4" /> Weekly leaderboard
             </h2>
+            {board.length > 0 && (
+              <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 tabular-nums">
+                {board.length} learner{board.length === 1 ? "" : "s"}
+              </div>
+            )}
           </div>
+
           {board.length === 0 ? (
-            <div className="text-xs text-zinc-500 font-light">
-              No public users yet. Go public to appear here.
+            <div className="p-10 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-white/15 text-center">
+              <div className="w-14 h-14 mx-auto rounded-full bg-[#ccff00]/15 flex items-center justify-center mb-4">
+                <Trophy className="w-6 h-6 text-[#ccff00]" />
+              </div>
+              <div className="text-base font-medium tracking-tighter">
+                No one's on the board yet.
+              </div>
+              <div className="text-xs text-zinc-500 mt-1 font-light">
+                {me?.is_public
+                  ? "Log a session this week to claim #1."
+                  : "Go public to claim #1."}
+              </div>
+              {me && !me.is_public && (
+                <button
+                  onClick={() => setEditingProfile(true)}
+                  className="mt-5 text-[10px] font-bold uppercase tracking-widest bg-[#ccff00] text-black px-4 py-2 rounded-full hover:bg-[#b3e600] transition-colors"
+                >
+                  Go public
+                </button>
+              )}
             </div>
           ) : (
-            <ol className="space-y-2">
-              {board.map((entry, i) => (
-                <li
-                  key={entry.username}
-                  className="flex items-center justify-between gap-4 py-3 px-4 rounded-xl border border-zinc-100 dark:border-white/5 hover:border-[#ccff00]/30 transition-colors"
+            <div className="space-y-3">
+              {champion && (
+                <Link
+                  to={`/u/${champion.username}`}
+                  className="block bg-[#ccff00] text-black rounded-2xl p-6 md:p-8 hover:opacity-95 transition-opacity"
                 >
-                  <div className="flex items-center gap-4 min-w-0">
-                    <span className="text-xs font-bold tabular-nums text-zinc-500 w-6">
-                      #{i + 1}
-                    </span>
-                    <Link
-                      to={`/u/${entry.username}`}
-                      className="text-sm font-medium hover:text-[#ccff00] truncate"
+                  <div className="flex items-center gap-4 md:gap-6">
+                    <div className="text-4xl md:text-6xl font-medium tracking-tighter tabular-nums">
+                      #1
+                    </div>
+                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-black text-[#ccff00] flex items-center justify-center text-base font-bold tracking-tighter shrink-0">
+                      {initials(champion.display_name || champion.username)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xl md:text-2xl font-medium tracking-tighter truncate">
+                        {champion.display_name || champion.username}
+                      </div>
+                      <div className="text-[10px] font-bold uppercase tracking-widest opacity-60 truncate">
+                        @{champion.username}
+                      </div>
+                    </div>
+                    <div className="text-2xl md:text-3xl font-medium tracking-tighter tabular-nums shrink-0">
+                      {formatDuration(champion.weekly_minutes)}
+                    </div>
+                  </div>
+                </Link>
+              )}
+              {rest.length > 0 && (
+                <ol className="space-y-1.5">
+                  {rest.map((entry, i) => (
+                    <li
+                      key={entry.username}
+                      className="flex items-center justify-between gap-4 py-3 px-4 rounded-xl border border-zinc-100 dark:border-white/5 hover:border-[#ccff00]/40 transition-colors"
                     >
-                      {entry.display_name || entry.username}
-                      <span className="text-zinc-500 font-light"> @{entry.username}</span>
-                    </Link>
-                  </div>
-                  <div className="text-sm tabular-nums text-[#ccff00] flex-shrink-0">
-                    {formatDuration(entry.weekly_minutes)}
-                  </div>
-                </li>
-              ))}
-            </ol>
+                      <div className="flex items-center gap-4 min-w-0">
+                        <span className="text-sm font-bold tabular-nums text-zinc-500 w-8">
+                          #{i + 2}
+                        </span>
+                        <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-white/10 text-zinc-600 dark:text-zinc-300 flex items-center justify-center text-[11px] font-bold tracking-tighter shrink-0">
+                          {initials(entry.display_name || entry.username)}
+                        </div>
+                        <Link
+                          to={`/u/${entry.username}`}
+                          className="text-sm font-medium hover:text-[#ccff00] truncate"
+                        >
+                          {entry.display_name || entry.username}
+                          <span className="text-zinc-500 font-light"> @{entry.username}</span>
+                        </Link>
+                      </div>
+                      <div className="text-sm tabular-nums text-[#ccff00] flex-shrink-0">
+                        {formatDuration(entry.weekly_minutes)}
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
           )}
         </section>
 
+        {/* Rooms */}
         <section className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
               <Users className="w-4 h-4" /> Your study rooms
             </h2>
+            {rooms.length > 0 && (
+              <button
+                onClick={() => setShowCreateRoom(true)}
+                className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-black bg-[#ccff00] hover:bg-[#b3e600] px-3 py-1.5 rounded-full transition-colors"
+              >
+                <Plus className="w-3 h-3" /> New room
+              </button>
+            )}
+          </div>
+
+          {rooms.length === 0 ? (
             <button
               onClick={() => setShowCreateRoom(true)}
-              className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-black bg-[#ccff00] hover:bg-[#b3e600] px-3 py-1.5 rounded-full transition-colors"
+              className="w-full p-12 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-white/20 hover:border-[#ccff00] hover:bg-[#ccff00]/5 transition-colors text-center group"
             >
-              <Plus className="w-3 h-3" /> New room
+              <div className="w-14 h-14 mx-auto rounded-full bg-zinc-100 dark:bg-white/5 group-hover:bg-[#ccff00] group-hover:text-black flex items-center justify-center mb-4 transition-colors">
+                <Plus className="w-6 h-6" />
+              </div>
+              <div className="text-base font-medium tracking-tighter">
+                Create your first room
+              </div>
+              <div className="text-xs text-zinc-500 mt-1 font-light">
+                Study alongside friends and watch the timer tick together.
+              </div>
             </button>
-          </div>
-          {rooms.length === 0 ? (
-            <div className="text-xs text-zinc-500 font-light">
-              No rooms yet — create one to study alongside friends.
-            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {rooms.map((room) => (
                 <Link
                   key={room.slug}
                   to={`/rooms/${room.slug}`}
-                  className="p-4 rounded-xl border border-zinc-100 dark:border-white/5 hover:border-[#ccff00]/30 transition-colors block"
+                  className="p-5 rounded-xl border border-zinc-100 dark:border-white/5 hover:border-[#ccff00]/40 hover:bg-[#ccff00]/5 transition-colors block"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <div className="font-medium text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                    <div className="font-medium text-zinc-900 dark:text-zinc-50 flex items-center gap-2 tracking-tighter">
                       {room.name}
                       {room.has_passcode && <Lock className="w-3 h-3 text-zinc-500" />}
                     </div>
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 tabular-nums">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 tabular-nums shrink-0">
                       {room.member_count} member{room.member_count === 1 ? "" : "s"}
                     </div>
                   </div>
@@ -200,6 +357,12 @@ export function Community() {
                   )}
                 </Link>
               ))}
+              <button
+                onClick={() => setShowCreateRoom(true)}
+                className="p-5 rounded-xl border-2 border-dashed border-zinc-200 dark:border-white/10 hover:border-[#ccff00] hover:bg-[#ccff00]/5 transition-colors flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00]"
+              >
+                <Plus className="w-4 h-4" /> New room
+              </button>
             </div>
           )}
         </section>
