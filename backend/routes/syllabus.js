@@ -87,9 +87,16 @@ router.post("/parse", upload.single("pdf"), async (req, res) => {
   if (!llmResponse.ok) {
     const bodyText = await llmResponse.text();
     console.error("openrouter error:", llmResponse.status, bodyText.slice(0, 500));
+    let reason = bodyText.slice(0, 300);
+    try {
+      const parsed = JSON.parse(bodyText);
+      reason = parsed?.error?.message || parsed?.error || reason;
+      if (typeof reason !== "string") reason = JSON.stringify(reason).slice(0, 300);
+    } catch {
+      // not JSON; keep raw slice
+    }
     return res.status(502).json({
-      error: `LLM request failed (${llmResponse.status})`,
-      details: bodyText.slice(0, 200),
+      error: `LLM request failed (${llmResponse.status}): ${reason}`,
     });
   }
 
