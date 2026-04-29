@@ -79,4 +79,18 @@ router.get("/me", requireAuth, async (req, res) => {
   res.json({ user: rows[0] });
 });
 
+// DELETE /api/auth/account — delete the authenticated user. All user-owned
+// tables cascade from users(id), so a single delete cleans up everything.
+// JWT-gated so a caller can only ever delete themselves.
+router.delete("/account", requireAuth, async (req, res) => {
+  try {
+    const { rowCount } = await pool.query("DELETE FROM users WHERE id = $1", [req.userId]);
+    if (rowCount === 0) return res.status(404).json({ error: "User not found" });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("delete account failed:", err);
+    res.status(500).json({ error: "Failed to delete account" });
+  }
+});
+
 export default router;

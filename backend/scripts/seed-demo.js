@@ -18,7 +18,7 @@ const NOTE_MARKER = "[demo-seed]";
 
 const NAMED = [
   {
-    email: "yinka@example.com",
+    email: "demo@example.com",
     username: "yinka",
     display: "Yinka Vaughan",
     bio: "Econ + CS '26 @ Wesleyan. Capstone + thesis + sleep, pick two.",
@@ -273,7 +273,7 @@ async function main() {
     console.log(`  ${room.name} → ${slug} (${room.members.length} members)`);
   }
 
-  console.log(`\nDone. Login: yinka@example.com / ${PASSWORD}`);
+  console.log(`\nDone. Login: demo@example.com / ${PASSWORD}`);
 }
 
 main().catch((e) => {
