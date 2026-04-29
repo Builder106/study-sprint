@@ -12,7 +12,14 @@ const upload = multer({
 });
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL = "qwen/qwen3-next-80b-a3b-instruct:free";
+// Fallback chain: OpenRouter tries each in order until one succeeds.
+// All must support structured outputs (json_schema + strict).
+const DEFAULT_MODELS = [
+  "qwen/qwen3-next-80b-a3b-instruct:free",
+  "meta-llama/llama-3.3-70b-instruct:free",
+  "google/gemini-2.0-flash-exp:free",
+  "mistralai/mistral-small-3.1-24b-instruct:free",
+];
 const MAX_INPUT_CHARS = 20000;
 
 const SYSTEM_PROMPT = `You extract structured study goals from course syllabi.
@@ -82,7 +89,13 @@ router.post("/parse", upload.single("pdf"), async (req, res) => {
     return res.status(500).json({ error: "OpenRouter not configured on the server" });
   }
 
-  const model = process.env.OPENROUTER_MODEL || DEFAULT_MODEL;
+  // OPENROUTER_MODEL accepts a single id or a comma-separated fallback chain.
+  const modelEnv = process.env.OPENROUTER_MODEL?.trim();
+  const modelList = modelEnv
+    ? modelEnv.split(",").map((s) => s.trim()).filter(Boolean)
+    : DEFAULT_MODELS;
+  const modelField =
+    modelList.length > 1 ? { models: modelList } : { model: modelList[0] };
   const trimmed = text.slice(0, MAX_INPUT_CHARS);
 
   let llmResponse;
@@ -96,7 +109,7 @@ router.post("/parse", upload.single("pdf"), async (req, res) => {
         "X-Title": "StudySprint",
       },
       body: JSON.stringify({
-        model,
+        ...modelField,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: trimmed },
@@ -149,7 +162,7 @@ router.post("/parse", upload.single("pdf"), async (req, res) => {
     if (typeof alt === "string" && alt.trim()) content = alt;
   }
   if (!content.trim()) {
-    const usedModel = data?.model ?? model;
+    const usedModel = data?.model ?? modelList[0];
     const provider = data?.provider ?? "unknown";
     const finish = choice?.finish_reason ?? "unknown";
     console.error("openrouter empty content:", { usedModel, provider, finish, raw: JSON.stringify(data).slice(0, 1000) });
@@ -184,7 +197,7 @@ router.post("/parse", upload.single("pdf"), async (req, res) => {
         : [],
     }));
 
-  res.json({ goals, model });
+  res.json({ goals, model: data?.model ?? modelList[0] });
 });
 
 function clampNumber(value, min, max, fallback) {
