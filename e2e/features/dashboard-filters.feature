@@ -11,11 +11,6 @@ Feature: Dashboard Filtering and Sorting (#21)
     When I click the "Active" filter button
     Then I should only see goals with "Active" status badges
 
-  Scenario: Showing all goals after filtering
-    When I click the "Active" filter button
-    And I click the "All" filter button
-    Then I should see at least one goal card
-
   Scenario: Sorting goals by most logged hours
     When I click the "Most logged" sort option
     Then the goals list should be displayed

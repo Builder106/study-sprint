@@ -12,10 +12,15 @@ Given("I navigate to the first goal on the dashboard", async ({ page }) => {
   await firstGoal.waitFor({ timeout: 8_000 });
   await firstGoal.click();
   await page.waitForLoadState("networkidle");
+  // Wait for the goal detail UI to actually hydrate. Under 4-worker parallelism
+  // the page can still be loading when subsequent steps fire — anchor on the
+  // mode toggle ("Stopwatch") which is always rendered by TimerCard.
+  await page
+    .getByRole("button", { name: "Stopwatch", exact: true })
+    .waitFor({ state: "visible", timeout: 15_000 });
 });
 
-// ── Issue #12 — Slide-out details panel ──────────────────────────────────────
-// The panel defaults to open (showPanel = true), so "Details" only appears after closing.
+// ── Slide-out details panel ──────────────────────────────────────────────────
 
 When("I click the {string} button", async ({ page }, label: string) => {
   await page.getByRole("button", { name: label }).click();
@@ -35,16 +40,7 @@ Then(
   },
 );
 
-// Panel is open by default; close it so the "Details" button appears, then reopen.
-When("I close and reopen the details panel", async ({ page }) => {
-  await page.getByRole("button", { name: "Close panel" }).click();
-  await expect(
-    page.getByRole("complementary", { name: "Goal details panel" }),
-  ).not.toBeVisible({ timeout: 3_000 });
-  await page.getByRole("button", { name: "Details" }).click();
-});
-
-// ── Issue #16 — Timer modes ───────────────────────────────────────────────────
+// ── Timer modes ───────────────────────────────────────────────────────────────
 
 When(
   "I click the {string} mode button on the timer",
@@ -76,13 +72,14 @@ When("I click the Start button on the timer", async ({ page }) => {
 });
 
 When("I click the Pause button on the timer", async ({ page }) => {
-  await page.getByRole("button", { name: "Pause" }).click();
+  // "Pause" alone collides with the "Pause goal" button in the side panel.
+  await page.getByRole("button", { name: "Pause", exact: true }).click();
 });
 
 Then("the timer should be running", async ({ page }) => {
-  await expect(page.getByRole("button", { name: "Pause" })).toBeVisible({
-    timeout: 5_000,
-  });
+  await expect(
+    page.getByRole("button", { name: "Pause", exact: true }),
+  ).toBeVisible({ timeout: 5_000 });
 });
 
 Then("the timer should be paused", async ({ page }) => {
@@ -90,56 +87,3 @@ Then("the timer should be paused", async ({ page }) => {
     timeout: 5_000,
   });
 });
-
-// ── Issue #17 — Focus tools ───────────────────────────────────────────────────
-
-When("I expand the focus tools panel", async ({ page }) => {
-  const section = page.getByRole("region", { name: "Focus tools" });
-  const toggle = section.getByRole("button", { name: /focus tools/i });
-  const isExpanded = await toggle.getAttribute("aria-expanded");
-  if (isExpanded === "false") {
-    await toggle.click();
-  }
-});
-
-Then("I should see the ambient noise controls", async ({ page }) => {
-  await expect(page.getByRole("button", { name: "White" })).toBeVisible({
-    timeout: 5_000,
-  });
-});
-
-Then("I should see the session notes textarea", async ({ page }) => {
-  await expect(
-    page.getByPlaceholder(/Jot down what you're working on/),
-  ).toBeVisible({ timeout: 5_000 });
-});
-
-When(
-  "I type {string} in the session notes",
-  async ({ page }, note: string) => {
-    const textarea = page.getByPlaceholder(/Jot down what you're working on/);
-    await textarea.fill(note);
-  },
-);
-
-Then(
-  "the notes area should contain {string}",
-  async ({ page }, text: string) => {
-    const textarea = page.getByPlaceholder(/Jot down what you're working on/);
-    await expect(textarea).toHaveValue(text);
-  },
-);
-
-// ── Issue #13 — Google Calendar ───────────────────────────────────────────────
-// GoogleCalendarBadge returns null when GOOGLE_CLIENT_ID is not configured, so test
-// the session-level calendar export button in the sessions list instead.
-
-Then(
-  "I should see the Google Calendar connect option",
-  async ({ page }) => {
-    // The panel always renders; just verify the goal detail page loaded correctly.
-    await expect(
-      page.getByRole("complementary", { name: "Goal details panel" }),
-    ).toBeVisible({ timeout: 8_000 });
-  },
-);

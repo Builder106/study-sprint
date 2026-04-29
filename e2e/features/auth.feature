@@ -8,7 +8,7 @@ Feature: Authentication
 
   Scenario: Successful registration with valid credentials
     When I navigate to the registration page
-    And I enter the email "e2e_test@example.com" and password "password123"
+    And I enter the email "demo_signup@studysprint.app" and password "password123"
     And I submit the registration form
     Then I should be redirected to the dashboard
     And I should see my study goals listed

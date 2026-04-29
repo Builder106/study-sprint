@@ -1,7 +1,11 @@
 import { createBdd } from "playwright-bdd";
 import { expect } from "@playwright/test";
 
-const { Given, When, Then } = createBdd();
+const { Given, When, Then, After } = createBdd();
+
+// Tracks emails registered during the current scenario so the After hook can
+// delete them. Keyed by Playwright Page so parallel workers don't cross-talk.
+const registeredEmails = new WeakMap<object, string>();
 
 Given("I am on the StudySprint home page", async ({ page }) => {
   await page.goto("/");
@@ -16,14 +20,63 @@ When("I navigate to the registration page", async ({ page }) => {
 When(
   "I enter the email {string} and password {string}",
   async ({ page }, email: string, password: string) => {
-    // Append a run-unique suffix so repeated test runs don't hit "email already registered".
-    const uniqueEmail = email.startsWith("e2e_")
+    // Demo records the literal email "example@example.com" — to keep that
+    // typing visible across re-runs without a timestamp suffix, pre-delete
+    // any existing account by logging in with the same credentials and
+    // hitting DELETE /api/auth/account. Best-effort; ignored if no row.
+    if (email === "example@example.com") {
+      const apiBase = process.env.API_URL ?? "http://localhost:4000";
+      try {
+        const loginRes = await page.request.post(`${apiBase}/api/auth/login`, {
+          data: { email, password },
+          failOnStatusCode: false,
+        });
+        if (loginRes.ok()) {
+          const { token } = await loginRes.json();
+          await page.request.delete(`${apiBase}/api/auth/account`, {
+            headers: { Authorization: `Bearer ${token}` },
+            failOnStatusCode: false,
+          });
+        }
+      } catch {
+        // best-effort cleanup
+      }
+      await page.fill('input[type="email"]', email);
+      await page.fill('input[type="password"]', password);
+      return;
+    }
+    // For other registration emails, append a run-unique suffix to avoid
+    // collisions across QA re-runs; the After hook deletes the row.
+    const uniqueEmail = email.startsWith("demo_signup")
       ? email.replace("@", `_${Date.now()}@`)
       : email;
+    if (uniqueEmail !== email) registeredEmails.set(page, uniqueEmail);
     await page.fill('input[type="email"]', uniqueEmail);
     await page.fill('input[type="password"]', password);
   },
 );
+
+After(async ({ page }) => {
+  const email = registeredEmails.get(page);
+  if (!email) return;
+  registeredEmails.delete(page);
+  // Skip cleanup in DEMO mode. The page.evaluate + page.request.delete here
+  // runs while Playwright is finalizing video for the first scenario, which
+  // can cause the video to be dropped. Demo runs are local-only — leave the
+  // demo_signup_<ts> row behind; manual `DELETE FROM users WHERE email LIKE
+  // 'demo_signup%'` is fine.
+  if (process.env.DEMO === "1") return;
+  try {
+    const token = await page.evaluate(() => localStorage.getItem("studysprint.token"));
+    if (!token) return;
+    const apiBase = process.env.API_URL ?? "http://localhost:4000";
+    await page.request.delete(`${apiBase}/api/auth/account`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch {
+    // best-effort cleanup; leave the row if anything goes wrong
+  }
+});
 
 When("I submit the registration form", async ({ page }) => {
   await page.click('button[type="submit"]');

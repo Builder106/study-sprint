@@ -121,9 +121,13 @@ When(
 When(
   "I click {string} in the context menu",
   async ({ page }, label: string) => {
-    // Accept any confirm() dialog that fires as a result of this action (e.g. delete confirmation).
-    page.once("dialog", (dialog) => dialog.accept());
     await page.getByRole("menuitem", { name: label }).click();
+    // For destructive actions, an in-app AlertDialog appears — confirm it.
+    if (/delete/i.test(label)) {
+      const dialog = page.getByRole("alertdialog");
+      await dialog.waitFor({ state: "visible", timeout: 5_000 });
+      await dialog.getByRole("button", { name: "Delete" }).click();
+    }
   },
 );
 

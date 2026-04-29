@@ -19,12 +19,12 @@ Feature: Study Sessions — Log and Validate (#19)
     When I open the log session modal
     And I set the session duration to "0"
     And I save the session
-    Then I should see the session duration error "Must be greater than 0"
+    Then I should see the session duration error "Duration must be greater than 0 hours."
     And the session modal should remain open
 
   Scenario: Session is rejected when duration is negative
     When I open the log session modal
     And I set the session duration to "-5"
     And I save the session
-    Then I should see the session duration error "Must be greater than 0"
+    Then I should see the session duration error "Duration must be greater than 0 hours."
     And the session modal should remain open

@@ -13,11 +13,12 @@ When(
   },
 );
 
-// Sort is a <select> element, not buttons.
+// Sort is a Radix Select (custom UI). Click the trigger, then the option.
 When(
   "I click the {string} sort option",
   async ({ page }, option: string) => {
-    await page.locator('select').selectOption({ label: option });
+    await page.getByRole("combobox", { name: "Sort" }).click();
+    await page.getByRole("option", { name: option }).click();
   },
 );
 
