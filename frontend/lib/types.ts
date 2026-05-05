@@ -7,7 +7,7 @@ export interface User {
 }
 
 export interface Goal {
-  id: number;
+  id: string;
   title: string;
   description: string | null;
   target_hours: number | string;
@@ -22,8 +22,8 @@ export interface Goal {
 export type SessionQuality = 1 | 2 | 3 | 4 | 5;
 
 export interface StudySession {
-  id: number;
-  goal_id: number;
+  id: string;
+  goal_id: string;
   duration_minutes: number;
   notes: string | null;
   logged_at: string;

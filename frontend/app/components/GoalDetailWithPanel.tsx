@@ -53,7 +53,7 @@ export function GoalDetailWithPanel() {
   const [modalInitialNotes, setModalInitialNotes] = useState<string>("");
   const [editingSession, setEditingSession] = useState<StudySession | null>(null);
   const [googleConnected, setGoogleConnected] = useState(false);
-  const [exportingSessionId, setExportingSessionId] = useState<number | null>(null);
+  const [exportingSessionId, setExportingSessionId] = useState<string | null>(null);
 
   const [editing, setEditing] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
@@ -82,7 +82,7 @@ export function GoalDetailWithPanel() {
       .catch(() => setGoogleConnected(false));
   }, [id]);
 
-  const exportToCalendar = async (sessionId: number) => {
+  const exportToCalendar = async (sessionId: string) => {
     setExportingSessionId(sessionId);
     try {
       await api.googleExportSession(sessionId);

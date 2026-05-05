@@ -66,11 +66,11 @@ export function Dashboard() {
   const [sortKey, setSortKey] = useState<SortKey>("recent");
   const [showImport, setShowImport] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [googleConnected, setGoogleConnected] = useState(false);
   const [eventsRefreshKey, setEventsRefreshKey] = useState(0);
 
-  const toggleSelected = (id: number) => {
+  const toggleSelected = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -120,7 +120,7 @@ export function Dashboard() {
     const results = await Promise.allSettled(ids.map((id) => api.deleteGoal(id)));
     const succeeded = results
       .map((r, i) => (r.status === "fulfilled" ? ids[i] : null))
-      .filter((v): v is number => v !== null);
+      .filter((v): v is string => v !== null);
     const failed = ids.length - succeeded.length;
     setGoals((prev) => (prev ? prev.filter((g) => !succeeded.includes(g.id)) : prev));
     if (failed === 0)

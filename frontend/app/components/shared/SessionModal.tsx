@@ -5,7 +5,7 @@ import { api, ApiError } from "@/lib/api";
 import type { SessionQuality, StudySession } from "@/lib/types";
 
 interface Props {
-  goalId: number | string;
+  goalId: string;
   initialMinutes?: number;
   initialNotes?: string;
   session?: StudySession | null;

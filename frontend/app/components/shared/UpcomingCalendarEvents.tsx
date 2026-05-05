@@ -15,7 +15,7 @@ import {
 
 const NEW_GOAL_OPTION = "__new__";
 
-type ImportedRef = { session_id: number; goal_id: number; goal_title: string };
+type ImportedRef = { session_id: string; goal_id: string; goal_title: string };
 
 type Event = {
   id: string;
@@ -252,7 +252,7 @@ function ImportModal({
   const submit = async () => {
     setSubmitting(true);
     try {
-      let resolvedGoalId: number;
+      let resolvedGoalId: string;
       let resolvedGoalTitle: string;
 
       if (creatingNew) {
@@ -272,13 +272,12 @@ function ImportModal({
         resolvedGoalId = created.goal.id;
         resolvedGoalTitle = created.goal.title;
       } else {
-        const id = Number(goalId);
-        if (!id) {
+        if (!goalId) {
           setSubmitting(false);
           return;
         }
-        resolvedGoalId = id;
-        resolvedGoalTitle = goals.find((g) => g.id === id)?.title ?? "";
+        resolvedGoalId = goalId;
+        resolvedGoalTitle = goals.find((g) => g.id === goalId)?.title ?? "";
       }
 
       const res = await api.googleImportEvent(event.id, resolvedGoalId);

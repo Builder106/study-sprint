@@ -32,6 +32,13 @@ export type Database = {
             foreignKeyName: "goal_subjects_goal_id_fkey"
             columns: ["goal_id"]
             isOneToOne: false
+            referencedRelation: "goals_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goal_subjects_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
             referencedRelation: "study_goals"
             referencedColumns: ["id"]
           },
@@ -199,6 +206,13 @@ export type Database = {
             foreignKeyName: "study_sessions_goal_id_fkey"
             columns: ["goal_id"]
             isOneToOne: false
+            referencedRelation: "goals_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "study_sessions_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
             referencedRelation: "study_goals"
             referencedColumns: ["id"]
           },
@@ -251,10 +265,54 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      goals_with_stats: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string | null
+          logged_minutes: number | null
+          status: string | null
+          subjects: string[] | null
+          target_date: string | null
+          target_hours: number | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          logged_minutes?: never
+          status?: string | null
+          subjects?: never
+          target_date?: string | null
+          target_hours?: number | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          logged_minutes?: never
+          status?: string | null
+          subjects?: never
+          target_date?: string | null
+          target_hours?: number | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      set_goal_subjects: {
+        Args: { p_goal_id: string; p_names: string[] }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
