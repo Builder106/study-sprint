@@ -430,8 +430,10 @@ export const api = {
       updateSessionImpl(sessionId, input),
    deleteSession: (sessionId: string) => deleteSessionImpl(sessionId),
 
-   analyticsSummary() {
-      return request<{
+   async analyticsSummary() {
+      const { data, error } = await supabase.rpc("analytics_summary");
+      if (error) throw new ApiError(500, error.message);
+      return data as unknown as {
          daily: { date: string; minutes: number }[];
          hourly: { hour: number; minutes: number }[];
          weekday: { dow: number; minutes: number }[];
@@ -442,7 +444,7 @@ export const api = {
             current_streak_days: number;
             longest_streak_days: number;
          };
-      }>("/api/analytics/summary");
+      };
    },
 
    gamificationProfile() {

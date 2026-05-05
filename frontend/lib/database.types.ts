@@ -309,6 +309,7 @@ export type Database = {
       }
     }
     Functions: {
+      analytics_summary: { Args: never; Returns: Json }
       set_goal_subjects: {
         Args: { p_goal_id: string; p_names: string[] }
         Returns: undefined
