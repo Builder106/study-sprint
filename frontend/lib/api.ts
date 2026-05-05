@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 import type { TablesUpdate } from "./database.types";
-import type { Goal, GoalStatus, StudySession } from "./types";
+import type { Goal, GoalStatus, SessionQuality, StudySession } from "./types";
 
 const API_BASE =
    (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") ||
@@ -180,10 +180,147 @@ async function deleteGoalImpl(id: string): Promise<void> {
    if (error) throw new ApiError(500, error.message);
 }
 
+// Phase 2.3b — session CRUD via direct Supabase queries.
+// RLS on study_sessions enforces transitive ownership through study_goals
+// (must own the parent goal). Spaced-repetition next_review_at is computed
+// client-side, mirroring the original Express logic.
+
+const QUALITY_REVIEW_DAYS: Record<1 | 2 | 3 | 4 | 5, number> = {
+   1: 1,
+   2: 2,
+   3: 4,
+   4: 7,
+   5: 14,
+};
+
+function nextReviewFromQuality(
+   quality: number | null,
+   base: Date = new Date(),
+): string | null {
+   if (quality === null || !(quality in QUALITY_REVIEW_DAYS)) return null;
+   const days = QUALITY_REVIEW_DAYS[quality as 1 | 2 | 3 | 4 | 5];
+   const d = new Date(base);
+   d.setDate(d.getDate() + days);
+   return d.toISOString();
+}
+
+interface SessionRow {
+   id: string;
+   goal_id: string;
+   duration_minutes: number;
+   notes: string | null;
+   logged_at: string;
+   quality: number | null;
+   next_review_at: string | null;
+   gcal_event_id: string | null;
+}
+
+function rowToSession(row: SessionRow): StudySession {
+   return {
+      id: row.id,
+      goal_id: row.goal_id,
+      duration_minutes: row.duration_minutes,
+      notes: row.notes,
+      logged_at: row.logged_at,
+      quality: row.quality as SessionQuality | null,
+      next_review_at: row.next_review_at,
+      gcal_event_id: row.gcal_event_id,
+   };
+}
+
+interface CreateSessionInput {
+   duration_minutes: number;
+   notes?: string;
+   logged_at?: string;
+   quality?: number | null;
+}
+
+interface UpdateSessionInput {
+   duration_minutes?: number;
+   notes?: string;
+   quality?: number | null;
+}
+
+async function listSessionsImpl(goalId: string): Promise<{ sessions: StudySession[] }> {
+   const { data, error } = await supabase
+      .from("study_sessions")
+      .select("*")
+      .eq("goal_id", goalId)
+      .order("logged_at", { ascending: false });
+   if (error) throw new ApiError(500, error.message);
+   return { sessions: (data ?? []).map(rowToSession) };
+}
+
+async function createSessionImpl(
+   goalId: string,
+   input: CreateSessionInput,
+): Promise<{ session: StudySession }> {
+   const mins = Math.round(input.duration_minutes);
+   if (!Number.isFinite(mins) || mins <= 0) {
+      throw new ApiError(400, "duration_minutes must be greater than 0");
+   }
+   const quality = input.quality ?? null;
+   const reviewAt = quality !== null ? nextReviewFromQuality(quality) : null;
+   const { data, error } = await supabase
+      .from("study_sessions")
+      .insert({
+         goal_id: goalId,
+         duration_minutes: mins,
+         notes: input.notes ?? null,
+         logged_at: input.logged_at ?? new Date().toISOString(),
+         quality,
+         next_review_at: reviewAt,
+      })
+      .select()
+      .single();
+   if (error) throw new ApiError(500, error.message);
+   return { session: rowToSession(data) };
+}
+
+async function updateSessionImpl(
+   sessionId: string,
+   input: UpdateSessionInput,
+): Promise<{ session: StudySession }> {
+   const updates: TablesUpdate<"study_sessions"> = {};
+   if (input.duration_minutes !== undefined) {
+      const mins = Math.round(input.duration_minutes);
+      if (!Number.isFinite(mins) || mins <= 0) {
+         throw new ApiError(400, "duration_minutes must be greater than 0");
+      }
+      updates.duration_minutes = mins;
+   }
+   if ("notes" in input) updates.notes = input.notes ?? null;
+   if ("quality" in input) {
+      if (input.quality === null || input.quality === undefined) {
+         updates.quality = null;
+         updates.next_review_at = null;
+      } else {
+         updates.quality = input.quality;
+         updates.next_review_at = nextReviewFromQuality(input.quality);
+      }
+   }
+   const { data, error } = await supabase
+      .from("study_sessions")
+      .update(updates)
+      .eq("id", sessionId)
+      .select()
+      .single();
+   if (error) throw new ApiError(500, error.message);
+   return { session: rowToSession(data) };
+}
+
+async function deleteSessionImpl(sessionId: string): Promise<void> {
+   const { error } = await supabase
+      .from("study_sessions")
+      .delete()
+      .eq("id", sessionId);
+   if (error) throw new ApiError(500, error.message);
+}
+
 // Endpoints below still hit Express until each Phase 2 sub-task migrates them
-// to direct supabase-js queries (sessions, profile) or RPCs (analytics,
-// gamification, leaderboard, rooms) or — for secret-bearing routes — Deno
-// Edge Functions in Phase 3.
+// to direct supabase-js queries (profile) or RPCs (analytics, gamification,
+// leaderboard, rooms) or — for secret-bearing routes — Deno Edge Functions
+// in Phase 3.
 
 export const api = {
    listGoals: listGoalsImpl,
@@ -192,35 +329,12 @@ export const api = {
    updateGoal: (id: string, input: UpdateGoalInput) => updateGoalImpl(id, input),
    deleteGoal: (id: string) => deleteGoalImpl(id),
 
-   listSessions(goalId: string) {
-      return request<{ sessions: StudySession[] }>(`/api/goals/${goalId}/sessions`);
-   },
-   createSession(
-      goalId: string,
-      input: {
-         duration_minutes: number;
-         notes?: string;
-         logged_at?: string;
-         quality?: number | null;
-      },
-   ) {
-      return request<{ session: StudySession }>(`/api/goals/${goalId}/sessions`, {
-         method: "POST",
-         body: JSON.stringify(input),
-      });
-   },
-   updateSession(
-      sessionId: string,
-      input: Partial<{ duration_minutes: number; notes: string; quality: number | null }>,
-   ) {
-      return request<{ session: StudySession }>(`/api/sessions/${sessionId}`, {
-         method: "PUT",
-         body: JSON.stringify(input),
-      });
-   },
-   deleteSession(sessionId: string) {
-      return request<void>(`/api/sessions/${sessionId}`, { method: "DELETE" });
-   },
+   listSessions: (goalId: string) => listSessionsImpl(goalId),
+   createSession: (goalId: string, input: CreateSessionInput) =>
+      createSessionImpl(goalId, input),
+   updateSession: (sessionId: string, input: UpdateSessionInput) =>
+      updateSessionImpl(sessionId, input),
+   deleteSession: (sessionId: string) => deleteSessionImpl(sessionId),
 
    analyticsSummary() {
       return request<{
