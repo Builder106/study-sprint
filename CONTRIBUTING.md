@@ -119,9 +119,12 @@ deno task test:setup    # one-time per machine
 deno task test          # full suite — picks up .env automatically
 ```
 
-E2E tests themselves run with the publishable key only. The suite
-skips cleanup of registered users in scenarios that test sign-up;
-periodically sweep them with:
+E2E tests themselves run with the publishable key only. The registration
+scenario creates a fresh `demo_signup_<ts>@studysprint.app` user per run;
+[`e2e/setup/teardown.ts`](e2e/setup/teardown.ts) sweeps those rows
+automatically as Playwright's `globalTeardown` step. If
+`SUPABASE_SECRET_KEY` is missing the teardown logs a warning and exits
+cleanly — clean up by hand with:
 
 ```sql
 delete from auth.users where email like 'demo_signup_%@studysprint.app';

@@ -27,6 +27,10 @@ export default defineConfig({
   fullyParallel: false,
   retries: 1,
   reporter: [["list"], ["./e2e/reporter.ts"]],
+  // Sweep demo_signup_<ts>@studysprint.app users created by the registration
+  // scenario. Best-effort — see e2e/setup/teardown.ts for the no-secret-key
+  // bail-out path.
+  globalTeardown: "./e2e/setup/teardown.ts",
   use: {
     // 127.0.0.1 is intentional — `localhost` resolves to ::1 (IPv6) first on
     // macOS, and Vite binds IPv4 only by default, so any other app already

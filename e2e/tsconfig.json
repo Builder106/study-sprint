@@ -7,5 +7,5 @@
     "allowImportingTsExtensions": false
   },
   "include": ["./**/*.ts", "../playwright.config.ts"],
-  "exclude": ["./setup/**"]
+  "exclude": ["./setup/bootstrap-demo.ts"]
 }
