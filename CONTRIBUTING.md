@@ -87,9 +87,39 @@ deps, add them to `supabase/functions/deno.json` instead.
 ## Tests
 
 ```bash
+deno task test:setup      # one-time per machine: bootstrap the demo account
 deno task test            # Gherkin E2E suite, headless
 deno task test:e2e:ui     # Playwright UI mode for debugging
 deno task demo            # records narrated walkthrough videos (DEMO=1)
+```
+
+### Test fixtures
+
+Most non-auth scenarios begin with `Given I am logged in as
+"demo@studysprint.app"`. That account has to exist in Supabase Auth for
+the suite to clear the login screen, so the suite ships with
+[`e2e/setup/bootstrap-demo.ts`](e2e/setup/bootstrap-demo.ts) which
+create-or-updates it and reseeds starter goals.
+
+Required env vars (for the bootstrap, **not** for the suite itself):
+
+```bash
+export SUPABASE_URL=https://<project-ref>.supabase.co
+export SUPABASE_SERVICE_ROLE_KEY=<service-role>   # Project Settings → API
+deno task test:setup
+```
+
+The service-role key never leaves your machine — `bootstrap-demo.ts` is
+the only place that needs it, and it's not used by the running suite or
+the application itself. Don't commit it.
+
+E2E tests themselves run with the publishable anon key only (read from
+`VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` in your `.env`). The
+suite skips cleanup of registered users in scenarios that test sign-up;
+periodically sweep them with:
+
+```sql
+delete from auth.users where email like 'demo_signup_%@studysprint.app';
 ```
 
 When adding a feature:
