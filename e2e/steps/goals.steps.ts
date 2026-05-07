@@ -17,7 +17,23 @@ Given(
     await page.fill('input[type="email"]', email);
     await page.fill('input[type="password"]', password);
     await page.click('button[type="submit"]');
-    await page.waitForURL("**/dashboard", { timeout: 10_000 });
+
+    // Race the redirect against the in-form alert. Without this, a rejected
+    // login (bad creds, missing demo account, blocked email domain) just
+    // burns the 10s navigation timeout and leaves the failure looking like
+    // a generic flake. Surfacing the alert text turns a 10s mystery into
+    // an instant "Login failed: Invalid login credentials".
+    const error = page.locator('[role="alert"]');
+    await Promise.race([
+      page.waitForURL("**/dashboard", { timeout: 10_000 }),
+      error.waitFor({ state: "visible", timeout: 10_000 }).then(async () => {
+        const msg = (await error.textContent())?.trim() ?? "(no message)";
+        throw new Error(
+          `Login failed for ${email}: ${msg}. ` +
+            `Did you run \`deno task test:setup\`?`,
+        );
+      }),
+    ]);
   },
 );
 

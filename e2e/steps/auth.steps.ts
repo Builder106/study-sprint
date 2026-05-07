@@ -38,7 +38,16 @@ When("I submit the registration form", async ({ page }) => {
 });
 
 Then("I should be redirected to the dashboard", async ({ page }) => {
-  await page.waitForURL("**/dashboard", { timeout: 10_000 });
+  // Race the redirect against the alert div so a rejected sign-in/up
+  // surfaces its actual error text instead of a 10s navigation timeout.
+  const error = page.locator('[role="alert"]');
+  await Promise.race([
+    page.waitForURL("**/dashboard", { timeout: 10_000 }),
+    error.waitFor({ state: "visible", timeout: 10_000 }).then(async () => {
+      const msg = (await error.textContent())?.trim() ?? "(no message)";
+      throw new Error(`Auth failed before dashboard redirect: ${msg}`);
+    }),
+  ]);
   expect(page.url()).toContain("/dashboard");
 });
 
