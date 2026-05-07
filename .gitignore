@@ -23,3 +23,5 @@ client_secret*.json
 
 # Supabase CLI local state (when supabase init is used)
 .supabase
+supabase/.temp
+.vercel
