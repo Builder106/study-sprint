@@ -21,66 +21,99 @@ A study tracker that turns focus sessions into a growing garden. Set goals, run 
 
 | Layer | Tools |
 |---|---|
-| Frontend | React 18, TypeScript, Vite, Tailwind CSS v4, Radix UI, Framer Motion, Recharts |
-| Backend | Node.js, Express, PostgreSQL (`pg`), JWT auth (`bcryptjs` + `jsonwebtoken`) |
+| Runtime | Deno 2 — single TS toolchain across frontend + edge functions, npm specifiers via `deno.json` |
+| Frontend | React 18, TypeScript, Vite (run via `deno run -A npm:vite`), Tailwind CSS v4, Radix UI, Framer Motion, Recharts |
+| Backend | Supabase — Postgres + Auth + Row Level Security + RPCs + Edge Functions (Deno) |
 | AI | OpenRouter (multi-model fallback chain for syllabus parsing) |
-| Integrations | Google Calendar API (`googleapis`) |
+| Integrations | Google Calendar API (REST, called from Edge Function) |
 | Testing | Playwright + playwright-bdd (Gherkin scenarios, demo-mode video capture) |
-| Deploy | Render (web service + static site + managed Postgres) |
+| Deploy | Vercel / Deno Deploy (static site) + Supabase (database, auth, edge functions) |
 
 ## Architecture
 
 ```
 frontend/  React + Vite SPA
   app/components/   page-level components (Dashboard, Garden, StudyRoom, ...)
-  lib/              API client, hooks, utilities
-backend/   Express API
-  routes/           auth, goals, sessions, subjects, syllabus, social, analytics, gamification, integrations, admin
-  middleware/       JWT auth
-  scripts/          migrate.js, seed.js
-  sql/              schema.sql
+  lib/              Supabase client, API wrappers, hooks, utilities
+supabase/
+  migrations/       SQL schema, views, and RPC definitions
+  functions/        Deno Edge Functions
+    syllabus-parse/   syllabus → structured goals via OpenRouter
+    google-calendar/  OAuth + Calendar export/import
 e2e/       Playwright + Gherkin BDD suite (QA + demo-recording configs)
 ```
 
+`backend/` (Express + node-postgres) is retained for reference only — every
+endpoint has been ported to Supabase RPCs or Edge Functions, and the frontend
+no longer talks to it. Safe to delete (`rm -rf backend/`) once you've verified
+the deployed app and don't need to consult the original handlers anymore.
+
 ## Local setup
 
-Requires Node.js 18+ and a local PostgreSQL instance.
+Requires [Deno 2.x](https://deno.com/) and the [Supabase CLI](https://supabase.com/docs/guides/cli).
+There is no `package.json` — `deno.json` is the source of truth for tasks and
+npm dependencies. Deno auto-creates a `node_modules/` directory when needed
+(so Vite can resolve plugins), but you don't manage it directly.
 
 ```bash
-npm run setup                       # installs frontend + backend deps
-cp backend/.env.example backend/.env
-createdb study_sprint
-cd backend && npm run migrate && npm run seed && cd ..
-npm run dev                         # frontend on :5173, backend on :4000
+deno install                        # materialize node_modules from deno.json
+cp .env.example .env                # fill in VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
+
+# One-time: link this repo to your Supabase project, push migrations,
+# deploy edge functions, and set their secrets.
+deno task supabase:link             # supabase link --project-ref <your-project-ref>
+deno task supabase:db:push
+deno task supabase:functions:deploy
+supabase secrets set \
+  OPENROUTER_API_KEY=... \
+  GOOGLE_CLIENT_ID=... \
+  GOOGLE_CLIENT_SECRET=... \
+  GOOGLE_REDIRECT_URI=https://<project-ref>.supabase.co/functions/v1/google-calendar/callback \
+  CLIENT_ORIGIN=http://localhost:5173
+
+deno task dev                       # frontend on :5173 (Vite via Deno)
 ```
 
-The seed script creates `demo@example.com` / `demo123` with starter goals and sessions.
+If `deno install` warns about ignored build scripts, re-run with
+`deno install --allow-scripts=npm:supabase,npm:@tailwindcss/oxide` — the
+Supabase CLI's binary download and Tailwind's native binding both run
+postinstall scripts.
+
+Sign up via the in-app register flow to create your account; a `profiles` row
+is created automatically by an `auth.users` trigger.
 
 ### Environment variables
-
-**Backend** (`backend/.env`)
-
-| Key | Description |
-|---|---|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `JWT_SECRET` | Secret for signing JWTs |
-| `PORT` | API port (default `4000`) |
-| `CLIENT_ORIGIN` | Frontend origin for CORS |
-| `OPENROUTER_API_KEY` | API key for the syllabus parser |
 
 **Frontend** (`.env` in repo root)
 
 | Key | Description |
 |---|---|
-| `VITE_API_URL` | Backend URL (defaults to `http://localhost:4000`) |
+| `VITE_SUPABASE_URL` | Supabase project URL (from Project Settings → API) |
+| `VITE_SUPABASE_ANON_KEY` | Supabase publishable / anon key (safe to ship — RLS guards data) |
+
+**Edge Functions** (set via `supabase secrets set ...`)
+
+| Key | Description |
+|---|---|
+| `OPENROUTER_API_KEY` | API key for the syllabus parser |
+| `OPENROUTER_MODEL` | Optional override (single id or comma-separated chain, max 3) |
+| `GOOGLE_CLIENT_ID` | Google OAuth client id |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
+| `GOOGLE_REDIRECT_URI` | `https://<project-ref>.functions.supabase.co/google-calendar/callback` |
+| `CLIENT_ORIGIN` | Frontend origin (used for OAuth post-callback redirect) |
 
 ## Tests
 
 ```bash
-npm test            # Gherkin E2E suite, headless
-npm run test:e2e:ui # Playwright UI mode
-npm run demo        # records narrated walkthrough videos (DEMO=1)
+deno task test            # Gherkin E2E suite, headless (Playwright via Deno)
+deno task test:e2e:ui     # Playwright UI mode
+deno task demo            # records narrated walkthrough videos (DEMO=1)
 ```
+
+Playwright runs under Deno's Node compatibility layer — its browser drivers
+are still Node binaries, but the test runner and step definitions execute
+through `deno run -A npm:@playwright/test`. No separate `npm install` is
+required.
 
 ## License
 

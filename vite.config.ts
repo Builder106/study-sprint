@@ -1,7 +1,10 @@
-import { defineConfig } from 'vite'
-import path from 'path'
-import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import path from "node:path";
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+
+// import.meta.dirname is ES2024 and works in both Deno and Node 20+.
+const root = import.meta.dirname ?? new URL(".", import.meta.url).pathname;
 
 export default defineConfig({
   plugins: [
@@ -13,14 +16,14 @@ export default defineConfig({
   resolve: {
     alias: {
       // Alias @ to the frontend directory
-      '@': path.resolve(__dirname, './frontend'),
+      "@": path.resolve(root, "./frontend"),
     },
   },
 
   // Static assets live under frontend/public, not the Vite default of ./public.
   // Without this override the favicon at /logo.svg would 404.
-  publicDir: path.resolve(__dirname, './frontend/public'),
+  publicDir: path.resolve(root, "./frontend/public"),
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
-  assetsInclude: ['**/*.svg', '**/*.csv'],
-})
+  assetsInclude: ["**/*.svg", "**/*.csv"],
+});

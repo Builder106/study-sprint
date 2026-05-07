@@ -29,20 +29,12 @@ export default defineConfig({
   },
   webServer: process.env.BASE_URL
     ? undefined
-    : [
-        {
-          command: "cd backend && npm run dev",
-          url: "http://localhost:4000/api/auth/me",
-          reuseExistingServer: true,
-          timeout: 30_000,
-        },
-        {
-          command: "npm run dev:frontend",
-          url: "http://localhost:5173",
-          reuseExistingServer: true,
-          timeout: 30_000,
-        },
-      ],
+    : {
+        command: "deno task dev",
+        url: "http://localhost:5173",
+        reuseExistingServer: true,
+        timeout: 30_000,
+      },
   projects: [
     {
       name: "chromium",
