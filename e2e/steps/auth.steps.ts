@@ -102,7 +102,8 @@ Then("I should remain on the registration page", async ({ page }) => {
 Given(
   "a registered account with email {string} and password {string}",
   async ({}, _email: string, _password: string) => {
-    // The demo account is pre-seeded via `npm run seed` — nothing to provision here.
+    // The demo account is provisioned out-of-band (Supabase Auth dashboard or
+    // a one-off `deno task` script). Nothing to provision in-test.
   },
 );
 

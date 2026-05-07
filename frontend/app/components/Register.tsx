@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth";
-import { ApiError } from "@/lib/api";
 import { LogoMark } from "./shared/Logo";
+import { GoogleSignInButton } from "./shared/GoogleSignInButton";
 
 export function Register() {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export function Register() {
       await register(email, password);
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Registration failed");
+      setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setSubmitting(false);
     }
@@ -67,6 +67,17 @@ export function Register() {
           <h1 className="text-4xl md:text-5xl font-medium tracking-tighter mb-10">
             Create account.
           </h1>
+
+          <div className="mb-8">
+            <GoogleSignInButton label="Sign up with Google" onError={setError} />
+            <div className="flex items-center gap-4 mt-8">
+              <div className="flex-1 h-px bg-zinc-200 dark:bg-white/10" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">
+                or with email
+              </span>
+              <div className="flex-1 h-px bg-zinc-200 dark:bg-white/10" />
+            </div>
+          </div>
 
           <form className="flex flex-col gap-8" onSubmit={onSubmit} noValidate>
             <div className="space-y-3">

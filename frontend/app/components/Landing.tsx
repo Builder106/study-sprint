@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth";
-import { ApiError } from "@/lib/api";
 import { LogoMark } from "./shared/Logo";
+import { GoogleSignInButton } from "./shared/GoogleSignInButton";
 
 export function Landing() {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ export function Landing() {
       await login(email, password);
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : "Sign-in failed";
+      const message = err instanceof Error ? err.message : "Sign-in failed";
       setError(message);
     } finally {
       setSubmitting(false);
@@ -64,6 +64,17 @@ export function Landing() {
         </div>
 
         <div className="w-full max-w-sm">
+          <div className="mb-8">
+            <GoogleSignInButton label="Sign in with Google" onError={setError} />
+            <div className="flex items-center gap-4 mt-8">
+              <div className="flex-1 h-px bg-zinc-200 dark:bg-white/10" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">
+                or with email
+              </span>
+              <div className="flex-1 h-px bg-zinc-200 dark:bg-white/10" />
+            </div>
+          </div>
+
           <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <div className="space-y-3">
               <label className="text-xs uppercase tracking-widest text-zinc-500 font-medium">
