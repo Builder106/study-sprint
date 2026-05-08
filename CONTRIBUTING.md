@@ -44,6 +44,27 @@ deno.json  Tasks, npm imports, fmt + lint config
 4. Open a PR against `main` with a description of *why* the change is needed,
    not just *what* it does.
 
+## CI
+
+Every push and PR runs `fmt:check`, `lint`, `check`, and `build` via
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml). The full E2E
+suite runs only on push to `main` (it hits the live Supabase project, so
+running it on every PR push would race against local dev on the shared
+demo account and chew through Supabase's signup rate limit).
+
+To enable the E2E job, add three secrets in the GitHub repo settings →
+Secrets and variables → Actions:
+
+| Secret | Source | Used by |
+|---|---|---|
+| `VITE_SUPABASE_URL` | Supabase dashboard → Project Settings → API | E2E job |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Same — `sb_publishable_…` | E2E job |
+| `SUPABASE_SECRET_KEY` | Same — `sb_secret_…` | Bootstrap step + teardown |
+
+Without these, the E2E job will fail on the bootstrap step. The other
+three jobs (fmt / lint / typecheck / build) need no secrets and pass
+on forks.
+
 ## Commit messages
 
 This repo follows [Conventional Commits](https://www.conventionalcommits.org/).

@@ -1,5 +1,7 @@
 # StudySprint
 
+[![CI](https://github.com/Builder106/StudySprint/actions/workflows/ci.yml/badge.svg)](https://github.com/Builder106/StudySprint/actions/workflows/ci.yml)
+
 A study tracker that turns focus sessions into a growing garden. Set goals, run a focus timer, watch plants grow with time logged, and compare streaks on a public leaderboard.
 
 **Live app:** https://getstudysprint.vercel.app
