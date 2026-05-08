@@ -99,8 +99,14 @@ export async function rest<T = unknown>(
     );
   }
 
+  // Supabase REST returns empty body on POST/PATCH without
+  // Prefer: return=representation (default for our setup steps that just need
+  // a row to exist). Don't blindly call res.json() on empty bodies — it
+  // throws SyntaxError("Unexpected end of JSON input").
   if (res.status() === 204) return undefined as T;
-  return (await res.json()) as T;
+  const text = await res.text();
+  if (!text) return undefined as T;
+  return JSON.parse(text) as T;
 }
 
 export async function rpc<T = unknown>(
