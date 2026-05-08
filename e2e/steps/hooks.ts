@@ -94,17 +94,27 @@ const ZOOM_SCRIPT = `
   })();
 `;
 
-// Pin html/body to a dark background and pre-seed next-themes to dark before
-// React mounts. Without this, every page.goto() flashes browser-default white
-// for a frame before the dark theme class is applied — visible in recordings.
-const DARK_BG_SCRIPT = `
+// Pin html/body to the right background and pre-seed next-themes before React
+// mounts. Without this, every page.goto() flashes the browser-default theme
+// for a frame before the right class is applied — visible in recordings.
+//
+// DEMO_THEME selects which one to record. Default "dark" for backward compat;
+// set DEMO_THEME=light to record a light-mode pass for theme-aware hero GIFs.
+const DEMO_THEME = process.env.DEMO_THEME === "light" ? "light" : "dark";
+const BG_COLOR = DEMO_THEME === "light" ? "#ffffff" : "#0a0a0a";
+const THEME_SCRIPT = `
   (() => {
-    try { localStorage.setItem('theme', 'dark'); } catch (_) {}
+    const theme = ${JSON.stringify(DEMO_THEME)};
+    const bg = ${JSON.stringify(BG_COLOR)};
+    try { localStorage.setItem('theme', theme); } catch (_) {}
     const apply = () => {
       const style = document.createElement('style');
-      style.textContent = 'html, body { background: #0a0a0a !important; color-scheme: dark; }';
+      style.textContent = 'html, body { background: ' + bg + ' !important; color-scheme: ' + theme + '; }';
       (document.head || document.documentElement).appendChild(style);
-      if (document.documentElement) document.documentElement.classList.add('dark');
+      if (document.documentElement) {
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+      }
     };
     apply();
   })();
@@ -115,8 +125,8 @@ let locatorFillPatched = false;
 
 Before(async ({ page }) => {
   if (process.env.DEMO !== "1") return;
-  // Re-inject on every navigation so the cursor + zoom + dark bg survive route changes.
-  await page.addInitScript(DARK_BG_SCRIPT);
+  // Re-inject on every navigation so the cursor + zoom + theme bg survive route changes.
+  await page.addInitScript(THEME_SCRIPT);
   await page.addInitScript(CURSOR_SCRIPT);
   if (DEMO_ZOOM !== 1) await page.addInitScript(ZOOM_SCRIPT);
 

@@ -6,14 +6,18 @@ A study tracker that turns focus sessions into a growing garden. Set goals, run 
 
 **Live app:** https://getstudysprint.vercel.app
 
-![StudySprint — register, set a goal, log a session, watch the garden grow](docs/gifs/01-core-new-student-registers-and-logs-their-first-session.gif)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/gifs/01-core-new-student-registers-and-logs-their-first-session-dark.gif">
+  <source media="(prefers-color-scheme: light)" srcset="docs/gifs/01-core-new-student-registers-and-logs-their-first-session-light.gif">
+  <img alt="StudySprint — register, set a goal, log a session, watch the garden grow" src="docs/gifs/01-core-new-student-registers-and-logs-their-first-session-dark.gif">
+</picture>
 
 ## Features
 
 <details>
 <summary><b>Focus timer + session logging</b></summary>
 
-![Timer modes and focus tools](docs/gifs/02-timer-demonstrate-timer-modes-and-focus-tools.gif)
+![Timer modes and focus tools](docs/gifs/02-timer-demonstrate-timer-modes-and-focus-tools-dark.gif)
 
 Stopwatch and Pomodoro modes with phase labels, ambient-sound focus tools, and a slide-out goal-detail panel. Sessions are tagged by goal and subject, validated server-side, and feed into the streak counter and garden.
 
@@ -22,7 +26,7 @@ Stopwatch and Pomodoro modes with phase labels, ambient-sound focus tools, and a
 <details>
 <summary><b>Gamified garden + analytics</b></summary>
 
-![Analytics dashboard and growing garden](docs/gifs/03-analytics-demonstrate-analytics-heatmap-and-garden-plant.gif)
+![Analytics dashboard and growing garden](docs/gifs/03-analytics-demonstrate-analytics-heatmap-and-garden-plant-dark.gif)
 
 Every focused minute grows a plant; streaks unlock new species. Analytics view shows per-subject time distribution, hour-of-day heatmap, day-of-week breakdown, and current/longest streak — all computed server-side via a single Postgres RPC (`analytics_summary`) and rendered with Recharts.
 
@@ -31,7 +35,7 @@ Every focused minute grows a plant; streaks unlock new species. Analytics view s
 <details>
 <summary><b>AI syllabus parser + co-study rooms</b></summary>
 
-![Syllabus parser extracts goals; study rooms for accountability](docs/gifs/04-power-demonstrate-syllabus-parser-and-study-rooms.gif)
+![Syllabus parser extracts goals; study rooms for accountability](docs/gifs/04-power-demonstrate-syllabus-parser-and-study-rooms-dark.gif)
 
 Paste a syllabus or upload a PDF; an OpenRouter-backed Edge Function returns structured study goals with target dates and subject tags. Co-study rooms let you join other users' sessions in real time; opt-in public profiles and a weekly leaderboard surface the social layer.
 
@@ -129,8 +133,10 @@ is created automatically by an `auth.users` trigger.
 ```bash
 deno task test            # Gherkin E2E suite, headless (Playwright via Deno)
 deno task test:e2e:ui     # Playwright UI mode
-deno task demo            # records narrated walkthrough videos (DEMO=1)
-deno task gif             # convert videos/*.mp4 → docs/gifs/*.gif for the README
+deno task demo            # records narrated walkthrough videos (dark theme)
+deno task demo:light      # same, in light theme — needed for the README hero <picture>
+deno task demo:both       # records both themes back-to-back
+deno task gif             # convert test-results/videos/*-{dark,light}.mp4 → docs/gifs/*.gif
 ```
 
 Playwright runs under Deno's Node compatibility layer — its browser drivers

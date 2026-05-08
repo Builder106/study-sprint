@@ -5,6 +5,11 @@ import { basename, dirname, join } from "path";
 
 const VIDEOS_DIR = "test-results/videos";
 
+// Suffix theme onto every output filename so dark + light demo passes can
+// coexist in test-results/videos/ without overwriting each other. Defaults
+// to "dark" for backward compatibility — DEMO_THEME=light flips to light.
+const THEME_SUFFIX = process.env.DEMO_THEME === "light" ? "-light" : "-dark";
+
 function slugify(s: string) {
   return s
     .toLowerCase()
@@ -92,7 +97,7 @@ class VideoRenameReporter implements Reporter {
     const webmFiles: string[] = [];
 
     for (const { sourcePath, slug } of this.pending) {
-      const target = join(VIDEOS_DIR, `${slug}.webm`);
+      const target = join(VIDEOS_DIR, `${slug}${THEME_SUFFIX}.webm`);
       const sourceDir = dirname(sourcePath);
       try {
         if (!existsSync(sourcePath)) continue;
