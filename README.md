@@ -17,7 +17,11 @@ A study tracker that turns focus sessions into a growing garden. Set goals, run 
 <details>
 <summary><b>Focus timer + session logging</b></summary>
 
-![Timer modes and focus tools](docs/gifs/02-timer-demonstrate-timer-modes-and-focus-tools-dark.gif)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/gifs/02-timer-demonstrate-timer-modes-and-focus-tools-dark.gif">
+  <source media="(prefers-color-scheme: light)" srcset="docs/gifs/02-timer-demonstrate-timer-modes-and-focus-tools-light.gif">
+  <img alt="Timer modes and focus tools" src="docs/gifs/02-timer-demonstrate-timer-modes-and-focus-tools-dark.gif">
+</picture>
 
 Stopwatch and Pomodoro modes with phase labels, ambient-sound focus tools, and a slide-out goal-detail panel. Sessions are tagged by goal and subject, validated server-side, and feed into the streak counter and garden.
 
@@ -26,7 +30,11 @@ Stopwatch and Pomodoro modes with phase labels, ambient-sound focus tools, and a
 <details>
 <summary><b>Gamified garden + analytics</b></summary>
 
-![Analytics dashboard and growing garden](docs/gifs/03-analytics-demonstrate-analytics-heatmap-and-garden-plant-dark.gif)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/gifs/03-analytics-demonstrate-analytics-heatmap-and-garden-plant-dark.gif">
+  <source media="(prefers-color-scheme: light)" srcset="docs/gifs/03-analytics-demonstrate-analytics-heatmap-and-garden-plant-light.gif">
+  <img alt="Analytics dashboard and growing garden" src="docs/gifs/03-analytics-demonstrate-analytics-heatmap-and-garden-plant-dark.gif">
+</picture>
 
 Every focused minute grows a plant; streaks unlock new species. Analytics view shows per-subject time distribution, hour-of-day heatmap, day-of-week breakdown, and current/longest streak — all computed server-side via a single Postgres RPC (`analytics_summary`) and rendered with Recharts.
 
@@ -35,7 +43,11 @@ Every focused minute grows a plant; streaks unlock new species. Analytics view s
 <details>
 <summary><b>AI syllabus parser + co-study rooms</b></summary>
 
-![Syllabus parser extracts goals; study rooms for accountability](docs/gifs/04-power-demonstrate-syllabus-parser-and-study-rooms-dark.gif)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/gifs/04-power-demonstrate-syllabus-parser-and-study-rooms-dark.gif">
+  <source media="(prefers-color-scheme: light)" srcset="docs/gifs/04-power-demonstrate-syllabus-parser-and-study-rooms-light.gif">
+  <img alt="Syllabus parser extracts goals; study rooms for accountability" src="docs/gifs/04-power-demonstrate-syllabus-parser-and-study-rooms-dark.gif">
+</picture>
 
 Paste a syllabus or upload a PDF; an OpenRouter-backed Edge Function returns structured study goals with target dates and subject tags. Co-study rooms let you join other users' sessions in real time; opt-in public profiles and a weekly leaderboard surface the social layer.
 
