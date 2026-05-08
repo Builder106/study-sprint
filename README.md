@@ -110,6 +110,7 @@ is created automatically by an `auth.users` trigger.
 deno task test            # Gherkin E2E suite, headless (Playwright via Deno)
 deno task test:e2e:ui     # Playwright UI mode
 deno task demo            # records narrated walkthrough videos (DEMO=1)
+deno task gif             # convert videos/*.mp4 → docs/gifs/*.gif for the README
 ```
 
 Playwright runs under Deno's Node compatibility layer — its browser drivers
