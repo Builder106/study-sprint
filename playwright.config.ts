@@ -48,14 +48,12 @@ export default defineConfig({
   },
   // Auto-start the Vite dev server when no BASE_URL is provided.
   // Backend is now Supabase (managed) — no local API process to launch.
-  webServer: process.env.BASE_URL
-    ? undefined
-    : {
-        command: "deno task dev",
-        url: "http://127.0.0.1:5173",
-        reuseExistingServer: true,
-        timeout: 30_000,
-      },
+  webServer: process.env.BASE_URL ? undefined : {
+    command: "deno task dev",
+    url: "http://127.0.0.1:5173",
+    reuseExistingServer: true,
+    timeout: 30_000,
+  },
   projects: [
     {
       name: "chromium",

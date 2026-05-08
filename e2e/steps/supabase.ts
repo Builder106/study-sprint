@@ -22,8 +22,7 @@ export function supabaseUrl(): string {
 }
 
 export function supabasePublishableKey(): string {
-  const key =
-    process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
   if (!key) {
     throw new Error(
       "e2e: SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY) is not set.",
@@ -95,7 +94,9 @@ export async function rest<T = unknown>(
 
   if (!res.ok()) {
     const text = await res.text();
-    throw new Error(`e2e: Supabase REST ${options.method ?? "GET"} ${path} → ${res.status()} ${text}`);
+    throw new Error(
+      `e2e: Supabase REST ${options.method ?? "GET"} ${path} → ${res.status()} ${text}`,
+    );
   }
 
   if (res.status() === 204) return undefined as T;

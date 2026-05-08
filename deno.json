@@ -4,8 +4,9 @@
     "build": "deno run -A npm:vite build",
     "preview": "deno run -A npm:vite preview",
     "check": "deno run -A npm:typescript/tsc --noEmit",
-    "fmt": "deno fmt frontend supabase/functions",
-    "lint": "deno lint frontend supabase/functions",
+    "fmt": "deno fmt",
+    "fmt:check": "deno fmt --check",
+    "lint": "deno lint supabase/functions/syllabus-parse supabase/functions/google-calendar",
 
     "test": "node ./node_modules/.bin/bddgen && node ./node_modules/.bin/playwright test",
     "test:e2e": "deno task test",
@@ -105,10 +106,42 @@
     "lineWidth": 100,
     "semiColons": true,
     "singleQuote": false,
-    "exclude": ["node_modules", "dist", ".features-gen", ".features-gen-demo", "test-results", "playwright-report"]
+    "include": [
+      "supabase/functions/syllabus-parse",
+      "supabase/functions/google-calendar",
+      "e2e/setup",
+      "e2e/steps",
+      "deno.json",
+      "vite.config.ts",
+      "playwright.config.ts",
+      "playwright.demo.config.ts"
+    ],
+    "exclude": [
+      "node_modules",
+      "dist",
+      ".features-gen",
+      ".features-gen-demo",
+      "test-results",
+      "playwright-report"
+    ]
   },
   "lint": {
-    "exclude": ["node_modules", "dist", ".features-gen", ".features-gen-demo", "test-results", "playwright-report"]
+    "exclude": [
+      "node_modules",
+      "dist",
+      ".features-gen",
+      ".features-gen-demo",
+      "test-results",
+      "playwright-report"
+    ]
   },
-  "exclude": ["node_modules", "dist", ".features-gen", ".features-gen-demo", "test-results", "playwright-report", "supabase/functions"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".features-gen",
+    ".features-gen-demo",
+    "test-results",
+    "playwright-report",
+    "supabase/functions"
+  ]
 }

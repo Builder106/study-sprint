@@ -136,7 +136,7 @@ async function getValidAccessToken(userId: string): Promise<string | null> {
   return newTokens.access_token ?? null;
 }
 
-async function gcalFetch(accessToken: string, path: string, init: RequestInit = {}): Promise<Response> {
+function gcalFetch(accessToken: string, path: string, init: RequestInit = {}): Promise<Response> {
   const headers = new Headers(init.headers);
   headers.set("Authorization", `Bearer ${accessToken}`);
   if (init.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
