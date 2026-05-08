@@ -86,11 +86,6 @@ supabase/
 e2e/                        Playwright + Gherkin BDD suite (QA + demo configs)
 ```
 
-`backend/` (Express + node-postgres) is retained for reference only — every
-endpoint has been ported to Supabase RPCs or Edge Functions, and the frontend
-no longer talks to it. Safe to delete (`rm -rf backend/`) once you've verified
-the deployed app and don't need to consult the original handlers anymore.
-
 ## Local setup
 
 Requires [Deno 2.x](https://deno.com/) and the [Supabase CLI](https://supabase.com/docs/guides/cli).
