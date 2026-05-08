@@ -2,7 +2,7 @@ Feature: Demo — Timer and Focus Tools
   Switch between Pomodoro and Stopwatch, start a timer, open focus tools.
 
   Background:
-    Given I am logged in as "demo@example.com" with password "demo123"
+    Given I am logged in as "demo@studysprint.app" with password "demo123"
     And I navigate to the first goal on the dashboard
 
   Scenario: Demonstrate timer modes and focus tools

@@ -2,7 +2,7 @@ Feature: Demo — AI Syllabus and Community
   Open the AI syllabus parser, then create a study room.
 
   Background:
-    Given I am logged in as "demo@example.com" with password "demo123"
+    Given I am logged in as "demo@studysprint.app" with password "demo123"
 
   Scenario: Demonstrate syllabus parser and study rooms
     When I open the syllabus import modal

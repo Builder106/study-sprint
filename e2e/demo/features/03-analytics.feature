@@ -2,7 +2,7 @@ Feature: Demo — Analytics and Garden
   Walk through the analytics dashboard and the gamification garden.
 
   Background:
-    Given I am logged in as "demo@example.com" with password "demo123"
+    Given I am logged in as "demo@studysprint.app" with password "demo123"
 
   Scenario: Demonstrate analytics heatmap and garden plant
     When I navigate to the analytics page

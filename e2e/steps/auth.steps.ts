@@ -16,22 +16,48 @@ When("I navigate to the registration page", async ({ page }) => {
 When(
   "I enter the email {string} and password {string}",
   async ({ page }, email: string, password: string) => {
-    // The DEMO suite re-runs against the same `example@example.com` literal so
-    // the recorded video stays consistent. In production, that domain is on
-    // Supabase Auth's blocklist — but DEMO mode exists to record locally
-    // against a relaxed/mocked Supabase, so we still fill the literal here.
-    // For QA runs we append a timestamp suffix to non-deterministic emails so
-    // re-runs don't collide; cleanup of the resulting auth.users row requires
-    // service-role access which the e2e suite doesn't currently have, so the
-    // demo_signup_<ts>@... rows accumulate. Sweep them out periodically with:
-    //   delete from auth.users where email like 'demo_signup_%@studysprint.app';
-    const uniqueEmail = email.startsWith("demo_signup")
-      ? email.replace("@", `_${Date.now()}@`)
-      : email;
+    // DEMO mode re-runs against deterministic literals (e.g. example@example.com)
+    // so the recorded video shows the same email every take. Supabase rejects
+    // the second signup with "User already registered" — wipe the user via
+    // service-role admin first so registration succeeds fresh on every run.
+    // Skipped silently if SUPABASE_SECRET_KEY isn't available.
+    //
+    // QA runs use a timestamp-suffixed `demo_signup_<ts>@studysprint.app` so
+    // re-runs don't collide; the globalTeardown sweeps those after the suite.
+    let uniqueEmail = email;
+    if (email.startsWith("demo_signup")) {
+      uniqueEmail = email.replace("@", `_${Date.now()}@`);
+    } else if (process.env.DEMO === "1") {
+      await wipeUserByEmail(email);
+    }
     await page.fill('input[type="email"]', uniqueEmail);
     await page.fill('input[type="password"]', password);
   },
 );
+
+async function wipeUserByEmail(email: string): Promise<void> {
+  const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
+  const secret = process.env.SUPABASE_SECRET_KEY;
+  if (!url || !secret) return; // best-effort; demo can fail loudly later if needed
+  try {
+    const list = await fetch(
+      `${url}/auth/v1/admin/users?filter=${encodeURIComponent(email)}`,
+      { headers: { apikey: secret, Authorization: `Bearer ${secret}` } },
+    );
+    if (!list.ok) return;
+    const { users } = (await list.json()) as { users: Array<{ id: string; email?: string }> };
+    const target = email.toLowerCase();
+    for (const u of users) {
+      if (u.email?.toLowerCase() !== target) continue;
+      await fetch(`${url}/auth/v1/admin/users/${u.id}`, {
+        method: "DELETE",
+        headers: { apikey: secret, Authorization: `Bearer ${secret}` },
+      });
+    }
+  } catch {
+    // best-effort
+  }
+}
 
 When("I submit the registration form", async ({ page }) => {
   await page.click('button[type="submit"]');
