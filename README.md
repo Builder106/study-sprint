@@ -117,6 +117,12 @@ are still Node binaries, but the test runner and step definitions execute
 through `deno run -A npm:@playwright/test`. No separate `npm install` is
 required.
 
+The same suite runs on every push to `main` via
+[GitHub Actions](.github/workflows/ci.yml) (alongside `deno fmt --check`,
+`deno lint`, `deno check`, and a build smoke test). The CI badge above
+reflects the most recent run. See
+[CONTRIBUTING.md](CONTRIBUTING.md#ci) for the secrets the e2e job needs.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
