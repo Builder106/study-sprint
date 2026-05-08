@@ -1,4 +1,7 @@
-# StudySprint
+<h1>
+  <img src="frontend/public/logo.svg" alt="" width="36" height="36" align="left" style="margin-right: 12px;">
+  StudySprint
+</h1>
 
 [![CI](https://github.com/Builder106/StudySprint/actions/workflows/ci.yml/badge.svg)](https://github.com/Builder106/StudySprint/actions/workflows/ci.yml)
 
