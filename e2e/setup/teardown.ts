@@ -8,11 +8,13 @@
 // instead of failing the build.
 
 import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 
 // Mirror playwright.config.ts's .env loader so this works whether the user
-// exports vars or relies on .env. Existing process.env wins.
-const envPath = new URL("../../.env", import.meta.url).pathname;
+// exports vars or relies on .env. Existing process.env wins. fileURLToPath
+// handles project paths that contain spaces / parens.
+const envPath = fileURLToPath(new URL("../../.env", import.meta.url));
 if (existsSync(envPath)) {
   for (const line of readFileSync(envPath, "utf8").split("\n")) {
     const m = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/);

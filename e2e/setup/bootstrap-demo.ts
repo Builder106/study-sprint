@@ -98,6 +98,14 @@ async function main() {
     }
   }
 
+  // Rooms the demo user created (community test creates one per run); cascades
+  // any remaining memberships from other test users.
+  const { error: roomErr } = await admin.from("study_rooms").delete().eq("created_by", userId);
+  if (roomErr) {
+    console.error("bootstrap-demo: delete from study_rooms failed:", roomErr.message);
+    Deno.exit(1);
+  }
+
   // Re-seed via the existing helper. SECURITY DEFINER on these means the
   // service-role bypass plus auth.uid() context makes them a no-op for
   // verification — call them from a SQL block instead.

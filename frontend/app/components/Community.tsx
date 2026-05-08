@@ -337,6 +337,7 @@ export function Community() {
           {rooms.length === 0 ? (
             <button
               onClick={() => setShowCreateRoom(true)}
+              aria-label="New room"
               className="w-full p-12 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-white/20 hover:border-[#ccff00] hover:bg-[#ccff00]/5 transition-colors text-center group"
             >
               <div className="w-14 h-14 mx-auto rounded-full bg-zinc-100 dark:bg-white/5 group-hover:bg-[#ccff00] group-hover:text-black flex items-center justify-center mb-4 transition-colors">
