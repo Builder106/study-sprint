@@ -10,13 +10,34 @@ A study tracker that turns focus sessions into a growing garden. Set goals, run 
 
 ## Features
 
-- **Focus timer + session logging** — start, pause, and resume timed study sessions, tagged by goal and subject.
-- **Gamified garden** — every focused minute grows a plant; streaks unlock new species.
-- **AI syllabus parser** — paste a syllabus, get goals and deadlines extracted automatically (OpenRouter-backed).
-- **Co-study rooms** — join real-time rooms to study alongside other users.
-- **Community leaderboard + public profiles** — opt-in social layer with avatars and weekly rankings.
-- **Analytics** — per-subject time distribution, weekly trends, and streak history (Recharts).
-- **Google Calendar integration** — push study blocks to your calendar.
+<details>
+<summary><b>Focus timer + session logging</b></summary>
+
+![Timer modes and focus tools](docs/gifs/02-timer-demonstrate-timer-modes-and-focus-tools.gif)
+
+Stopwatch and Pomodoro modes with phase labels, ambient-sound focus tools, and a slide-out goal-detail panel. Sessions are tagged by goal and subject, validated server-side, and feed into the streak counter and garden.
+
+</details>
+
+<details>
+<summary><b>Gamified garden + analytics</b></summary>
+
+![Analytics dashboard and growing garden](docs/gifs/03-analytics-demonstrate-analytics-heatmap-and-garden-plant.gif)
+
+Every focused minute grows a plant; streaks unlock new species. Analytics view shows per-subject time distribution, hour-of-day heatmap, day-of-week breakdown, and current/longest streak — all computed server-side via a single Postgres RPC (`analytics_summary`) and rendered with Recharts.
+
+</details>
+
+<details>
+<summary><b>AI syllabus parser + co-study rooms</b></summary>
+
+![Syllabus parser extracts goals; study rooms for accountability](docs/gifs/04-power-demonstrate-syllabus-parser-and-study-rooms.gif)
+
+Paste a syllabus or upload a PDF; an OpenRouter-backed Edge Function returns structured study goals with target dates and subject tags. Co-study rooms let you join other users' sessions in real time; opt-in public profiles and a weekly leaderboard surface the social layer.
+
+</details>
+
+Also: **Google Calendar integration** (export sessions, import events) via a dedicated OAuth flow; **dark mode** with theme persistence; **one-click account reset** that wipes your data and reseeds starter goals.
 
 ## Tech stack
 
