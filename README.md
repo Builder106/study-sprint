@@ -6,8 +6,7 @@ A study tracker that turns focus sessions into a growing garden. Set goals, run 
 
 **Live app:** https://getstudysprint.vercel.app
 
-<!-- Replace this with a hero screenshot or GIF (recommended: 960px wide). -->
-<!-- ![StudySprint dashboard](docs/hero.png) -->
+![StudySprint — register, set a goal, log a session, watch the garden grow](docs/gifs/01-core-new-student-registers-and-logs-their-first-session.gif)
 
 ## Features
 
