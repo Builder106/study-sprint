@@ -1,7 +1,8 @@
-<h1>
-  <img src="frontend/public/logo.svg" alt="" width="36" height="36" align="left" style="margin-right: 12px;">
-  StudySprint
-</h1>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/banner-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/banner-light.svg">
+  <img alt="StudySprint — Focus. Track. Grow." src="docs/banner-dark.svg" width="1200" height="300">
+</picture>
 
 [![CI](https://github.com/Builder106/StudySprint/actions/workflows/ci.yml/badge.svg)](https://github.com/Builder106/StudySprint/actions/workflows/ci.yml)
 

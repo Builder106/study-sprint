@@ -1,0 +1,19 @@
+<svg width="1200" height="300" viewBox="0 0 1200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="300" fill="#0a0a0a"/>
+
+  <!-- Accent line -->
+  <rect width="1200" height="4" fill="#ccff00"/>
+
+  <!-- Logo container background -->
+  <rect x="40" y="75" width="150" height="150" rx="20" fill="#ccff00"/>
+
+  <!-- Lightning bolt icon -->
+  <path d="M115 90L90 135H110L95 180L140 135H120L115 90Z" fill="#0a0a0a"/>
+
+  <!-- Title -->
+  <text x="220" y="165" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="600" fill="#ffffff" letter-spacing="-1">StudySprint</text>
+
+  <!-- Subtitle -->
+  <text x="220" y="220" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#999999" letter-spacing="0.5">Focus. Track. Grow.</text>
+</svg>
