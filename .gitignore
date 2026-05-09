@@ -1,27 +1,52 @@
-node_modules
-dist
-.features-gen
-.features-gen-demo
-playwright-report
-test-results
+# ============================================================================
+# BUILD & DEPENDENCIES
+# ============================================================================
+node_modules/
+dist/
+.deno/
+deno.lock.tmp
 
+# ============================================================================
+# TESTING & REPORTS
+# ============================================================================
+.features-gen/
+.features-gen-demo/
+playwright-report/
+test-results/
+coverage/
+
+# ============================================================================
+# ENVIRONMENT & SECRETS
+# ============================================================================
 .env
 .env.local
 .env.*.local
-
-.DS_Store
-*.log
-
-# Playwright/demo artifacts
-*.mov
-*.mp4
-*.webm
-
-# Secrets
 client_secret*.json
 *credentials*.json
 
-# Supabase CLI local state (when supabase init is used)
-.supabase
-supabase/.temp
-.vercel
+# ============================================================================
+# IDE & EDITOR
+# ============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.log
+
+# ============================================================================
+# PLATFORM & DEPLOYMENT
+# ============================================================================
+.vercel/
+.supabase/
+supabase/.temp/
+
+# ============================================================================
+# DEVELOPMENT ARTIFACTS
+# ============================================================================
+*.mov
+*.mp4
+*.webm
+*.tmp
+.cache/
