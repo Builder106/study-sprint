@@ -5,6 +5,14 @@
 </picture>
 
 [![CI](https://github.com/Builder106/StudySprint/actions/workflows/ci.yml/badge.svg)](https://github.com/Builder106/StudySprint/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Deno](https://img.shields.io/badge/Deno-2-black?logo=deno&logoColor=white)](https://deno.com)
+[![React](https://img.shields.io/badge/React-18-20232a?logo=react&logoColor=61DAFB)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
+[![Vercel](https://img.shields.io/badge/Vercel-000?logo=vercel&logoColor=white)](https://vercel.com)
 
 A study tracker that turns focus sessions into a growing garden. Set goals, run a focus timer, watch plants grow with time logged, and compare streaks on a public leaderboard.
 
