@@ -13,7 +13,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
          <AuthProvider>
             <ConfirmProvider>
                <App />
-               <Analytics />
             </ConfirmProvider>
             <Toaster
                position="bottom-right"
