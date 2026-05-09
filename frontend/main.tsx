@@ -7,14 +7,6 @@ import { AuthProvider } from './lib/auth';
 import { ConfirmProvider } from './app/components/shared/ConfirmDialog';
 import './styles/index.css';
 
-// Load Vercel Analytics via script tag
-if (typeof window !== 'undefined') {
-  const script = document.createElement('script');
-  script.defer = true;
-  script.src = 'https://cdn.vercel-analytics.com/v1/script.js';
-  document.head.appendChild(script);
-}
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
    <React.StrictMode>
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={true} storageKey="theme">
