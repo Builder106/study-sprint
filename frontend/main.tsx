@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'sonner';
-import { Analytics } from '@vercel/analytics/react';
 import App from './app/App';
 import { AuthProvider } from './lib/auth';
 import { ConfirmProvider } from './app/components/shared/ConfirmDialog';
@@ -14,7 +13,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
          <AuthProvider>
             <ConfirmProvider>
                <App />
-               <Analytics />
             </ConfirmProvider>
             <Toaster
                position="bottom-right"
