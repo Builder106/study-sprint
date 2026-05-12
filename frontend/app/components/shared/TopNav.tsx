@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import type { ReactNode } from "react";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Settings as SettingsIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth";
 import { LogoMark } from "./Logo";
@@ -21,6 +21,15 @@ export function TopNav({ right }: { right?: ReactNode }) {
 
       <div className="flex gap-4 items-center">
         {right}
+        {user && (
+          <Link
+            to="/settings"
+            aria-label="Settings"
+            className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+          >
+            <SettingsIcon className="w-4 h-4" />
+          </Link>
+        )}
         <button
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
           aria-label="Toggle theme"

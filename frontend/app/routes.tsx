@@ -11,6 +11,7 @@ import { StudyRoom } from "./components/StudyRoom";
 import { PublicProfile } from "./components/PublicProfile";
 import { Privacy } from "./components/Privacy";
 import { Terms } from "./components/Terms";
+import { Settings } from "./components/Settings";
 import { ProtectedRoute } from "./components/shared/ProtectedRoute";
 
 function RedirectToGoal() {
@@ -81,4 +82,12 @@ export const router = createBrowserRouter([
   { path: "/u/:username", Component: PublicProfile },
   { path: "/privacy", Component: Privacy },
   { path: "/terms", Component: Terms },
+  {
+    path: "/settings",
+    element: (
+      <ProtectedRoute>
+        <Settings />
+      </ProtectedRoute>
+    ),
+  },
 ]);

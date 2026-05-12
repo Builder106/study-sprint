@@ -8,7 +8,7 @@ Feature: Authentication
 
   Scenario: Successful registration with valid credentials
     When I navigate to the registration page
-    And I enter the email "demo_signup@studysprint.app" and password "password123"
+    And I enter the email "demo_signup@studysprint.app" and password "Sprint-42-go"
     And I submit the registration form
     Then I should be redirected to the dashboard
     And I should see my study goals listed
@@ -17,7 +17,14 @@ Feature: Authentication
     When I navigate to the registration page
     And I enter the email "short@example.com" and password "abc"
     And I submit the registration form
-    Then I should see the error "Password must be at least 6 characters"
+    Then I should see the error "Password must be at least 8 characters."
+    And I should remain on the registration page
+
+  Scenario: Registration fails when password is too common
+    When I navigate to the registration page
+    And I enter the email "common@example.com" and password "password123"
+    And I submit the registration form
+    Then I should see the error "That password is too common — try something less guessable."
     And I should remain on the registration page
 
   Scenario: Successful login with existing credentials

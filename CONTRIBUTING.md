@@ -117,10 +117,18 @@ deno task demo            # records narrated walkthrough videos (DEMO=1)
 ### Test fixtures
 
 Most non-auth scenarios begin with `Given I am logged in as
-"demo@studysprint.app"`. That account has to exist in Supabase Auth for
-the suite to clear the login screen, so the suite ships with
-[`e2e/setup/bootstrap-demo.ts`](e2e/setup/bootstrap-demo.ts) which
-create-or-updates it and reseeds starter goals.
+"demo@studysprint.app"`. Two accounts have to exist in Supabase Auth for
+the suite to clear the login screen:
+
+- **`demo@studysprint.app`** — the workhorse account used by every QA
+  feature except `settings.feature`. Reseeded with starter goals each
+  run so scenarios that assume baseline state are deterministic.
+- **`demo-settings@studysprint.app`** — used only by `settings.feature`,
+  which temporarily mutates its own password. Isolating it from the
+  workhorse account prevents parallel-worker login races.
+
+Both share the same password (`demo123`) and are provisioned by
+[`e2e/setup/bootstrap-demo.ts`](e2e/setup/bootstrap-demo.ts).
 
 Required env vars (loaded automatically from `.env`, no exports needed):
 

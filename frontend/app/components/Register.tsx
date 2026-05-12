@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth";
+import { validatePassword, PASSWORD_MIN_LENGTH } from "@/lib/password";
 import { LogoMark } from "./shared/Logo";
 import { GoogleSignInButton } from "./shared/GoogleSignInButton";
 
@@ -23,8 +24,9 @@ export function Register() {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
     setSubmitting(true);
@@ -97,12 +99,12 @@ export function Register() {
 
             <div className="space-y-3">
               <label className="text-xs uppercase tracking-widest text-zinc-500 font-medium">
-                Password <span className="text-zinc-400 dark:text-zinc-700">(min. 6 characters)</span>
+                Password <span className="text-zinc-400 dark:text-zinc-700">(min. {PASSWORD_MIN_LENGTH} characters)</span>
               </label>
               <input
                 type="password"
                 required
-                minLength={6}
+                minLength={PASSWORD_MIN_LENGTH}
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

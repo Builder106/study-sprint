@@ -1,11 +1,15 @@
-// Bootstrap the shared E2E test account.
+// Bootstrap the shared E2E test accounts.
 //
-// Most non-auth scenarios start with `Given I am logged in as
-// "demo@studysprint.app"` — this user must already exist in Supabase Auth
-// for those scenarios to load the dashboard. This script creates-or-updates
-// that account using a Supabase service-role key (which bypasses email
-// verification + RLS), then resets its data so test runs start from a known
-// baseline.
+// Provisions two users:
+//   1. demo@studysprint.app          — the workhorse account for all
+//      non-auth, non-settings scenarios. Reseeded with starter goals each
+//      run so scenarios that assume baseline state are deterministic.
+//   2. demo-settings@studysprint.app — used only by `settings.feature`,
+//      which mutates its own password (current → new). Isolating it from
+//      the workhorse account prevents a race where another parallel worker
+//      tries to log in as the workhorse while its password is temporarily
+//      the "new" value. No starter data needed — the settings scenarios
+//      never look at the dashboard's goal state.
 //
 // Usage: `deno task test:setup`
 //
@@ -20,12 +24,15 @@
 // the first step in CI before invoking `deno task test`.
 
 import "jsr:@std/dotenv/load";
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? Deno.env.get("VITE_SUPABASE_URL");
 const SECRET_KEY = Deno.env.get("SUPABASE_SECRET_KEY");
+
 const DEMO_EMAIL = Deno.env.get("E2E_DEMO_EMAIL") ?? "demo@studysprint.app";
 const DEMO_PASSWORD = Deno.env.get("E2E_DEMO_PASSWORD") ?? "demo123";
+const SETTINGS_EMAIL = Deno.env.get("E2E_SETTINGS_EMAIL") ?? "demo-settings@studysprint.app";
+const SETTINGS_PASSWORD = Deno.env.get("E2E_SETTINGS_PASSWORD") ?? "demo123";
 
 if (!SUPABASE_URL || !SECRET_KEY) {
   console.error(
@@ -41,11 +48,11 @@ const admin = createClient(SUPABASE_URL, SECRET_KEY, {
 
 // Page through admin.listUsers (default page size is 50) looking for the demo
 // email. listUsers doesn't have a server-side filter; we have to enumerate.
-async function findUserByEmail(email: string) {
+async function findUserByEmail(client: SupabaseClient, email: string) {
   const target = email.toLowerCase();
   let page = 1;
   for (;;) {
-    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 200 });
+    const { data, error } = await client.auth.admin.listUsers({ page, perPage: 200 });
     if (error) throw error;
     const hit = data.users.find((u) => u.email?.toLowerCase() === target);
     if (hit) return hit;
@@ -54,42 +61,42 @@ async function findUserByEmail(email: string) {
   }
 }
 
-async function main() {
-  console.log(`bootstrap-demo: target user is ${DEMO_EMAIL}`);
-
-  const existing = await findUserByEmail(DEMO_EMAIL);
-  let userId: string;
+// Create-or-update the user and reset its password to a known value.
+// Returns the user's UUID so callers can clean up dependent rows.
+async function ensureUser(email: string, password: string): Promise<string> {
+  const existing = await findUserByEmail(admin, email);
 
   if (existing) {
-    console.log(`bootstrap-demo: user exists (${existing.id}); resetting password`);
+    console.log(`bootstrap-demo: ${email} exists (${existing.id}); resetting password`);
     const { error } = await admin.auth.admin.updateUserById(existing.id, {
-      password: DEMO_PASSWORD,
+      password,
       email_confirm: true,
     });
     if (error) {
-      console.error("bootstrap-demo: updateUserById failed:", error.message);
+      console.error(`bootstrap-demo: updateUserById(${email}) failed:`, error.message);
       Deno.exit(1);
     }
-    userId = existing.id;
-  } else {
-    console.log("bootstrap-demo: user does not exist; creating");
-    const { data, error } = await admin.auth.admin.createUser({
-      email: DEMO_EMAIL,
-      password: DEMO_PASSWORD,
-      email_confirm: true,
-    });
-    if (error || !data.user) {
-      console.error("bootstrap-demo: createUser failed:", error?.message);
-      Deno.exit(1);
-    }
-    userId = data.user.id;
+    return existing.id;
   }
 
-  // Wipe any prior test residue and reinstall starter goals so scenarios that
-  // depend on baseline state (e.g. "Dashboard shows existing goals") are
-  // deterministic. reset_account is SECURITY DEFINER + scoped to auth.uid(),
-  // so we have to call it as the user, not as service-role. Cheaper to just
-  // truncate via service-role here.
+  console.log(`bootstrap-demo: ${email} does not exist; creating`);
+  const { data, error } = await admin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+  });
+  if (error || !data.user) {
+    console.error(`bootstrap-demo: createUser(${email}) failed:`, error?.message);
+    Deno.exit(1);
+  }
+  return data.user.id;
+}
+
+// Wipe prior test residue (goals/sessions cascade, google tokens, room
+// memberships, rooms the user created). Cheaper to do via service-role here
+// than to call reset_account, which is SECURITY DEFINER + scoped to auth.uid()
+// and so unreachable from this script.
+async function wipeUserData(userId: string) {
   for (const table of ["study_goals", "user_google_tokens", "room_members"]) {
     const { error } = await admin.from(table).delete().eq("user_id", userId);
     if (error) {
@@ -97,33 +104,41 @@ async function main() {
       Deno.exit(1);
     }
   }
-
-  // Rooms the demo user created (community test creates one per run); cascades
-  // any remaining memberships from other test users.
   const { error: roomErr } = await admin.from("study_rooms").delete().eq("created_by", userId);
   if (roomErr) {
     console.error("bootstrap-demo: delete from study_rooms failed:", roomErr.message);
     Deno.exit(1);
   }
+}
 
-  // Re-seed via the existing helper. SECURITY DEFINER on these means the
-  // service-role bypass plus auth.uid() context makes them a no-op for
-  // verification — call them from a SQL block instead.
-  const { error: seedErr } = await admin.rpc("create_starter_data_for", { p_user_id: userId });
-  if (seedErr) {
+async function seedStarterGoals(userId: string) {
+  const { error } = await admin.rpc("create_starter_data_for", { p_user_id: userId });
+  if (error) {
     // Service-role doesn't carry an auth.uid(), and create_starter_data_for
     // doesn't strictly need one (it takes p_user_id). The REVOKE FROM
     // anon, authenticated still permits postgres + service_role to call it.
-    // If the RPC was registered without a service-role grant we fall back to
-    // raw inserts.
     console.warn(
-      `bootstrap-demo: create_starter_data_for failed (${seedErr.message}); ` +
+      `bootstrap-demo: create_starter_data_for failed (${error.message}); ` +
         "skipping starter goals — scenarios that assume them will need to be " +
         "updated.",
     );
   }
+}
 
-  console.log(`bootstrap-demo: ready. user_id=${userId} email=${DEMO_EMAIL}`);
+async function main() {
+  // ── Workhorse demo user ──────────────────────────────────────────────────
+  console.log(`bootstrap-demo: target user is ${DEMO_EMAIL}`);
+  const demoId = await ensureUser(DEMO_EMAIL, DEMO_PASSWORD);
+  await wipeUserData(demoId);
+  await seedStarterGoals(demoId);
+  console.log(`bootstrap-demo: ready. user_id=${demoId} email=${DEMO_EMAIL}`);
+
+  // ── Settings-only user ───────────────────────────────────────────────────
+  // No starter data — settings.feature never inspects dashboard state.
+  console.log(`bootstrap-demo: target user is ${SETTINGS_EMAIL}`);
+  const settingsId = await ensureUser(SETTINGS_EMAIL, SETTINGS_PASSWORD);
+  await wipeUserData(settingsId);
+  console.log(`bootstrap-demo: ready. user_id=${settingsId} email=${SETTINGS_EMAIL}`);
 }
 
 main().catch((err) => {

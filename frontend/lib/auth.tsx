@@ -7,10 +7,12 @@ import type { User } from "./types";
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
+  hasPasswordIdentity: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -27,14 +29,22 @@ function toUser(supaUser: SupabaseUser | null | undefined): User | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasPasswordIdentity, setHasPasswordIdentity] = useState(false);
 
   useEffect(() => {
+    const syncIdentity = (supaUser: SupabaseUser | null | undefined) => {
+      setHasPasswordIdentity(
+        !!supaUser?.identities?.some((i) => i.provider === "email"),
+      );
+    };
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(toUser(session?.user));
+      syncIdentity(session?.user);
       setLoading(false);
     });
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(toUser(session?.user));
+      syncIdentity(session?.user);
     });
     return () => {
       data.subscription.unsubscribe();
@@ -66,8 +76,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  // The project has "Require current password when updating" enabled in
+  // Supabase Auth, so the SDK forwards the current password to GoTrue's
+  // PUT /user endpoint via the `current_password` field. GoTrue returns
+  // "New password should be different from the old password." on a no-op
+  // and "Current password is incorrect." on a mismatch — we normalize both.
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+      current_password: currentPassword,
+    });
+    if (error) {
+      const msg = error.message.toLowerCase();
+      if (msg.includes("current password") || msg.includes("invalid")) {
+        throw new Error("Current password is incorrect.");
+      }
+      throw new Error(error.message);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, loginWithGoogle, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        hasPasswordIdentity,
+        login,
+        register,
+        loginWithGoogle,
+        logout,
+        changePassword,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
