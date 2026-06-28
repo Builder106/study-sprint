@@ -92,11 +92,11 @@
     "@types/node": "npm:@types/node@^26.0.1",
     "@types/react": "npm:@types/react@^19.2.17",
     "@types/react-dom": "npm:@types/react-dom@^19.2.3",
-    "@vitejs/plugin-react": "npm:@vitejs/plugin-react@6.0.3",
+    "@vitejs/plugin-react": "npm:@vitejs/plugin-react@5.2.0",
     "playwright-bdd": "npm:playwright-bdd@^9.2.0",
     "tailwindcss": "npm:tailwindcss@4.3.1",
     "typescript": "npm:typescript@^6.0.3",
-    "vite": "npm:vite@8.1.0",
+    "vite": "npm:vite@7.3.6",
     "supabase": "npm:supabase@^2.108.0"
   },
   "compilerOptions": {
