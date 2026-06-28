@@ -64,6 +64,16 @@ jobs:
           VITE_SUPABASE_URL: https://placeholder.supabase.co
           VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_placeholder
 
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno task test:unit
+
   # E2E only runs on push to main (not on every PR push). The suite hits the
   # real Supabase project — running it from PR CI would race against local dev
   # on the shared demo account and burn through Supabase's signup rate limit.
@@ -71,7 +81,7 @@ jobs:
   e2e:
     name: E2E
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [fmt, lint, typecheck, build]
+    needs: [fmt, lint, typecheck, build, unit]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
