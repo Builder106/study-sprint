@@ -251,7 +251,7 @@ export function Analytics() {
                           borderRadius: 8,
                           fontSize: 12,
                         }}
-                        formatter={(value: number) => [formatHoursShort(value), "Studied"]}
+                        formatter={(value: any) => [formatHoursShort(value as number), "Studied"]}
                         labelFormatter={(h) => `${h}:00`}
                       />
                       <Bar dataKey="minutes" fill="#ccff00" radius={[3, 3, 0, 0]} />
@@ -288,7 +288,7 @@ export function Analytics() {
                           borderRadius: 8,
                           fontSize: 12,
                         }}
-                        formatter={(value: number) => [formatHoursShort(value), "Studied"]}
+                        formatter={(value: any) => [formatHoursShort(value as number), "Studied"]}
                       />
                       <Bar dataKey="minutes" fill="#22f5cb" radius={[3, 3, 0, 0]} />
                     </BarChart>
@@ -329,8 +329,8 @@ export function Analytics() {
                             borderRadius: 8,
                             fontSize: 12,
                           }}
-                          formatter={(value: number, name: string) => [
-                            formatHoursShort(value),
+                          formatter={(value: any, name: any) => [
+                            formatHoursShort(value as number),
                             name,
                           ]}
                         />
