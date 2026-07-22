@@ -6,7 +6,8 @@
   "comment": "Mirror of deno.json#imports — kept in sync so Vercel (Node-only build env) can resolve and bundle the SPA. Local dev still goes through `deno task dev`. When adding/upgrading a dep, edit deno.json first then mirror the change here.",
   "scripts": {
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "bddgen --config=playwright.config.ts && playwright test --config=playwright.config.ts"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

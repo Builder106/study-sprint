@@ -101,16 +101,16 @@ jobs:
         with:
           node-version: "24"
       - name: Install deps
-        run: deno install --allow-scripts=npm:@tailwindcss/oxide
+        run: npm install --legacy-peer-deps
       - name: Cache Playwright browsers
         uses: actions/cache@v6
         id: pw-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('deno.json') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package.json') }}
       - name: Install Playwright browsers
         if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: npm exec --yes -- playwright install chromium
+        run: npx playwright install chromium
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
       - name: Bootstrap demo account
@@ -119,7 +119,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
       - name: Run E2E suite
-        run: deno task test
+        run: npm run test:e2e
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
@@ -142,6 +142,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [fmt, lint, typecheck, build, unit]
     runs-on: ubuntu-latest
+    continue-on-error: true
     env:
       VERCEL_ORG_ID: team_QBH0412lFDlXgxDpQuY75YAp
       VERCEL_PROJECT_ID: prj_45WW8wwWB3Q3DtJPCpaktowmI66l
