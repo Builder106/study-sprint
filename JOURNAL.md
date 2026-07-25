@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-07-24 — Synchronized Deno/Node dependency manifests & documented Supabase API #decision #maintenance
+
+Synchronized version pins between `deno.json#imports` and `package.json` (`react` 19.2.8, `@supabase/supabase-js` 2.110.8, `react-router` 8.3.0, `@tailwindcss/vite` 4.3.3) to resolve package version drift between local Deno development and Node-based Vercel deployment runners. Authored comprehensive Supabase backend API documentation at `docs/API-SUPABASE.md` covering all 5 custom PostgreSQL stored procedures (`analytics_summary`, `set_goal_subjects`, `get_public_profile`, `get_weekly_leaderboard`, `reset_account_data`) and Edge Functions.
+
 ## 2026-05-11 — Hand-rolled a password validator because HIBP is Pro-tier #decision
 
 Added the change-password flow on `/settings`, which meant deciding how strict to be about weak passwords. Supabase's leaked-password protection (HIBP lookup) is gated behind the Pro plan, and this project runs on the free tier. Rather than ship nothing, I wrote a shared client-side validator (min 8 chars, reject all-numeric, block `password*`/`123456*`/`qwerty*` prefixes) used by both Register and Settings as a compensating control. It's not a substitute for HIBP — a determined user can still pick a leaked password not on the prefix list — but it catches the lazy 90%. Five e2e scenarios cover it: happy path plus four failure modes. Worth noting if the project ever moves to Pro: delete the custom validator, don't stack it.
