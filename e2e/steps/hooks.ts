@@ -26,6 +26,13 @@ const DEMO_TAIL_MS = Number(process.env.DEMO_TAIL_MS ?? 1500);
 // mousemove events on the page during clicks/hovers, so a CSS-positioned dot
 // listening to those events traces the same path the test takes — giving the
 // viewer a focal point that browser headless mode otherwise hides.
+//
+// The dot lives inside the zoomed <html> (see ZOOM_SCRIPT below), so its
+// left/top render in zoomed coordinates once CSS `zoom` is applied to the
+// root — but MouseEvent.clientX/Y always arrive in unzoomed viewport pixels.
+// Dividing by the live zoom factor is what keeps the dot on the actual
+// cursor position instead of drifting outward from center as DEMO_ZOOM
+// increases. At DEMO_ZOOM=1 this divides by 1 and is a no-op.
 const CURSOR_SCRIPT = `
   (() => {
     if (window.__demoCursorInstalled) return;
@@ -48,8 +55,9 @@ const CURSOR_SCRIPT = `
       ].join(';');
       document.body.appendChild(dot);
       const move = (e) => {
-        dot.style.left = e.clientX + 'px';
-        dot.style.top = e.clientY + 'px';
+        const z = window.__demoZoom || 1;
+        dot.style.left = (e.clientX / z) + 'px';
+        dot.style.top = (e.clientY / z) + 'px';
       };
       const click = () => {
         dot.style.transform = 'translate(-50%,-50%) scale(1.6)';
@@ -80,6 +88,7 @@ const ZOOM_SCRIPT = `
     window.__demoZoomInstalled = true;
     const apply = () => {
       const z = ${DEMO_ZOOM};
+      window.__demoZoom = z;
       const inv = (1 / z) * 100;
       const style = document.createElement('style');
       style.textContent = [

@@ -4,10 +4,15 @@
   "version": "0.0.1",
   "type": "module",
   "comment": "Mirror of deno.json#imports — kept in sync so Vercel (Node-only build env) can resolve and bundle the SPA. Local dev still goes through `deno task dev`. When adding/upgrading a dep, edit deno.json first then mirror the change here.",
+  "overrides": {
+    "playwright": "1.61.1"
+  },
   "scripts": {
     "build": "vite build",
     "preview": "vite preview",
-    "test:e2e": "bddgen --config=playwright.config.ts && playwright test --config=playwright.config.ts"
+    "test:e2e": "bddgen --config=playwright.config.ts && playwright test --config=playwright.config.ts",
+    "tour": "DEMO=1 bddgen --config=playwright.tour.config.ts && DEMO=1 playwright test --config=playwright.tour.config.ts",
+    "tour:light": "DEMO=1 DEMO_THEME=light bddgen --config=playwright.tour.config.ts && DEMO=1 DEMO_THEME=light playwright test --config=playwright.tour.config.ts"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -72,12 +77,15 @@
     "vaul": "1.1.2"
   },
   "devDependencies": {
+    "@playwright/test": "1.61.1",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "4.3.3",
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "6.0.4",
+    "playwright-bdd": "^9.2.0",
+    "supabase": "^2.109.1",
     "tailwindcss": "4.3.3",
     "typescript": "^7.0.2",
     "vite": "8.1.5"
