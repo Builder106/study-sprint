@@ -18,6 +18,10 @@ A study tracker that turns focus sessions into a growing garden. Set goals, run 
 
 **Live app:** https://getstudysprint.vercel.app
 
+[![Watch the 63-second product tour](docs/ui-demo-poster.png)](ui-demo/public/ui-demo.mp4)
+
+*45 days of studying, one continuous take: the timer, the log, the heatmap, the plant growing from `young_tree` to `mature_tree`, the syllabus importer, and the community leaderboard. Music: "Undaunted," Kevin MacLeod (incompetech.com), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).*
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/gifs/01-core-new-student-registers-and-logs-their-first-session-dark.gif">
   <source media="(prefers-color-scheme: light)" srcset="docs/gifs/01-core-new-student-registers-and-logs-their-first-session-light.gif">
