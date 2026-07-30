@@ -11,6 +11,7 @@ deno.lock.tmp
 # ============================================================================
 .features-gen/
 .features-gen-demo/
+.features-gen-tour/
 playwright-report/
 test-results/
 coverage/
@@ -27,6 +28,7 @@ client_secret*.json
 # ============================================================================
 # IDE & EDITOR
 # ============================================================================
+.claude/
 .vscode/
 .idea/
 *.swp
@@ -50,3 +52,13 @@ supabase/.temp/
 *.webm
 *.tmp
 .cache/
+
+# Tier 2/3 demo video source assets are checked in — SFX/captions are pinned
+# to absolute frames inside them, so losing them makes the composition
+# unreproducible. Only the .mp4 negation is load-bearing (*.mp3 was never
+# ignored above); the trimmed music beds under public/ ride along with it.
+!ui-demo/public/*.mp4
+
+# Raw, untrimmed music downloads the beds were cut from. Big, and the
+# trimmed public/music-bed.mp3 is what the compositions actually read.
+*-raw.mp3
