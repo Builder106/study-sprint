@@ -57,11 +57,15 @@ async function findUsers() {
 
 async function main() {
   const { synthetic: users, demoUserId } = await findUsers();
-  console.log(`teardown-demo-history: found ${users.length} synthetic user(s) at @${SOCIAL_DOMAIN}`);
+  console.log(
+    `teardown-demo-history: found ${users.length} synthetic user(s) at @${SOCIAL_DOMAIN}`,
+  );
 
   const { error: roomErr } = await admin.from("study_rooms").delete().eq("slug", ROOM_SLUG);
   if (roomErr) console.warn(`teardown-demo-history: study_rooms delete failed: ${roomErr.message}`);
-  else console.log(`teardown-demo-history: deleted study room "${ROOM_SLUG}" (room_members cascades)`);
+  else {console.log(
+      `teardown-demo-history: deleted study room "${ROOM_SLUG}" (room_members cascades)`,
+    );}
 
   for (const u of users) {
     // study_goals cascade -> study_sessions, goal_subjects. profiles cascade
@@ -69,9 +73,17 @@ async function main() {
     // room above, but delete defensively in case membership in some other
     // room was ever added by hand.
     const { error: goalsErr } = await admin.from("study_goals").delete().eq("user_id", u.id);
-    if (goalsErr) console.warn(`teardown-demo-history: study_goals delete(${u.email}) failed: ${goalsErr.message}`);
+    if (goalsErr) {
+      console.warn(
+        `teardown-demo-history: study_goals delete(${u.email}) failed: ${goalsErr.message}`,
+      );
+    }
     const { error: membersErr } = await admin.from("room_members").delete().eq("user_id", u.id);
-    if (membersErr) console.warn(`teardown-demo-history: room_members delete(${u.email}) failed: ${membersErr.message}`);
+    if (membersErr) {
+      console.warn(
+        `teardown-demo-history: room_members delete(${u.email}) failed: ${membersErr.message}`,
+      );
+    }
 
     const { error: userErr } = await admin.auth.admin.deleteUser(u.id);
     if (userErr) {
@@ -88,8 +100,9 @@ async function main() {
       .from("profiles")
       .update({ is_public: false })
       .eq("id", demoUserId);
-    if (visErr) console.warn(`teardown-demo-history: un-publishing ${DEMO_EMAIL} failed: ${visErr.message}`);
-    else console.log(`teardown-demo-history: ${DEMO_EMAIL} is_public -> false`);
+    if (visErr) {
+      console.warn(`teardown-demo-history: un-publishing ${DEMO_EMAIL} failed: ${visErr.message}`);
+    } else console.log(`teardown-demo-history: ${DEMO_EMAIL} is_public -> false`);
   } else {
     console.warn(`teardown-demo-history: ${DEMO_EMAIL} not found — left as-is.`);
   }

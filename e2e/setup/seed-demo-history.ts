@@ -167,7 +167,14 @@ function addSession(
   usedDayKeys.add(key);
   const loggedAt = new Date(day);
   loggedAt.setUTCHours(hourUTC, randInt(0, 59), 0, 0);
-  const s: GenSession = { subject, duration_minutes: capped, quality, logged_at: loggedAt, dateKey: key, dayIndex };
+  const s: GenSession = {
+    subject,
+    duration_minutes: capped,
+    quality,
+    logged_at: loggedAt,
+    dateKey: key,
+    dayIndex,
+  };
   sessions.push(s);
   return s;
 }
@@ -339,7 +346,10 @@ function runFillerPass(target: number): Profile {
     if (delta < 0) break; // overshot — stop rather than dig deeper; shouldn't happen with isolated-only fillers
     if (!isIsolatedCandidate(i)) continue;
     const multiplier = 31 / 30; // guaranteed by isolation
-    const duration = Math.max(FILLER_MIN_DURATION, Math.min(FILLER_MAX_DURATION, Math.round(delta / multiplier)));
+    const duration = Math.max(
+      FILLER_MIN_DURATION,
+      Math.min(FILLER_MAX_DURATION, Math.round(delta / multiplier)),
+    );
     addSession(i, weightedSubject(), duration, null, randInt(6, 23));
     profile = computeProfile(sessions);
     iter++;
@@ -475,14 +485,70 @@ interface SocialUserDef {
 // land above it, five below, so the demo account ranks #3 on the leaderboard
 // regardless of the exact PRNG output.
 const SOCIAL_USERS: SocialUserDef[] = [
-  { slug: "priya", displayName: "Priya K.", bio: "Chasing a 4.0, one pomodoro at a time.", subject: "Computer Science", weeklyMinuteMultiplier: 1.6, inRoom: true },
-  { slug: "marcus", displayName: "Marcus T.", bio: "MCAT prep, mostly at 6am.", subject: "Science", weeklyMinuteMultiplier: 1.25, inRoom: true },
-  { slug: "elena", displayName: "Elena R.", bio: "Learning German for a semester abroad.", subject: "Languages", weeklyMinuteMultiplier: 0.75, inRoom: true },
-  { slug: "davidk", displayName: "David K.", bio: "Bar prep, one outline at a time.", subject: "Writing", weeklyMinuteMultiplier: 0.55, inRoom: true },
-  { slug: "sofia", displayName: "Sofia M.", bio: "Calc II study group organizer.", subject: "Mathematics", weeklyMinuteMultiplier: 0.4, inRoom: false },
-  { slug: "jamal", displayName: "Jamal B.", bio: "Self-taught, building in public.", subject: "Computer Science", weeklyMinuteMultiplier: 0.28, inRoom: false },
-  { slug: "wei", displayName: "Wei L.", bio: "Grad school apps + GRE review.", subject: "Mathematics", weeklyMinuteMultiplier: 0.15, inRoom: false },
-  { slug: "amara", displayName: "Amara O.", bio: "Studying between shifts.", subject: "Science", weeklyMinuteMultiplier: 0.08, inRoom: false },
+  {
+    slug: "priya",
+    displayName: "Priya K.",
+    bio: "Chasing a 4.0, one pomodoro at a time.",
+    subject: "Computer Science",
+    weeklyMinuteMultiplier: 1.6,
+    inRoom: true,
+  },
+  {
+    slug: "marcus",
+    displayName: "Marcus T.",
+    bio: "MCAT prep, mostly at 6am.",
+    subject: "Science",
+    weeklyMinuteMultiplier: 1.25,
+    inRoom: true,
+  },
+  {
+    slug: "elena",
+    displayName: "Elena R.",
+    bio: "Learning German for a semester abroad.",
+    subject: "Languages",
+    weeklyMinuteMultiplier: 0.75,
+    inRoom: true,
+  },
+  {
+    slug: "davidk",
+    displayName: "David K.",
+    bio: "Bar prep, one outline at a time.",
+    subject: "Writing",
+    weeklyMinuteMultiplier: 0.55,
+    inRoom: true,
+  },
+  {
+    slug: "sofia",
+    displayName: "Sofia M.",
+    bio: "Calc II study group organizer.",
+    subject: "Mathematics",
+    weeklyMinuteMultiplier: 0.4,
+    inRoom: false,
+  },
+  {
+    slug: "jamal",
+    displayName: "Jamal B.",
+    bio: "Self-taught, building in public.",
+    subject: "Computer Science",
+    weeklyMinuteMultiplier: 0.28,
+    inRoom: false,
+  },
+  {
+    slug: "wei",
+    displayName: "Wei L.",
+    bio: "Grad school apps + GRE review.",
+    subject: "Mathematics",
+    weeklyMinuteMultiplier: 0.15,
+    inRoom: false,
+  },
+  {
+    slug: "amara",
+    displayName: "Amara O.",
+    bio: "Studying between shifts.",
+    subject: "Science",
+    weeklyMinuteMultiplier: 0.08,
+    inRoom: false,
+  },
 ];
 
 const ROOM_SLUG = "ss-demo-study-squad";
@@ -509,11 +575,18 @@ async function findUserByEmail(client: SupabaseClient, email: string) {
 async function ensureUser(admin: SupabaseClient, email: string, password: string): Promise<string> {
   const existing = await findUserByEmail(admin, email);
   if (existing) {
-    const { error } = await admin.auth.admin.updateUserById(existing.id, { password, email_confirm: true });
+    const { error } = await admin.auth.admin.updateUserById(existing.id, {
+      password,
+      email_confirm: true,
+    });
     if (error) throw new Error(`updateUserById(${email}) failed: ${error.message}`);
     return existing.id;
   }
-  const { data, error } = await admin.auth.admin.createUser({ email, password, email_confirm: true });
+  const { data, error } = await admin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+  });
   if (error || !data.user) throw new Error(`createUser(${email}) failed: ${error?.message}`);
   return data.user.id;
 }
@@ -543,12 +616,17 @@ async function main() {
   console.log("seed-demo-history: post-recorded-session profile:", postLog);
   console.log(
     `seed-demo-history: stage flip ${profile.pet_stage} -> ${postLog.pet_stage} ` +
-      `(${postLog.pet_stage === "mature_tree" ? "OK" : "MISMATCH — check SESSION_LOG_MINUTES/QUALITY vs 10-tour.feature"})`,
+      `(${
+        postLog.pet_stage === "mature_tree"
+          ? "OK"
+          : "MISMATCH — check SESSION_LOG_MINUTES/QUALITY vs 10-tour.feature"
+      })`,
   );
 
   const checks: Record<string, boolean> = {
     "current_streak_days >= 40": profile.current_streak_days >= 40,
-    [`xp within ${XP_TOLERANCE} of ${TARGET_XP_BEFORE_LOG}`]: Math.abs(profile.xp - TARGET_XP_BEFORE_LOG) <= XP_TOLERANCE,
+    [`xp within ${XP_TOLERANCE} of ${TARGET_XP_BEFORE_LOG}`]:
+      Math.abs(profile.xp - TARGET_XP_BEFORE_LOG) <= XP_TOLERANCE,
     "pet_stage === young_tree (pre-log)": profile.pet_stage === "young_tree",
     "pet_stage === mature_tree (post-log)": postLog.pet_stage === "mature_tree",
     "total_sessions < 100 (century locked)": profile.total_sessions < 100,
@@ -565,7 +643,9 @@ async function main() {
     if (!v) allPass = false;
   }
   if (!allPass) {
-    console.error("seed-demo-history: acceptance checks failed — not writing anything. Retune the generator constants.");
+    console.error(
+      "seed-demo-history: acceptance checks failed — not writing anything. Retune the generator constants.",
+    );
     Deno.exit(1);
   }
 
@@ -581,7 +661,9 @@ async function main() {
   // ── Demo account: subjects, goals, sessions, public profile ──────────────
   const demoUser = await findUserByEmail(admin, DEMO_EMAIL);
   if (!demoUser) {
-    console.error(`seed-demo-history: ${DEMO_EMAIL} not found — run \`deno task test:setup\` first.`);
+    console.error(
+      `seed-demo-history: ${DEMO_EMAIL} not found — run \`deno task test:setup\` first.`,
+    );
     Deno.exit(1);
   }
   const demoUserId = demoUser.id;
@@ -591,18 +673,26 @@ async function main() {
     const { error } = await admin.from("subjects").upsert({ name }, { onConflict: "name" });
     if (error) throw new Error(`subjects upsert(${name}) failed: ${error.message}`);
   }
-  const { data: subjectRows, error: subjectsErr } = await admin.from("subjects").select("id, name").in("name", SUBJECTS);
-  if (subjectsErr || !subjectRows) throw new Error(`subjects select failed: ${subjectsErr?.message}`);
+  const { data: subjectRows, error: subjectsErr } = await admin.from("subjects").select("id, name")
+    .in("name", SUBJECTS);
+  if (subjectsErr || !subjectRows) {
+    throw new Error(`subjects select failed: ${subjectsErr?.message}`);
+  }
   const subjectIdByName = new Map(subjectRows.map((r) => [r.name as string, r.id as string]));
 
   console.log("seed-demo-history: wiping existing demo-account goals/sessions…");
-  const { error: wipeGoalsErr } = await admin.from("study_goals").delete().eq("user_id", demoUserId);
+  const { error: wipeGoalsErr } = await admin.from("study_goals").delete().eq(
+    "user_id",
+    demoUserId,
+  );
   if (wipeGoalsErr) throw new Error(`wipe study_goals failed: ${wipeGoalsErr.message}`);
 
   console.log("seed-demo-history: creating goals…");
   const goalIdByKey = new Map<string, string>();
   for (const g of GOAL_DEFS) {
-    const target_date = g.target_date_days == null ? null : dateKeyUTC(new Date(TODAY.getTime() + g.target_date_days * MS_PER_DAY));
+    const target_date = g.target_date_days == null
+      ? null
+      : dateKeyUTC(new Date(TODAY.getTime() + g.target_date_days * MS_PER_DAY));
     const { data, error } = await admin
       .from("study_goals")
       .insert({
@@ -619,7 +709,10 @@ async function main() {
     goalIdByKey.set(g.key, data.id as string);
     const subjectId = subjectIdByName.get(g.subject);
     if (subjectId) {
-      const { error: tagErr } = await admin.from("goal_subjects").insert({ goal_id: data.id, subject_id: subjectId });
+      const { error: tagErr } = await admin.from("goal_subjects").insert({
+        goal_id: data.id,
+        subject_id: subjectId,
+      });
       if (tagErr) throw new Error(`goal_subjects insert for ${g.key} failed: ${tagErr.message}`);
     }
   }
@@ -628,7 +721,9 @@ async function main() {
   console.log(`seed-demo-history: inserting ${sessions.length} sessions…`);
   const rows = sessions.map((s) => {
     const goalKey = goalKeyForSession(s.subject, s.dayIndex);
-    const next_review_at = s.quality != null ? new Date(s.logged_at.getTime() + QUALITY_REVIEW_DAYS[s.quality] * MS_PER_DAY).toISOString() : null;
+    const next_review_at = s.quality != null
+      ? new Date(s.logged_at.getTime() + QUALITY_REVIEW_DAYS[s.quality] * MS_PER_DAY).toISOString()
+      : null;
     return {
       goal_id: goalIdByKey.get(goalKey),
       duration_minutes: s.duration_minutes,
@@ -646,7 +741,12 @@ async function main() {
   console.log("seed-demo-history: setting demo profile public…");
   const { error: profileErr } = await admin
     .from("profiles")
-    .update({ username: "demo_sprinter", display_name: "Demo Sprinter", bio: "The account behind the README GIFs.", is_public: true })
+    .update({
+      username: "demo_sprinter",
+      display_name: "Demo Sprinter",
+      bio: "The account behind the README GIFs.",
+      is_public: true,
+    })
     .eq("id", demoUserId);
   if (profileErr) throw new Error(`profiles update failed: ${profileErr.message}`);
 
@@ -664,7 +764,12 @@ async function main() {
     socialUserIds.push(userId);
     const { error: pErr } = await admin
       .from("profiles")
-      .update({ username: `ss_demo_${u.slug}`, display_name: u.displayName, bio: u.bio, is_public: true })
+      .update({
+        username: `ss_demo_${u.slug}`,
+        display_name: u.displayName,
+        bio: u.bio,
+        is_public: true,
+      })
       .eq("id", userId);
     if (pErr) throw new Error(`social profile update(${u.slug}) failed: ${pErr.message}`);
 
@@ -680,7 +785,9 @@ async function main() {
       .select("id")
       .single();
     if (gErr || !goalRow) throw new Error(`social goal insert(${u.slug}) failed: ${gErr?.message}`);
-    if (subjectId) await admin.from("goal_subjects").insert({ goal_id: goalRow.id, subject_id: subjectId });
+    if (subjectId) {
+      await admin.from("goal_subjects").insert({ goal_id: goalRow.id, subject_id: subjectId });
+    }
 
     // One session per day across the last 7 days, each capped at 180min, so
     // up to 1260min/week of capacity — comfortably above the highest
@@ -695,7 +802,12 @@ async function main() {
       const duration = Math.min(180, remaining);
       const loggedAt = new Date(TODAY.getTime() - d * MS_PER_DAY);
       loggedAt.setUTCHours(randInt(8, 22), randInt(0, 59), 0, 0);
-      socialSessions.push({ goal_id: goalRow.id, duration_minutes: duration, quality: pick([3, 4, 5]), logged_at: loggedAt.toISOString() });
+      socialSessions.push({
+        goal_id: goalRow.id,
+        duration_minutes: duration,
+        quality: pick([3, 4, 5]),
+        logged_at: loggedAt.toISOString(),
+      });
       remaining -= duration;
     }
     if (socialSessions.length > 0) {
@@ -710,7 +822,13 @@ async function main() {
   await admin.from("study_rooms").delete().eq("slug", ROOM_SLUG);
   const { data: roomRow, error: roomErr } = await admin
     .from("study_rooms")
-    .insert({ slug: ROOM_SLUG, name: ROOM_NAME, description: ROOM_DESCRIPTION, passcode_hash: null, created_by: demoUserId })
+    .insert({
+      slug: ROOM_SLUG,
+      name: ROOM_NAME,
+      description: ROOM_DESCRIPTION,
+      passcode_hash: null,
+      created_by: demoUserId,
+    })
     .select("id")
     .single();
   if (roomErr || !roomRow) throw new Error(`study_rooms insert failed: ${roomErr?.message}`);
@@ -738,7 +856,11 @@ async function main() {
     if (actErr) throw new Error(`room activity session insert failed: ${actErr.message}`);
   }
 
-  console.log(`seed-demo-history: done. Recording target goal: "${GOAL_DEFS.find((g) => g.key === RECORDING_TARGET_GOAL_KEY)?.title}"`);
+  console.log(
+    `seed-demo-history: done. Recording target goal: "${
+      GOAL_DEFS.find((g) => g.key === RECORDING_TARGET_GOAL_KEY)?.title
+    }"`,
+  );
 }
 
 main().catch((err) => {
