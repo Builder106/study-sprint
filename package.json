@@ -10,7 +10,7 @@
   "scripts": {
     "build": "vite build",
     "preview": "vite preview",
-    "test:e2e": "bddgen --config=playwright.config.ts && playwright test --config=playwright.config.ts",
+    "test:e2e": "node ./node_modules/playwright-bdd/dist/cli/index.js --config=playwright.config.ts && node ./node_modules/@playwright/test/cli.js test --config=playwright.config.ts",
     "tour": "DEMO=1 bddgen --config=playwright.tour.config.ts && DEMO=1 playwright test --config=playwright.tour.config.ts",
     "tour:light": "DEMO=1 DEMO_THEME=light bddgen --config=playwright.tour.config.ts && DEMO=1 DEMO_THEME=light playwright test --config=playwright.tour.config.ts"
   },
