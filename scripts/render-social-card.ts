@@ -5,7 +5,7 @@
 // suite) so there's no extra browser to install.
 //
 // Upload the resulting PNG at:
-//   https://github.com/Builder106/StudySprint/settings → Social preview
+//   https://github.com/Builder106/study-sprint/settings → Social preview
 
 import { chromium } from "npm:playwright@1.59.1";
 import { fromFileUrl, resolve } from "jsr:@std/path";

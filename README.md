@@ -4,7 +4,7 @@
   <img alt="StudySprint — Focus. Track. Grow." src="docs/banner-dark.svg" width="1200" height="300">
 </picture>
 
-[![CI](https://github.com/Builder106/StudySprint/actions/workflows/ci.yml/badge.svg)](https://github.com/Builder106/StudySprint/actions/workflows/ci.yml)
+[![CI](https://github.com/Builder106/study-sprint/actions/workflows/ci.yml/badge.svg)](https://github.com/Builder106/study-sprint/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Deno](https://img.shields.io/badge/Deno-2-black?logo=deno&logoColor=white)](https://deno.com)
 [![React](https://img.shields.io/badge/React-18-20232a?logo=react&logoColor=61DAFB)](https://react.dev)

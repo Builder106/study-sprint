@@ -45,7 +45,7 @@ export function Landing() {
         </div>
         <div className="flex items-center gap-4">
           <a
-            href="https://github.com/Builder106/StudySprint"
+            href="https://github.com/Builder106/study-sprint"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 rounded-full border border-zinc-300 dark:border-white/20 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-white/30 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors text-sm font-medium"
