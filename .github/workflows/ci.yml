@@ -12,6 +12,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_NOTIFY_USER_LIST: ""
+
   fmt:
     name: Format
     runs-on: ubuntu-latest
@@ -57,6 +68,8 @@ jobs:
         # Deno's npm runtime has a require.resolve incompatibility with
         # @tailwindcss/node on Linux; Node avoids this entirely.
         run: npm install --legacy-peer-deps
+      - name: Node dependency audit
+        run: npm audit --audit-level=high
       - name: Build
         # Vite inlines VITE_* values at build time. CI builds with placeholders
         # so we can verify "is this buildable?" without exposing real keys to
