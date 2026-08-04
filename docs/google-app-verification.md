@@ -52,7 +52,7 @@ verification is the only way to drop the warning.
 vercel domains buy studysprint.app    # check availability first
 vercel domains buy studysprint.dev    # alternative
 vercel domains buy studysprint.io     # alternative
-```
+```text
 
 Cheaper alternative: buy through Cloudflare Registrar (at-cost), then
 `vercel domains add <yourdomain> studysprint`.
@@ -61,7 +61,7 @@ Cheaper alternative: buy through Cloudflare Registrar (at-cost), then
 
 ```bash
 vercel domains add studysprint.app studysprint
-```
+```text
 
 After DNS propagates (5 min – 24 h), `https://studysprint.app/privacy`
 should serve the same page as

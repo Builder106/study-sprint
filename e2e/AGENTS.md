@@ -131,7 +131,7 @@ export async function dwellForDemo(page: Page, ms = 1500) {
   if (process.env.DEMO !== "1") return;
   try { await page.waitForTimeout(ms); } catch { /* page closed */ }
 }
-```
+```text
 
 Call it at every "thing just appeared" beat:
 
@@ -160,7 +160,7 @@ Feature: Warmup
     Given I am on the home page
   Scenario: Warmup B
     Given I am on the home page
-```
+```text
 
 Two warmups is the floor; one is sometimes not enough.
 
@@ -265,7 +265,7 @@ Demo config should differ from QA config in:
     },
   }],
 }
-```
+```text
 
 QA config inverts everything: `video: "retain-on-failure"`, no `slowMo`,
 smaller viewport, parallel workers OK.
@@ -366,7 +366,7 @@ ffmpeg -i demo.mp4 -i narration.mp3 \
 
 # Pad short audio with silence to match a target duration
 ffmpeg -i narration.mp3 -af apad -t <video-duration-seconds> narration-padded.mp3
-```
+```text
 
 `-shortest` truncates to the shorter input — usually unwanted; pad the audio
 first instead.

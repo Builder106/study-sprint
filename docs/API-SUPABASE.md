@@ -62,7 +62,7 @@ Parses PDF or raw text syllabi and returns structured study goals.
   "content": "CS 201 Data Structures Syllabus...",
   "contentType": "text/plain" | "application/pdf"
 }
-```
+```text
 
 * **Response (200 OK)**:
 
@@ -77,7 +77,7 @@ Parses PDF or raw text syllabi and returns structured study goals.
     }
   ]
 }
-```
+```text
 
 ### 2. `google-calendar`
 

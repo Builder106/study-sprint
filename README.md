@@ -90,7 +90,7 @@ Also: **Google Calendar integration** (export sessions, import events) via a ded
 
 ## Architecture
 
-```
+```text
 frontend/                   React + Vite SPA
 ├── app/components/         Page-level components (Dashboard, Garden, StudyRoom, …)
 └── lib/                    Supabase client, API wrappers, hooks, utilities
@@ -102,7 +102,7 @@ supabase/
     └── google-calendar/    OAuth + Calendar export/import
 
 e2e/                        Playwright + Gherkin BDD suite (QA + demo configs)
-```
+```text
 
 ## Local setup
 
@@ -128,7 +128,7 @@ supabase secrets set \
   CLIENT_ORIGIN=http://localhost:5173
 
 deno task dev                       # frontend on :5173 (Vite via Deno)
-```
+```text
 
 If `deno install` warns about ignored build scripts, re-run with
 `deno install --allow-scripts=npm:supabase,npm:@tailwindcss/oxide` — the
@@ -167,7 +167,7 @@ deno task demo            # records narrated walkthrough videos (dark theme)
 deno task demo:light      # same, in light theme — needed for the README hero <picture>
 deno task demo:both       # records both themes back-to-back
 deno task gif             # convert test-results/videos/*-{dark,light}.mp4 → docs/gifs/*.gif
-```
+```text
 
 Playwright runs under Deno's Node compatibility layer — its browser drivers
 are still Node binaries, but the test runner and step definitions execute

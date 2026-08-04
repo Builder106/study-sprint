@@ -61,15 +61,15 @@ function mulberry32(seed: number) {
   };
 }
 const rng = mulberry32(0x53545559);
-```
+```text
 
 The target XP formula mirrors `frontend/lib/gamification.ts` exactly (confirmed current as of this plan — `computeGamificationProfile`):
 
-```
+```text
 sessionXp = round( (duration_minutes + (quality ?? 0) * 10) * (1 + min(streakOnThatDay / 30, 1)) )
 level      = floor(sqrt(totalXp / 100))
 PET_STAGES: sprout=1, sapling=4, young_tree=8, mature_tree=14, blooming=22 (by level)
-```
+```text
 
 Tier 2's beat 3 will log a **90-minute session rated Mastered (quality 5)** live during recording: `(90 + 50) × 2 = 280 XP` (streak is maxed by then, multiplier caps at 2×). Seed the account so it sits **just under** the `mature_tree` line (level 14 = 19,600 XP) before that session, and crosses it after.
 
@@ -163,7 +163,7 @@ Add to `deno.json`'s `"tasks"` object:
 ```json
 "seed:demo": "deno run -A e2e/setup/seed-demo-history.ts",
 "seed:demo:teardown": "deno run -A e2e/setup/teardown-demo-history.ts"
-```
+```text
 
 - [ ] **Step 11: Write the teardown script**
 
@@ -190,7 +190,7 @@ Run `deno task test` (the full QA suite) and `deno task test:unit`. Both must st
 ```bash
 git add e2e/setup/seed-demo-history.ts e2e/setup/teardown-demo-history.ts deno.json
 git commit -m "feat: add synthetic demo-history seeder and teardown"
-```
+```text
 
 **Report contract:** in addition to the standard DONE/BLOCKED status, the report file MUST include: final total XP, level, pet_stage-before-recording, `current_streak_days`, per-subject minute totals (all 5), and the ranked list of leaderboard minutes (demo account + 8 synthetics) — Tasks 2 and 4 need these numbers verbatim.
 
@@ -246,7 +246,7 @@ await page.route('**/functions/v1/syllabus-parse', async (route) => {
     }),
   });
 });
-```
+```text
 
 Match the actual response shape `SyllabusImport.tsx` expects — read that component first; if its expected shape differs from the sketch above, use the real shape (this stub must satisfy the component's parser, not an assumed one).
 
@@ -273,16 +273,16 @@ Use `dwellForDemo(page, ms)` after every state-change assertion (session save, X
 "tour:seed": "deno task test:setup && deno task seed:demo",
 "tour": "DEMO=1 DEMO_ZOOM=1.05 node ./node_modules/.bin/bddgen --config playwright.tour.config.ts && DEMO=1 DEMO_ZOOM=1.05 node ./node_modules/.bin/playwright test --config playwright.tour.config.ts",
 "tour:light": "DEMO=1 DEMO_ZOOM=1.05 DEMO_THEME=light node ./node_modules/.bin/bddgen --config playwright.tour.config.ts && DEMO=1 DEMO_ZOOM=1.05 DEMO_THEME=light node ./node_modules/.bin/playwright test --config playwright.tour.config.ts"
-```
+```text
 
 - [ ] **Step 6: Record on ampere-dev, dark pass**
 
 `node_modules`/Playwright browsers must exist on `ampere-dev`, not the Mac. Rsync this repo (excluding `.git`, `node_modules`, `test-results`) to `~/work/studysprint-tour` on `ampere-dev`, SSH in, start (or reuse) a named `tmux` session (e.g. `tmux new -s studysprint-tour`), `npm install` there, then inside `tmux`:
 
-```
+```bash
 deno task tour:seed
 deno task tour
-```
+```text
 
 **Order matters**: seed, then dark recording. Do not run `demo:both`-style back-to-back dark+light without re-seeding between — beat 3 logs a real 90-minute session each pass, and a second pass without re-seeding starts from an already-flipped XP total.
 
@@ -296,10 +296,10 @@ Confirm: no 0-byte video files in the synced-back set, all 8 beats are present a
 
 On `ampere-dev`, inside the same (or a fresh) `tmux` session:
 
-```
+```bash
 deno task tour:seed
 deno task tour:light
-```
+```text
 
 Rsync `test-results/videos/*-light.mp4` back.
 
@@ -312,7 +312,7 @@ Both passes must show the same heatmap shape, the same streak number, the same a
 ```bash
 git add playwright.tour.config.ts e2e/demo/features/10-tour.feature e2e/demo/steps/tour.steps.ts deno.json
 git commit -m "feat: add Tier 2 UI-tour recording config and feature"
-```
+```text
 
 **Report contract:** include the synced-back footage's location (on this machine, e.g. `/tmp/studysprint-tour-footage/`), a per-beat timestamp table for both dark and light passes (Task 3 needs `trimStartSec` values per beat), and confirmation of Step 2's cursor-zoom finding (offset or not, and whether `hooks.ts` was patched).
 
@@ -368,9 +368,9 @@ One `<Audio>` spanning the whole timeline, `interpolate` volume envelope (fade i
 
 Add to `.gitignore`:
 
-```
+```text
 !ui-demo/public/*.mp4
-```
+```text
 
 Copy Task 2's synced-back footage into `ui-demo/public/` under clear names (e.g. `beat1-hook-dark.mp4`, `beat1-hook-light.mp4`, …).
 
@@ -378,10 +378,10 @@ Copy Task 2's synced-back footage into `ui-demo/public/` under clear names (e.g.
 
 Rsync `ui-demo/` to `ampere-dev` (e.g. `~/work/studysprint-ui-demo`). SSH in, start/reuse a named `tmux` session, `npm install` (Remotion on linux-arm64 needs its Chrome Headless Shell — expect the first install to be slow), then:
 
-```
+```text
 npx remotion render src/index.ts StudySprintUiDemo out/ui-demo-landscape.mp4
 npx remotion render src/index.ts StudySprintUiDemoSocial out/ui-demo-social.mp4
-```
+```text
 
 Rsync both outputs back to `ui-demo/out/` in this worktree.
 
@@ -389,15 +389,15 @@ Rsync both outputs back to `ui-demo/out/` in this worktree.
 
 Extract frames at 2–3fps across every cut (a 1fps pass misses half-second gaps) via `claude-video-vision` `video_analyze` on both renders. Then run, at default log level (never `-v error` — see Global Constraints):
 
-```
+```text
 ffmpeg -i out/ui-demo-landscape.mp4 -vf freezedetect -af silencedetect -f null -
-```
+```text
 
 `freezedetect` output must be empty. Check loudness:
 
-```
+```text
 ffmpeg -i out/ui-demo-landscape.mp4 -af ebur128 -f null -
-```
+```text
 
 Confirm the social cut renders at 1080×1920 with no clipped captions and no horizontal letterboxing.
 
@@ -410,7 +410,7 @@ Confirm the social cut renders at 1080×1920 with no clipped captions and no hor
 ```bash
 git add ui-demo/ .gitignore
 git commit -m "feat: add Tier 2 UI-tour Remotion assembly"
-```
+```text
 
 **Report contract:** confirm both render outputs' resolutions/frame counts/durations, the `freezedetect`/`silencedetect`/`ebur128` command outputs (paste the actual ffmpeg stderr, not a paraphrase), and the exact track name/file used.
 
@@ -481,9 +481,9 @@ Add `!trailer/public/*.mp4` to `.gitignore`. Write `trailer/STORYBOARD.md` with 
 
 Rsync `trailer/` to `ampere-dev` (e.g. `~/work/studysprint-trailer`), SSH in, named `tmux` session, `npm install`, then:
 
-```
+```text
 npx remotion render src/index.ts <CompositionId> out/trailer.mp4
-```
+```text
 
 Rsync the output back to `trailer/out/`.
 
@@ -496,7 +496,7 @@ Same protocol as Task 3 Step 8: 2–3fps frame extraction across every cut via `
 ```bash
 git add trailer/ .gitignore
 git commit -m "feat: add Tier 3 generative trailer"
-```
+```text
 
 **Report contract:** render resolution/frame count/duration, ffmpeg verification output (actual stderr, not paraphrased), and explicit confirmation that Scene 4's on-screen counters match Task 1's reported totals.
 
@@ -528,7 +528,7 @@ Follow this repo's existing `JOURNAL.md` dated-entry format (check the most rece
 
 ```bash
 deno task seed:demo:teardown
-```
+```text
 
 This is the only point in the whole plan where this runs. Verify afterward (read-only query) that no `profiles`/`auth.users` rows remain with `@demo.studysprint.invalid` emails or `ss_demo_` usernames, and that the `demo@studysprint.app` account itself (and its seeded goals/sessions) is untouched.
 
@@ -537,6 +537,6 @@ This is the only point in the whole plan where this runs. Verify afterward (read
 ```bash
 git add README.md JOURNAL.md
 git commit -m "docs: publish Tier 2/3 demo videos and journal entry"
-```
+```text
 
 **Report contract:** confirm teardown's read-only verification query results (zero remaining synthetic rows), and the final embed locations in `README.md`.

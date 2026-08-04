@@ -15,7 +15,7 @@ deno install                        # materialize node_modules from deno.json
 cp .env.example .env                # fill VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY
 deno task supabase:link             # link to your Supabase project
 deno task dev                       # frontend :5173 (Vite via Deno)
-```
+```text
 
 Sign up via the in-app register flow to create your account. See
 [README.md](README.md#environment-variables) for the full env-var list.
@@ -25,7 +25,7 @@ If `deno install` warns about ignored build scripts, re-run with
 
 ## Project layout
 
-```
+```text
 frontend/  React + Vite SPA (run via `deno task dev`)
   app/components/   page-level components
   lib/              Supabase client, API wrappers, hooks, utilities
@@ -34,7 +34,7 @@ supabase/
   functions/        Deno Edge Functions (shared deno.json import map)
 e2e/       Playwright + Gherkin BDD suite (QA + demo configs)
 deno.json  Tasks, npm imports, fmt + lint config
-```
+```text
 
 ## Workflow
 
@@ -100,7 +100,7 @@ Do not add `Co-Authored-By` trailers attributing work to AI assistants.
 
 ```bash
 deno add npm:<package>@<version>          # frontend dep
-```
+```text
 
 This updates `deno.json` and re-materializes `node_modules`. For Edge Function
 deps, add them to `supabase/functions/deno.json` instead.
@@ -112,7 +112,7 @@ deno task test:setup      # one-time per machine: bootstrap the demo account
 deno task test            # Gherkin E2E suite, headless
 deno task test:e2e:ui     # Playwright UI mode for debugging
 deno task demo            # records narrated walkthrough videos (DEMO=1)
-```
+```text
 
 ### Test fixtures
 
@@ -137,7 +137,7 @@ Required env vars (loaded automatically from `.env`, no exports needed):
 VITE_SUPABASE_URL=https://<project-ref>.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_…
 SUPABASE_SECRET_KEY=sb_secret_…   # only needed for test:setup
-```
+```text
 
 The secret key never leaves your machine — `bootstrap-demo.ts` is the
 only place that needs it, and it's not used by the running suite or the
@@ -146,7 +146,7 @@ application itself. `.env` is gitignored.
 ```bash
 deno task test:setup    # one-time per machine
 deno task test          # full suite — picks up .env automatically
-```
+```text
 
 E2E tests themselves run with the publishable key only. The registration
 scenario creates a fresh `demo_signup_<ts>@studysprint.app` user per run;
@@ -157,7 +157,7 @@ cleanly — clean up by hand with:
 
 ```sql
 delete from auth.users where email like 'demo_signup_%@studysprint.app';
-```
+```text
 
 When adding a feature:
 
