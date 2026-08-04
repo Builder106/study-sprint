@@ -102,7 +102,7 @@ along — no blink-and-miss-it interactions.
 ### Required ingredients
 
 | Mechanism | Effect | Fragility |
-|---|---|---|
+| --- | --- | --- |
 | `launchOptions.slowMo` | Pause before each Playwright action (click, fill, etc.) | Doesn't apply to `goto()` or assertions |
 | `Locator.prototype.fill` patch → `pressSequentially` | Animates typing character-by-character | Patches global prototype; only patch once per worker |
 | `addInitScript` cursor injection | A visible dot follows mouse events | Must be re-injected on every page (init scripts auto-rerun on navigation) |
@@ -134,6 +134,7 @@ export async function dwellForDemo(page: Page, ms = 1500) {
 ```
 
 Call it at every "thing just appeared" beat:
+
 - After `page.goto()` (slowMo doesn't cover navigation)
 - After modal-visibility assertions, before the next interaction
 - On the final assertion of a scenario (so the end state lingers)
@@ -213,6 +214,7 @@ by user journey:
 ### Test data for repeatable demos
 
 For accounts the demo creates fresh:
+
 - Use a **deterministic, human-readable email** (e.g. `example@example.com`),
   not a timestamp-suffixed one. Viewers reading the form should see something
   recognizable.
@@ -301,11 +303,11 @@ Target ~150 words per minute of video. Demos pace slow due to slowMo + dwells,
 so prefer the **lower** end (130–145 wpm). For a typical demo:
 
 | Video duration | Word target |
-|---|---|
+| --- | --- |
 | 10–15 s | 25–35 |
 | 15–25 s | 40–55 |
 | 25–35 s | 60–80 |
-| 35+ s   | ~140 wpm × seconds ÷ 60 |
+| 35+ s | ~140 wpm × seconds ÷ 60 |
 
 Underwriting is safer than overwriting — the editor can pad silence; they
 can't trim a script that runs past the final beat.
@@ -374,7 +376,7 @@ first instead.
 ## Tuning knobs (env vars)
 
 | Var | Default | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `DEMO` | `0` | Master switch. Hooks no-op when not `1`. |
 | `DEMO_SLOWMO` | `1200` | Per-action pause in ms |
 | `DEMO_TYPE_DELAY` | `70` | Per-character delay in ms for slow typing |

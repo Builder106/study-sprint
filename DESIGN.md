@@ -18,7 +18,7 @@ StudySprint combines focused study timing with a growing virtual garden. The int
 ### Core brand tokens
 
 | Token | Hex / Value | Usage |
-|---|---|---|
+| --- | --- | --- |
 | Primary dark | `#030213` | Main dark background in light mode text, brand elements |
 | Electric lime | `#ccff00` | Signature accent for XP, level counters, streaks, active tabs |
 | Lime hover | `#b3e600` | Interactive hover state for electric lime buttons and links |
@@ -29,7 +29,7 @@ StudySprint combines focused study timing with a growing virtual garden. The int
 The app supports dynamic theme switching using OKLCH and standard CSS variables defined in `theme.css`.
 
 | Token | Light mode | Dark mode | Application |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `--background` | `#ffffff` | `oklch(0.145 0 0)` (`#0a0a0a`) | Page background |
 | `--foreground` | `oklch(0.145 0 0)` | `oklch(0.985 0 0)` | Primary body text |
 | `--card` | `#ffffff` | `oklch(0.145 0 0)` | Card containers |
@@ -43,7 +43,7 @@ The app supports dynamic theme switching using OKLCH and standard CSS variables 
 Virtual plants use custom SVG path fills to illustrate growth stages from seed to full bloom:
 
 | Growth layer | Hex code | Visual element |
-|---|---|---|
+| --- | --- | --- |
 | Soil base | `#8b5a3c` | Dirt mound base |
 | Soil shadow | `#5a3a26` | Seed center shadow |
 | Stem stroke | `#87a635` | Trunk and branches |
@@ -69,7 +69,7 @@ StudySprint uses **Inter** for all UI typography, loaded via Google Fonts. Tabul
 ### Type hierarchy
 
 | Class / Level | Size | Weight | Tracking | Case | Application |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `text-6xl` | 3.75rem (60px) | Medium (500) | `tracking-tighter` | Default | Level numbers, giant stat highlights |
 | `text-4xl` / `text-5xl` | 2.25rem - 3rem | Medium (500) | `tracking-tighter` | Default | Main page headings |
 | `text-2xl` | 1.5rem (24px) | Medium (500) | `tracking-tighter` | Default | Card titles, modal headers |

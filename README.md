@@ -16,7 +16,7 @@
 
 A study tracker that turns focus sessions into a growing garden. Set goals, run a focus timer, watch plants grow with time logged, and compare streaks on a public leaderboard.
 
-**Live app:** https://getstudysprint.vercel.app
+**Live app:** <https://getstudysprint.vercel.app>
 
 [![Watch the 63-second product tour](docs/ui-demo-poster.png)](ui-demo/public/ui-demo.mp4)
 
@@ -79,7 +79,7 @@ Also: **Google Calendar integration** (export sessions, import events) via a ded
 ## Tech stack
 
 | Layer | Tools |
-|---|---|
+| --- | --- |
 | Runtime | Deno 2 — single TS toolchain across frontend + edge functions, npm specifiers via `deno.json` |
 | Frontend | React 18, TypeScript, Vite (run via `deno run -A npm:vite`), Tailwind CSS v4, Radix UI, Framer Motion, Recharts |
 | Backend | Supabase — Postgres + Auth + Row Level Security + RPCs + Edge Functions (Deno) |
@@ -143,14 +143,14 @@ is created automatically by an `auth.users` trigger.
 **Frontend** (`.env` in repo root)
 
 | Key | Description |
-|---|---|
+| --- | --- |
 | `VITE_SUPABASE_URL` | Supabase project URL (from Project Settings → API) |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable key (`sb_publishable_…`) — safe to ship; RLS guards data |
 
 **Edge Functions** (set via `supabase secrets set ...`)
 
 | Key | Description |
-|---|---|
+| --- | --- |
 | `OPENROUTER_API_KEY` | API key for the syllabus parser |
 | `OPENROUTER_MODEL` | Optional override (single id or comma-separated chain, max 3) |
 | `GOOGLE_CLIENT_ID` | Google OAuth client id |

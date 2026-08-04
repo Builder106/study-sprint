@@ -8,8 +8,8 @@ Brand + Scope verification.
 
 ## What's already done
 
-- Privacy policy live at https://getstudysprint.vercel.app/privacy
-- Terms of service live at https://getstudysprint.vercel.app/terms
+- Privacy policy live at <https://getstudysprint.vercel.app/privacy>
+- Terms of service live at <https://getstudysprint.vercel.app/terms>
 - Both pages include the **Limited Use disclosure** that Google reviewers
   grep for ([Privacy.tsx](../frontend/app/components/Privacy.tsx) §
   "Limited Use disclosure")
@@ -22,7 +22,7 @@ Brand + Scope verification.
 ## Why publishing to Production isn't enough by itself
 
 | Publishing state | Sensitive scope behavior |
-|---|---|
+| --- | --- |
 | Testing (current) | Hard 403 for any non-test user. Refresh tokens expire after 7 days. Cap of 100 test users. |
 | Production, **unverified** | Works for everyone, but consent screen shows "Google hasn't verified this app — Advanced → Continue (unsafe)" warning. Refresh tokens still expire after 7 days. |
 | Production, **verified** | Clean consent. Refresh tokens permanent. |
@@ -71,7 +71,7 @@ Let's Encrypt cert. Promote to "Primary domain" in Vercel project settings.
 ### 3. Update every reference
 
 | Location | New value |
-|---|---|
+| --- | --- |
 | Google Cloud Console → OAuth consent screen → **Application home page** | `https://studysprint.app` |
 | → **Authorized domains** | Add `studysprint.app`, remove `vercel.app` |
 | → **Application privacy policy link** | `https://studysprint.app/privacy` |
@@ -111,6 +111,7 @@ Verification** button only appears once App name, logo, App domain (home
 page + privacy + terms), and authorized domains are all populated.
 
 Form fields:
+
 - **Demo video URL** — the unlisted YouTube link from step 4
 - **Scope justification** — sample text:
   > StudySprint lets users export their logged study sessions to Google
@@ -122,6 +123,7 @@ Form fields:
   contains the required language.
 
 Reviewer turnaround: **1–6 weeks**. Common revision asks:
+
 - Logo too small or doesn't match brand on the consent screen
 - Demo video missing a step (especially the disconnect/revoke flow)
 - Privacy policy missing one of the four Limited Use bullets

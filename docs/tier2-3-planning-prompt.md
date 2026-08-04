@@ -2,7 +2,7 @@
 
 ## Context
 
-StudySprint is a study tracker (React + Vite + Supabase) that turns focus sessions into a growing garden — timer, goal tracking, streaks, per-subject analytics with a heatmap, an AI syllabus parser, and social features (leaderboard, study rooms). Live at https://getstudysprint.vercel.app.
+StudySprint is a study tracker (React + Vite + Supabase) that turns focus sessions into a growing garden — timer, goal tracking, streaks, per-subject analytics with a heatmap, an AI syllabus parser, and social features (leaderboard, study rooms). Live at <https://getstudysprint.vercel.app>.
 
 Tier 1 already exists and is done: four README GIFs (dark/light) covering the core loop, timer modes, analytics/garden, and syllabus-parser/study-rooms, recorded via a Playwright + playwright-bdd suite (`e2e/demo/features/*.feature`, `deno task demo`). No changes needed there.
 
@@ -11,6 +11,7 @@ Tier 2 and Tier 3 do not exist yet — this is greenfield planning, not a refres
 ## Reference model (scaffold, not a template to clone)
 
 A sibling project, MicroMatch, uses a three-tier content model:
+
 - Tier 1: README GIFs (Playwright-recorded, `.spec.ts`, not Gherkin).
 - Tier 2: a longer Playwright-recorded "UI tour" with B-roll clips assembled per a written script, no voiceover, backed by a music bed.
 - Tier 3: a produced trailer (Remotion + Blender compositing, transitions, its own music bed) built from footage/assets rather than live-recorded UI.
@@ -26,6 +27,7 @@ Decision made: seed synthetic backdated session history for the demo account (we
 ## Purpose / distribution
 
 Both of:
+
 1. README + portfolio showcase (same audience as Tier 1).
 2. Social/marketing push (LinkedIn/X) — needs a strong hook in the first few seconds and should work shortened/cut down for that context.
 

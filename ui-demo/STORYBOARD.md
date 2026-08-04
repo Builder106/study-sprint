@@ -8,7 +8,7 @@ in/out points and `../e2e/setup/seed-demo-history.ts` for the seeded account
 the recording runs against.
 
 | # | Beat | Visual | Caption | Social cut |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 1 | HOOK | `/garden`, plant at `young_tree`, streak card, XP bar | "45 days of studying looks like this." | yes |
 | 2 | THE UNIT | Pomodoro → 25:00 Focus, switch to Stopwatch, Start | "It starts with one timer." | no |
 | 3 | THE LOG | Session modal, 90min / Mastered, save, lands in recent sessions | "Rate it — it schedules the review." | yes |

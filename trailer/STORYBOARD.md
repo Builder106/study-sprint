@@ -4,7 +4,7 @@
 No screenshots, no UI chrome, no 3D. Near-black ground, lime `#ccff00` accent.
 
 | # | Frames | Beat | Content |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | 0–210 | THE EMPTY GRID | 7×53 grid on near-black. One cell lights lime. Type: "One session." |
 | 2 | 195–435 | THE GAP | A few more cells light, then a long empty run. Streak counter falls to 0. Type: "Most people stop here." |
 | 3 | 420–735 | THE RETURN | Cells resume, quicker. Seed cracks into a sprout below the grid. Type: "The only job is making day two easier." |

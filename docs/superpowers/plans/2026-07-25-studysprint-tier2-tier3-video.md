@@ -33,11 +33,13 @@
 ### Task 1: Synthetic-history seeder + teardown
 
 **Files:**
+
 - Create: `e2e/setup/seed-demo-history.ts`
 - Create: `e2e/setup/teardown-demo-history.ts`
 - Modify: `deno.json` — add `seed:demo` and `seed:demo:teardown` tasks
 
 **Interfaces:**
+
 - Consumes: `SUPABASE_URL`/`VITE_SUPABASE_URL` + `SUPABASE_SECRET_KEY` env vars (already in `.env`, loaded via `import "jsr:@std/dotenv/load"`, same pattern as `e2e/setup/bootstrap-demo.ts`); the demo account created by `deno task test:setup` (`demo@studysprint.app`); the `create_starter_data_for` RPC pattern (do **not** call it — this script replaces its output for the demo account with real history).
 - Produces: a demo account (`demo@studysprint.app`) with seeded goals/sessions/achievements/social profile that Tasks 2–4 read as ground truth. The exact numbers this task produces (XP, streak, subject mix) become the literal values Task 2's recorded session and Task 4's beat-4 counters must match — **write down the actual final numbers you get in the report file**, since Tasks 2 and 4 need them verbatim and cannot re-derive them.
 
@@ -78,7 +80,7 @@ Tier 2's beat 3 will log a **90-minute session rated Mastered (quality 5)** live
 Reuse the 5 subject names already seeded by `seed_starter_subjects()` (`Computer Science`, `Mathematics`, `Languages`, `Writing`, `Science`) — query `public.subjects` for their ids rather than inserting new ones. Create 6 `study_goals` rows for the demo user:
 
 | # | Title | Status | Subject(s) |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | Data Structures deep dive | Active | Computer Science |
 | 2 | Linear algebra review | Active | Mathematics |
 | 3 | Spanish conversation practice | Active | Languages |
@@ -93,7 +95,7 @@ Insert goals first via the service-role client, keep their returned `id`s in a m
 Anchor on `todayLocal` in `America/Los_Angeles` (the recording machine's timezone — confirm this matches the box that will actually record; if it's a different IANA zone, substitute it everywhere in this task and Task 2). Generate `study_sessions` rows (columns: `goal_id`, `duration_minutes` integer `CHECK > 0`, `notes`, `logged_at` timestamptz, `quality` 1–5 or null, `next_review_at`) with this shape, using `rng()` for all randomization:
 
 | Window (days back from today) | Coverage | Sessions/active day | Duration (min) | Quality |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 0–44 (the streak) | every day, **zero gaps** | 1–2 | 45–150 | mostly 3–5 |
 | 45–180 | ~30% of days, clustered in runs | 1 | 30–120 | 2–4 |
 | 181–364 | ~12% of days, sparse | 1 | 20–75 | null or 2–3 |
@@ -125,6 +127,7 @@ Log the final computed XP, level, pet_stage-before, streak, and per-subject minu
 - [ ] **Step 6: Verify achievement unlock/lock targets**
 
 Cross-check the generated data unlocks exactly 8 of `ACHIEVEMENTS` (`frontend/lib/gamification.ts:62-73`) and leaves exactly 2 locked:
+
 - `first_step` — unlocked (≥1 session, trivially true)
 - `hot_streak` — unlocked (streak ≥7)
 - `dedicated` — unlocked (streak ≥30 — the 0–44-day window guarantees this)
@@ -143,6 +146,7 @@ Set on the demo account's `profiles` row: `username` (e.g. `demo_studysprint`), 
 - [ ] **Step 8: Social seeding — ~8 synthetic public users**
 
 Create 8 `auth.users` via `admin.auth.admin.createUser` (mirror `bootstrap-demo.ts`'s `ensureUser` pattern — check-then-create/update, not blind insert) with:
+
 - Emails at `@demo.studysprint.invalid` (e.g. `ss_demo_maya@demo.studysprint.invalid`) — the sole teardown marker for `auth.users`.
 - `profiles.username` prefixed `ss_demo_` (e.g. `ss_demo_maya`), `is_public = true`, obviously fictional `display_name`s (first names + a whimsical or clearly-fake surname — avoid anything that reads as a plausible real stranger).
 
@@ -155,6 +159,7 @@ Call `create_room` (as the demo account or a synthetic user — whichever the RP
 - [ ] **Step 10: Wire deno.json tasks**
 
 Add to `deno.json`'s `"tasks"` object:
+
 ```json
 "seed:demo": "deno run -A e2e/setup/seed-demo-history.ts",
 "seed:demo:teardown": "deno run -A e2e/setup/teardown-demo-history.ts"
@@ -167,6 +172,7 @@ Add to `deno.json`'s `"tasks"` object:
 - [ ] **Step 12: Run and verify**
 
 Run `deno task test:setup && deno task seed:demo`. Then check in a browser (or via `mcp__supabase__execute_sql` against the production project, read-only queries only):
+
 - `/garden` (logged in as `demo@studysprint.app`, password from `.env`'s `E2E_DEMO_PASSWORD` or the `bootstrap-demo.ts` default `demo123`): `pet_stage === "young_tree"`, `current_streak_days ≥ 40`, achievements panel shows 8/10 unlocked with `century` and `sprint_day` locked.
 - `/analytics`: heatmap has visible texture across multiple intensity buckets (not a single flat color), subject donut shows 5 slices in the ~35/25/18/12/10 order, hour-of-day and weekday bar charts both have visible shape (not flat).
 - `/community`: leaderboard populated with 8 synthetic users + the demo account, demo account ranked ~#3, a study room exists with 3–4 members and a non-empty activity feed.
@@ -195,6 +201,7 @@ git commit -m "feat: add synthetic demo-history seeder and teardown"
 **Depends on:** Task 1 (reads its report's final XP/streak numbers).
 
 **Files:**
+
 - Create: `playwright.tour.config.ts`
 - Create: `e2e/demo/features/10-tour.feature`
 - Create: `e2e/demo/steps/tour.steps.ts`
@@ -202,6 +209,7 @@ git commit -m "feat: add synthetic demo-history seeder and teardown"
 - Modify: `e2e/steps/hooks.ts` — only if Step 2 below finds the cursor is actually offset
 
 **Interfaces:**
+
 - Consumes: Task 1's seeded demo account and its reported XP/streak numbers; `dwellForDemo`/cursor-injection/`Locator.fill` patch/theme-pinning from `e2e/steps/hooks.ts` (reuse, do not duplicate); the login `Given` step from `e2e/steps/goals.steps.ts:26`; the hydration-wait anchor from `e2e/steps/goal-detail.steps.ts:8` (waits on the Stopwatch button — `networkidle` does not mean hydrated in this app).
 - Produces: two sets of raw recorded footage (dark + light) in `test-results/videos/`, ready for Task 3 to import into `ui-demo/public/`. The exact beat timings/captions recorded here are the "Notes" column values below — Task 3's Remotion scenes cut to these captions verbatim.
 
@@ -247,7 +255,7 @@ Match the actual response shape `SyllabusImport.tsx` expects — read that compo
 One scenario, sorts after `00-warmup.feature` lexicographically. Eight beats in this exact order (each beat is one or more Gherkin steps backed by `tour.steps.ts` step defs, reusing existing steps from `e2e/steps/**` wherever one already exists for that UI action):
 
 | # | Time | Beat | Visual | Caption |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 1 | 0:00–0:07 | HOOK | `/garden`. Plant at `young_tree`, swaying. Streak card reads 40+. XP bar near full. | *"45 days of studying looks like this."* |
 | 2 | 0:07–0:18 | THE UNIT | `/goal/:id`. Pomodoro pill → `25:00` "Focus". Switch to Stopwatch → Start → counter running (keep this shot short — `TimerCard.tsx` counts `setInterval` ticks, not wall-clock deltas, so it can drift under headless throttling; don't cut away and back expecting continuity). | *"It starts with one timer."* |
 | 3 | 0:18–0:29 | THE LOG | Session modal, duration pre-filled at **90**, quality **Mastered**, Save. Modal closes, session lands top of Recent Sessions, progress bar advances. **This exact 90-minute/quality-5 session is what Task 1's seed target is calibrated against — do not change the duration or quality here without also updating Task 1's seed.** | *"Rate it — it schedules the review."* |
@@ -287,10 +295,12 @@ Confirm: no 0-byte video files in the synced-back set, all 8 beats are present a
 - [ ] **Step 8: Re-seed and record the light pass**
 
 On `ampere-dev`, inside the same (or a fresh) `tmux` session:
+
 ```
 deno task tour:seed
 deno task tour:light
 ```
+
 Rsync `test-results/videos/*-light.mp4` back.
 
 - [ ] **Step 9: Verify dark/light parity**
@@ -313,6 +323,7 @@ git commit -m "feat: add Tier 2 UI-tour recording config and feature"
 **Depends on:** Task 2 (footage + per-beat timestamps).
 
 **Files:**
+
 - Create: `ui-demo/package.json`, `ui-demo/remotion.config.ts`, `ui-demo/tsconfig.json`
 - Create: `ui-demo/src/Root.tsx`, `ui-demo/src/Composition.tsx`, `ui-demo/src/theme.ts`
 - Create: `ui-demo/src/scenes/FootageBeat.tsx` (mirrors MicroMatch's, see Step 2)
@@ -321,6 +332,7 @@ git commit -m "feat: add Tier 2 UI-tour recording config and feature"
 - Modify: `.gitignore` — add `!ui-demo/public/*.mp4` exceptions
 
 **Interfaces:**
+
 - Consumes: Task 2's dark/light footage files + per-beat timestamp table (from its report).
 - Produces: `StudySprintUiDemo` (1920×1080 @ 30fps, ~2280 frames) and `StudySprintUiDemoSocial` (1080×1920, ~750 frames) compositions, rendered to `out/`.
 
@@ -331,6 +343,7 @@ git commit -m "feat: add Tier 2 UI-tour recording config and feature"
 - [ ] **Step 2: Read MicroMatch's reference implementation before writing scenes**
 
 Read (don't copy blindly — the API surface matters, the specific look does not) these files in the sibling repo at `/Users/yinkavaughan/My Drive (yvaughan@wesleyan.edu)/CS/Projects/SWE/MicroMatch/ui-demo/src/`:
+
 - `scenes/FootageBeat.tsx` — the `src` + `trimStartSec` + push/drift prop shape, and specifically its `pushCreep`/`preDrift` knobs, which exist because a held shot with zero motion trips ffmpeg's `freezedetect`. Reproduce the same mechanism (a slow, near-imperceptible pan/scale drift on held frames) rather than rediscovering the problem from a failed verification pass later.
 - `Composition.tsx` — how it sequences scenes, computes absolute frame offsets from named constants, and layers the single `<Audio>` track with a volume envelope.
 - `Root.tsx` — how it registers multiple compositions (needed here for the landscape + social variants).
@@ -354,30 +367,38 @@ One `<Audio>` spanning the whole timeline, `interpolate` volume envelope (fade i
 - [ ] **Step 6: Gitignore exceptions and asset placement**
 
 Add to `.gitignore`:
+
 ```
 !ui-demo/public/*.mp4
 ```
+
 Copy Task 2's synced-back footage into `ui-demo/public/` under clear names (e.g. `beat1-hook-dark.mp4`, `beat1-hook-light.mp4`, …).
 
 - [ ] **Step 7: Install and render on ampere-dev**
 
 Rsync `ui-demo/` to `ampere-dev` (e.g. `~/work/studysprint-ui-demo`). SSH in, start/reuse a named `tmux` session, `npm install` (Remotion on linux-arm64 needs its Chrome Headless Shell — expect the first install to be slow), then:
+
 ```
 npx remotion render src/index.ts StudySprintUiDemo out/ui-demo-landscape.mp4
 npx remotion render src/index.ts StudySprintUiDemoSocial out/ui-demo-social.mp4
 ```
+
 Rsync both outputs back to `ui-demo/out/` in this worktree.
 
 - [ ] **Step 8: Verify — this is the gate, not the exit code**
 
 Extract frames at 2–3fps across every cut (a 1fps pass misses half-second gaps) via `claude-video-vision` `video_analyze` on both renders. Then run, at default log level (never `-v error` — see Global Constraints):
+
 ```
 ffmpeg -i out/ui-demo-landscape.mp4 -vf freezedetect -af silencedetect -f null -
 ```
+
 `freezedetect` output must be empty. Check loudness:
+
 ```
 ffmpeg -i out/ui-demo-landscape.mp4 -af ebur128 -f null -
 ```
+
 Confirm the social cut renders at 1080×1920 with no clipped captions and no horizontal letterboxing.
 
 - [ ] **Step 9: Write STORYBOARD.md and CREDITS.md**
@@ -400,6 +421,7 @@ git commit -m "feat: add Tier 2 UI-tour Remotion assembly"
 **Depends on:** Task 1 only (needs its reported final totals — hours, sessions, streak). Independent of Tasks 2/3 — if either stalls, this can be pulled forward.
 
 **Files:**
+
 - Create: `trailer/package.json`, `trailer/remotion.config.ts`, `trailer/tsconfig.json`
 - Create: `trailer/src/Root.tsx`, `trailer/src/Composition.tsx`, `trailer/src/theme.ts`
 - Create: `trailer/src/components/PlantGlyphs.tsx` (ported from `VirtualPlant.tsx`)
@@ -409,6 +431,7 @@ git commit -m "feat: add Tier 2 UI-tour Remotion assembly"
 - Modify: `.gitignore` — add `!trailer/public/*.mp4`
 
 **Interfaces:**
+
 - Consumes: Task 1's reported final totals (total hours, total sessions, `current_streak_days`, per-subject minute totals) for beat 4's on-screen counters — these must be the real seeded numbers, not invented ones.
 - Produces: one ~1500-frame, 1920×1080 @ 30fps render.
 
@@ -457,9 +480,11 @@ Add `!trailer/public/*.mp4` to `.gitignore`. Write `trailer/STORYBOARD.md` with 
 - [ ] **Step 11: Install and render on ampere-dev**
 
 Rsync `trailer/` to `ampere-dev` (e.g. `~/work/studysprint-trailer`), SSH in, named `tmux` session, `npm install`, then:
+
 ```
 npx remotion render src/index.ts <CompositionId> out/trailer.mp4
 ```
+
 Rsync the output back to `trailer/out/`.
 
 - [ ] **Step 12: Verify**
@@ -482,6 +507,7 @@ git commit -m "feat: add Tier 3 generative trailer"
 **Depends on:** Tasks 3 and 4 (needs both final render paths). Task 1's teardown script runs here, and only here.
 
 **Files:**
+
 - Modify: `README.md` — embed Tier 2 master above the existing Tier 1 GIFs (Tier 1 stays where it is, untouched)
 - Modify: `JOURNAL.md` — dated entry
 - Verify: `ui-demo/public/CREDITS.md`, `trailer/public/CREDITS.md` already correct (written in Tasks 3/4 — this task only double-checks, doesn't re-author)
@@ -503,6 +529,7 @@ Follow this repo's existing `JOURNAL.md` dated-entry format (check the most rece
 ```bash
 deno task seed:demo:teardown
 ```
+
 This is the only point in the whole plan where this runs. Verify afterward (read-only query) that no `profiles`/`auth.users` rows remain with `@demo.studysprint.invalid` emails or `ss_demo_` usernames, and that the `demo@studysprint.app` account itself (and its seeded goals/sessions) is untouched.
 
 - [ ] **Step 5: Commit**

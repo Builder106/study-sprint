@@ -56,7 +56,7 @@ To enable the E2E job, add three secrets in the GitHub repo settings →
 Secrets and variables → Actions:
 
 | Secret | Source | Used by |
-|---|---|---|
+| --- | --- | --- |
 | `VITE_SUPABASE_URL` | Supabase dashboard → Project Settings → API | E2E job |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Same — `sb_publishable_…` | E2E job |
 | `SUPABASE_SECRET_KEY` | Same — `sb_secret_…` | Bootstrap step + teardown |
