@@ -15,3 +15,6 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+    ignore:
+      - dependency-name: "typescript"
+        versions: [">= 7.0.0"]

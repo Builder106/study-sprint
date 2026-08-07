@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "comment": "Mirror of deno.json#imports — kept in sync so Vercel (Node-only build env) can resolve and bundle the SPA. Local dev still goes through `deno task dev`. When adding/upgrading a dep, edit deno.json first then mirror the change here.",
+  "comment": "Mirror of deno.json#imports \u2014 kept in sync so Vercel (Node-only build env) can resolve and bundle the SPA. Local dev still goes through `deno task dev`. When adding/upgrading a dep, edit deno.json first then mirror the change here.",
   "overrides": {
     "playwright": "1.62.1"
   },
@@ -88,7 +88,7 @@
     "playwright-bdd": "^9.2.0",
     "supabase": "^2.111.0",
     "tailwindcss": "4.3.3",
-    "typescript": "^7.0.2",
+    "typescript": "~6.0.3",
     "vite": "8.2.0"
   }
 }
