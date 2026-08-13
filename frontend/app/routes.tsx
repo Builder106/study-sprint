@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate, useParams } from "react-router";
 import { Landing } from "./components/Landing";
+import { Login } from "./components/Login";
 import { Register } from "./components/Register";
 import { Dashboard } from "./components/Dashboard";
 import { GoalDetailWithPanel } from "./components/GoalDetailWithPanel";
@@ -21,6 +22,11 @@ function RedirectToGoal() {
 
 export const router = createBrowserRouter([
   { path: "/", Component: Landing },
+  { path: "/login", Component: Login },
+  // "/" used to render the sign-in form directly. Anything that linked or
+  // bookmarked it as the sign-in URL lands on the marketing page now, so keep
+  // an explicit alias rather than relying on people re-finding the form.
+  { path: "/signin", element: <Navigate to="/login" replace /> },
   { path: "/register", Component: Register },
   {
     path: "/dashboard",
