@@ -1,0 +1,13 @@
+[
+  {
+    "date": "2026-08-12",
+    "macrostructure": "Narrative Workflow",
+    "genre": "playful",
+    "theme": "DESIGN.md (locked, system-managed)",
+    "theme_axes": "dark+light dual / grotesk-sans (Inter) / chromatic-other (electric lime)",
+    "nav": "N7 brutal slab",
+    "footer": "Ft5 statement",
+    "enrichment": "Tier B — reused the existing VirtualPlant SVG component, no new construction",
+    "brief": "StudySprint — marketing landing page at /, auth form moved to /login"
+  }
+]

@@ -1,0 +1,45 @@
+{
+  "scanned": "2026-08-12",
+  "designSystem": {
+    "file": "DESIGN.md",
+    "status": "system-managed — locked design system, overrides catalog/custom dispatch"
+  },
+  "fontStack": {
+    "faces": ["Inter"],
+    "weights": [400, 500, 600, 700],
+    "source": "Google Fonts @import",
+    "cite": "frontend/styles/fonts.css:1"
+  },
+  "palette": {
+    "format": "mixed hex + OKLCH custom properties",
+    "accent": "#ccff00 electric lime",
+    "darkSurface": "oklch(0.145 0 0) / #0a0a0a",
+    "cite": "frontend/styles/theme.css :root and .dark"
+  },
+  "motion": {
+    "stance": "motion-on",
+    "library": "motion 12.43.0",
+    "cite": "package.json:59",
+    "currentUsage": ["frontend/app/components/shared/VirtualPlant.tsx"]
+  },
+  "spacing": {
+    "scale": "Tailwind v4 default 4-pt",
+    "conventions": "max-w-5xl content, px-8 desktop / px-4 mobile, space-y-16 sections",
+    "cite": "DESIGN.md § Layout, radii, and grid"
+  },
+  "framework": {
+    "name": "React + Vite",
+    "react": "19.2.8",
+    "vite": "8.2.1",
+    "tailwind": "4.3.3",
+    "router": "react-router",
+    "themes": "next-themes",
+    "cite": "package.json"
+  },
+  "conflicts": [
+    "README badge claims React 18; package.json:61 pins react 19.2.8",
+    "DESIGN.md § Motion says 'Framer Motion'; package.json:59 installs the successor package 'motion' 12.43.0"
+  ],
+  "preserve": ["DESIGN.md system", "Inter font stack", "theme.css token names", "4-pt spacing scale", "motion-on stance"],
+  "introduce": ["macrostructure", "nav + footer archetype", "microinteraction discipline", "slop-test gates"]
+}
