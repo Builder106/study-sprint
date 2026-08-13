@@ -183,4 +183,15 @@ there's no "day zero" transition state to design for.
 5. **Copy & docs sweep** — `Terms.tsx`, `DESIGN.md` rewrite, e2e test
    copy.
 6. **Demo trailer re-shoot** — `trailer/Composition.tsx` etc. reference
-   real seeded streak stats; re-cut once 1–3 are real.
+   real seeded streak stats; re-cut once 1–3 are real. Also: `e2e/setup/seed-demo-history.ts`
+   carries its own private, undiscovered-until-final-review copy of the
+   economy formula (`computeProfile()` with its own streak loop, its own
+   `stageForLevel`, its own multiplier — imports nothing from
+   `gamification.ts`). This is a third implementation, not just stale
+   assertions to update — sub-project 1's final review found it after
+   `deno task check` stayed green throughout (nothing wires it to the real
+   code, so nothing caught the drift automatically). Decide here whether to
+   delete it in favor of importing `computeGamificationProfile` directly, or
+   re-port the battery formula into it a third time — the former is
+   probably right, since a third hand-maintained copy is exactly the kind of
+   drift risk that caused this to go unnoticed for an entire sub-project.
