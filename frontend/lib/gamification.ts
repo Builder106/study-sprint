@@ -2,14 +2,6 @@
 // backend/routes/gamification.js — moved client-side for the Supabase migration
 // since the input is just the caller's own sessions + subjects (RLS-protected).
 
-export type PetStage =
-   | "seed"
-   | "sprout"
-   | "sapling"
-   | "young_tree"
-   | "mature_tree"
-   | "blooming";
-
 export interface GamificationSession {
    id: string;
    duration_minutes: number;
@@ -23,9 +15,9 @@ export interface GamificationProfile {
    xp_into_level: number;
    xp_for_next_level: number;
    progress_to_next: number;
-   pet_stage: PetStage;
-   current_streak_days: number;
-   longest_streak_days: number;
+   current_charge_pct: number;
+   days_since_empty: number;
+   longest_days_since_empty: number;
    total_sessions: number;
    total_minutes: number;
    mastered_count: number;
@@ -41,28 +33,11 @@ function xpForLevel(level: number): number {
    return 100 * level * level;
 }
 
-const PET_STAGES: { level: number; key: PetStage }[] = [
-   { level: 0, key: "seed" },
-   { level: 1, key: "sprout" },
-   { level: 4, key: "sapling" },
-   { level: 8, key: "young_tree" },
-   { level: 14, key: "mature_tree" },
-   { level: 22, key: "blooming" },
-];
-
-function stageForLevel(level: number): PetStage {
-   let current = PET_STAGES[0];
-   for (const stage of PET_STAGES) {
-      if (level >= stage.level) current = stage;
-      else break;
-   }
-   return current.key;
-}
-
 const ACHIEVEMENTS: { id: string; label: string; description: string }[] = [
    { id: "first_step", label: "First Step", description: "Log your first session." },
-   { id: "hot_streak", label: "Hot Streak", description: "7 days in a row." },
-   { id: "dedicated", label: "Dedicated", description: "30 days in a row." },
+   { id: "charged_up", label: "Charged Up", description: "7 days since your battery was last empty." },
+   { id: "never_empty", label: "Never Empty", description: "30 days since your battery was last empty." },
+   { id: "full_charge", label: "Full Charge", description: "Reach 100% charge." },
    { id: "marathon", label: "Marathon", description: "Log 100 total hours." },
    { id: "century", label: "Century", description: "Log 100 sessions." },
    { id: "polymath", label: "Polymath", description: "Study 5 different subjects." },
@@ -106,7 +81,7 @@ export function computeGamificationProfile(
    subjectNames: Set<string>,
    tz: string,
 ): GamificationProfile {
-   // Bucket sessions into local-tz dates so the streak boundary matches the
+   // Bucket sessions into local-tz dates so the charge boundary matches the
    // user's calendar day, not UTC midnight.
    const dayMinutes = new Map<string, number>();
    for (const s of sessions) {
@@ -125,34 +100,49 @@ export function computeGamificationProfile(
       daily.push({ date: key, minutes: dayMinutes.get(key) ?? 0 });
    }
 
-   // Consecutive non-zero days up to and including each day.
-   const streakEndingOn = new Array<number>(daily.length).fill(0);
+   // Battery charge: up to +20 gain/day (capped at 120 studied minutes),
+   // minus a flat -8 decay every day regardless of activity, clamped to
+   // [0, 100]. charge[0] (365 days ago) anchors at 0, not derived from that
+   // day's own minutes.
+   const DECAY_PER_DAY = 8;
+   const GAIN_CAP = 20;
+   const FULL_GAIN_MINUTES = 120;
+   const charge = new Array<number>(daily.length).fill(0);
+   for (let i = 1; i < daily.length; i++) {
+      const gain = Math.min(daily[i].minutes / FULL_GAIN_MINUTES, 1) * GAIN_CAP;
+      charge[i] = Math.min(100, Math.max(0, charge[i - 1] - DECAY_PER_DAY + gain));
+   }
+   const currentChargePct = charge[charge.length - 1];
+   const reachedFullCharge = charge.some((c) => c >= 100);
+
+   // days_since_empty: consecutive days (ending today) where charge > 0.
+   const daysSinceEmptyEndingOn = new Array<number>(daily.length).fill(0);
    for (let i = 0; i < daily.length; i++) {
-      if (daily[i].minutes > 0) {
-         streakEndingOn[i] = (i > 0 ? streakEndingOn[i - 1] : 0) + 1;
+      if (charge[i] > 0) {
+         daysSinceEmptyEndingOn[i] = (i > 0 ? daysSinceEmptyEndingOn[i - 1] : 0) + 1;
       }
    }
-   const currentStreak = streakEndingOn[streakEndingOn.length - 1];
-   let longestStreak = 0;
-   for (const v of streakEndingOn) if (v > longestStreak) longestStreak = v;
+   const daysSinceEmpty = daysSinceEmptyEndingOn[daysSinceEmptyEndingOn.length - 1];
+   let longestDaysSinceEmpty = 0;
+   for (const v of daysSinceEmptyEndingOn) if (v > longestDaysSinceEmpty) longestDaysSinceEmpty = v;
 
-   const streakByDate = new Map<string, number>();
+   const chargeByDate = new Map<string, number>();
    for (let i = 0; i < daily.length; i++) {
-      streakByDate.set(daily[i].date, streakEndingOn[i]);
+      chargeByDate.set(daily[i].date, charge[i]);
    }
 
-   // XP: (minutes + quality bonus) × streak multiplier of the day the session
-   // was logged. Multiplier ramps from 1.0× → 2.0× across a 30-day streak.
-   // Streak-as-of-that-day means breaking a streak doesn't retroactively shrink
-   // old XP — past achievements stay earned.
+   // XP: (minutes + quality bonus) × charge multiplier of the day the
+   // session was logged. Multiplier ramps 1.0×-2.0× with that day's charge
+   // level (computed *after* that day's own gain, so a session on a
+   // just-resumed day already benefits from that day's partial charge-up).
    let totalMinutes = 0;
    let masteredCount = 0;
    let totalXp = 0;
    for (const s of sessions) {
       const base = s.duration_minutes + (s.quality ?? 0) * 10;
       const dateKey = localDateKey(s.logged_at, tz);
-      const streakOnDay = streakByDate.get(dateKey) ?? 0;
-      const multiplier = 1 + Math.min(streakOnDay / 30, 1);
+      const chargeOnDay = chargeByDate.get(dateKey) ?? 0;
+      const multiplier = 1 + chargeOnDay / 100;
       totalMinutes += s.duration_minutes;
       if (s.quality === 5) masteredCount++;
       totalXp += Math.round(base * multiplier);
@@ -182,8 +172,9 @@ export function computeGamificationProfile(
 
    const unlocked = new Set<string>();
    if (sessions.length >= 1) unlocked.add("first_step");
-   if (currentStreak >= 7 || longestStreak >= 7) unlocked.add("hot_streak");
-   if (currentStreak >= 30 || longestStreak >= 30) unlocked.add("dedicated");
+   if (daysSinceEmpty >= 7 || longestDaysSinceEmpty >= 7) unlocked.add("charged_up");
+   if (daysSinceEmpty >= 30 || longestDaysSinceEmpty >= 30) unlocked.add("never_empty");
+   if (reachedFullCharge) unlocked.add("full_charge");
    if (totalHours >= 100) unlocked.add("marathon");
    if (sessions.length >= 100) unlocked.add("century");
    if (subjectNames.size >= 5) unlocked.add("polymath");
@@ -198,9 +189,9 @@ export function computeGamificationProfile(
       xp_into_level: xpIntoLevel,
       xp_for_next_level: xpForNextLevel,
       progress_to_next: progressToNext,
-      pet_stage: stageForLevel(level),
-      current_streak_days: currentStreak,
-      longest_streak_days: longestStreak,
+      current_charge_pct: Math.round(currentChargePct),
+      days_since_empty: daysSinceEmpty,
+      longest_days_since_empty: longestDaysSinceEmpty,
       total_sessions: sessions.length,
       total_minutes: totalMinutes,
       mastered_count: masteredCount,
