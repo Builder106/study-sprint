@@ -23,6 +23,7 @@ StudySprint combines focused study timing with a growing virtual garden. The int
 | Electric lime | `#ccff00` | Signature accent for XP, level counters, streaks, active tabs |
 | Lime hover | `#b3e600` | Interactive hover state for electric lime buttons and links |
 | Lime highlight | `#e5ff4d` | Foliage highlights and active glows |
+| Lime ink | `#526d00` | Lime as *text* on a light surface. The brand limes are background fills; as foreground text on white they measure 1.18:1 (`#ccff00`) and 1.48:1 (`#b3e600`), well under the 4.5:1 AA floor. This one measures 5.92:1. Dark mode keeps `#ccff00`, which measures 16.85:1 on `#0a0a0a`. |
 
 ### Surface tokens (Light vs. Dark mode)
 
