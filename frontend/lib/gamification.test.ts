@@ -31,9 +31,9 @@ Deno.test("empty sessions → zeroed profile", () => {
   assertEquals(p.xp, 0);
   assertEquals(p.total_sessions, 0);
   assertEquals(p.total_minutes, 0);
-  assertEquals(p.pet_stage, "seed");
-  assertEquals(p.current_streak_days, 0);
-  assertEquals(p.longest_streak_days, 0);
+  assertEquals(p.current_charge_pct, 0);
+  assertEquals(p.days_since_empty, 0);
+  assertEquals(p.longest_days_since_empty, 0);
   assertEquals(p.mastered_count, 0);
   assert(p.achievements.every((a) => !a.unlocked));
 });
@@ -64,78 +64,86 @@ Deno.test("mastered_count counts quality-5 sessions only", () => {
 
 // ── XP and levels ────────────────────────────────────────────────────────────
 
-Deno.test("single session today earns XP with 1-day streak multiplier", () => {
-  // base = 60, streak = 1, multiplier = 1 + 1/30, xp = round(60 * 31/30) = 62
+Deno.test("single session today earns XP with charge multiplier", () => {
+  // gain = min(60/120,1)*20 = 10, charge = clamp(0-8+10) = 2
+  // multiplier = 1 + 2/100 = 1.02, xp = round(60 * 1.02) = 61
   const p = computeGamificationProfile([session("a", 0, 60)], new Set(), "UTC");
-  assertEquals(p.xp, 62);
-  assertEquals(p.level, 0); // 62 < 100 (threshold for level 1)
+  assertEquals(p.current_charge_pct, 2);
+  assertEquals(p.xp, 61);
+  assertEquals(p.level, 0); // 61 < 100 (threshold for level 1)
 });
 
 Deno.test("quality bonus is added to XP base", () => {
-  // base = 60 + 5*10 = 110, streak = 1, multiplier = 31/30, xp = round(110 * 31/30) = 114
+  // base = 60 + 5*10 = 110, charge = 2 (unaffected by quality), multiplier = 1.02
+  // xp = round(110 * 1.02) = round(112.2) = 112
   const p = computeGamificationProfile([session("a", 0, 60, 5)], new Set(), "UTC");
-  assertEquals(p.xp, 114); // round(110 * 31/30) = round(113.67) = 114
+  assertEquals(p.xp, 112);
 });
 
-Deno.test("level 1 requires 100 XP", () => {
-  // 100 XP needs base ≥ 97 with today's 1-day multiplier (31/30):
-  // round(97 * 31/30) = round(100.23) = 100 → level 1
-  const p = computeGamificationProfile([session("a", 0, 97)], new Set(), "UTC");
+Deno.test("a single 100-minute session crosses into level 1", () => {
+  // gain = min(100/120,1)*20 = 16.6667, charge = clamp(0-8+16.6667) = 8.6667
+  // multiplier = 1.086667, xp = round(100 * 1.086667) = round(108.667) = 109
+  const p = computeGamificationProfile([session("a", 0, 100)], new Set(), "UTC");
+  assertEquals(p.xp, 109);
   assertEquals(p.level, 1);
-  assertEquals(p.pet_stage, "sprout");
 });
 
-Deno.test("30 consecutive days produces level 5 and sapling stage", () => {
-  // XP = sum_{i=1}^{30} round(60 * (1 + i/30)) = sum (60 + 2i) = 1800 + 2*465 = 2730
-  // level = floor(sqrt(2730/100)) = floor(sqrt(27.3)) = floor(5.22) = 5
+Deno.test("30 consecutive days of 60 min/day produces level 4", () => {
+  // Each day k (1-indexed): gain=10, charge_k = 2k (net +2/day, never clamps
+  // since it stays within [2, 60]). xp_k = round(60 * (1 + 2k/100)).
+  // Summed over k=1..30: totalXp = 1800 + 558 = 2358.
+  // level = floor(sqrt(2358/100)) = floor(sqrt(23.58)) = 4.
   const sessions = Array.from({ length: 30 }, (_, i) =>
     session(String(i), 29 - i, 60)
   );
   const p = computeGamificationProfile(sessions, new Set(), "UTC");
-  assertEquals(p.xp, 2730);
-  assertEquals(p.level, 5);
-  assertEquals(p.pet_stage, "sapling"); // levels 4–7
+  assertEquals(p.xp, 2358);
+  assertEquals(p.level, 4);
 });
 
-// ── Streaks ──────────────────────────────────────────────────────────────────
+// ── Battery charge ───────────────────────────────────────────────────────────
 
-Deno.test("session today gives current_streak of 1", () => {
-  const p = computeGamificationProfile([session("a", 0, 30)], new Set(), "UTC");
-  assertEquals(p.current_streak_days, 1);
-});
-
-Deno.test("no session today resets current streak to 0", () => {
-  const p = computeGamificationProfile([session("a", 1, 30)], new Set(), "UTC");
-  assertEquals(p.current_streak_days, 0);
-  assertEquals(p.longest_streak_days, 1);
-});
-
-Deno.test("7 consecutive days ending today", () => {
-  const sessions = Array.from({ length: 7 }, (_, i) =>
-    session(String(i), 6 - i, 30)
+Deno.test("10 consecutive days of 120 min/day ramps charge to 100", () => {
+  const sessions = Array.from({ length: 10 }, (_, i) =>
+    session(String(i), 9 - i, 120)
   );
   const p = computeGamificationProfile(sessions, new Set(), "UTC");
-  assertEquals(p.current_streak_days, 7);
-  assertEquals(p.longest_streak_days, 7);
+  assertEquals(p.current_charge_pct, 100);
 });
 
-Deno.test("longest_streak is preserved after a break", () => {
-  // 5 consecutive days ending 3 days ago, then nothing
-  const sessions = Array.from({ length: 5 }, (_, i) =>
-    session(String(i), 7 - i, 30) // days 7,6,5,4,3 ago
+Deno.test("5 zero-minute days after reaching 100 drains charge to 60", () => {
+  // 10 days of 120 min (daysAgo 14..5) ramps to charge=100 by the 9th day
+  // and holds; then 5 zero-minute days (daysAgo 4..0) drain -8 each: 60.
+  const sessions = Array.from({ length: 10 }, (_, i) =>
+    session(String(i), 14 - i, 120)
   );
   const p = computeGamificationProfile(sessions, new Set(), "UTC");
-  assertEquals(p.current_streak_days, 0);
-  assertEquals(p.longest_streak_days, 5);
+  assertEquals(p.current_charge_pct, 60);
 });
 
-Deno.test("multiple sessions on the same day count as one streak day", () => {
+Deno.test("charge fully drains to 0 after enough inactive days, resetting days_since_empty", () => {
+  // 10 days of 120 min (daysAgo 22..13) ramps to charge=100 and holds.
+  // 13 zero-minute days (daysAgo 12..0) drain exactly to 0 by today
+  // (100 - 13*8 = -4, clamped to 0).
+  const sessions = Array.from({ length: 10 }, (_, i) =>
+    session(String(i), 22 - i, 120)
+  );
+  const p = computeGamificationProfile(sessions, new Set(), "UTC");
+  assertEquals(p.current_charge_pct, 0);
+  assertEquals(p.days_since_empty, 0);
+  // The run from daysAgo=22 through daysAgo=1 (22 days) all had charge > 0
+  // before today's drain to exactly 0.
+  assertEquals(p.longest_days_since_empty, 22);
+});
+
+Deno.test("multiple sessions on the same day are summed into one day's gain", () => {
   const sessions = [
-    session("a", 0, 30),
-    session("b", 0, 45), // same day, second session
+    session("a", 0, 60),
+    session("b", 0, 60), // same day, second session — 120 min total
   ];
   const p = computeGamificationProfile(sessions, new Set(), "UTC");
-  assertEquals(p.current_streak_days, 1); // still just 1 day
+  // gain = min(120/120,1)*20 = 20, charge = clamp(0-8+20) = 12
+  assertEquals(p.current_charge_pct, 12);
 });
 
 // ── Achievements ─────────────────────────────────────────────────────────────
@@ -146,21 +154,26 @@ Deno.test("first_step unlocked after one session", () => {
   assertEquals(a?.unlocked, true);
 });
 
-Deno.test("hot_streak unlocks after 7-day streak", () => {
+Deno.test("charged_up unlocks after 7 days since empty", () => {
   const sessions = Array.from({ length: 7 }, (_, i) =>
-    session(String(i), 6 - i, 30)
+    session(String(i), 6 - i, 120)
   );
   const p = computeGamificationProfile(sessions, new Set(), "UTC");
-  assertEquals(p.achievements.find((x) => x.id === "hot_streak")?.unlocked, true);
+  assertEquals(p.days_since_empty, 7);
+  assertEquals(p.achievements.find((x) => x.id === "charged_up")?.unlocked, true);
+  assertEquals(p.achievements.find((x) => x.id === "never_empty")?.unlocked, false);
+  assertEquals(p.achievements.find((x) => x.id === "full_charge")?.unlocked, false);
 });
 
-Deno.test("30-day streak unlocks dedicated (and hot_streak)", () => {
+Deno.test("30 days since empty unlocks never_empty and full_charge", () => {
   const sessions = Array.from({ length: 30 }, (_, i) =>
-    session(String(i), 29 - i, 30)
+    session(String(i), 29 - i, 120)
   );
   const p = computeGamificationProfile(sessions, new Set(), "UTC");
-  assertEquals(p.achievements.find((x) => x.id === "dedicated")?.unlocked, true);
-  assertEquals(p.achievements.find((x) => x.id === "hot_streak")?.unlocked, true);
+  assertEquals(p.days_since_empty, 30);
+  assertEquals(p.achievements.find((x) => x.id === "charged_up")?.unlocked, true);
+  assertEquals(p.achievements.find((x) => x.id === "never_empty")?.unlocked, true);
+  assertEquals(p.achievements.find((x) => x.id === "full_charge")?.unlocked, true);
 });
 
 Deno.test("polymath unlocks with 5 distinct subjects", () => {
