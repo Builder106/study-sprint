@@ -115,7 +115,8 @@ Given(
 When(
   "I enter the email {string} and password {string} on the login form",
   async ({ page }, email: string, password: string) => {
-    await page.goto("/");
+    // "/" is the marketing landing page; the sign-in form lives at /login.
+    await page.goto("/login");
     await page.waitForLoadState("networkidle");
     await page.fill('input[type="email"]', email);
     await page.fill('input[type="password"]', password);
@@ -130,6 +131,7 @@ Then("I should see an error message on the login page", async ({ page }) => {
   await expect(page.locator('[role="alert"]')).toBeVisible();
 });
 
-Then("I should remain on the home page", async ({ page }) => {
+Then("I should remain on the login page", async ({ page }) => {
+  expect(page.url()).toContain("/login");
   expect(page.url()).not.toContain("/dashboard");
 });

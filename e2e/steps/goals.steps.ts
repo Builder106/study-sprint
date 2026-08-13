@@ -12,7 +12,8 @@ const resolvedTitles = new Map<string, string>();
 Given(
   "I am logged in as {string} with password {string}",
   async ({ page }, email: string, password: string) => {
-    await page.goto("/");
+    // "/" is the marketing landing page; the sign-in form lives at /login.
+    await page.goto("/login");
     await page.waitForLoadState("networkidle");
     await page.fill('input[type="email"]', email);
     await page.fill('input[type="password"]', password);

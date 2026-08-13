@@ -38,4 +38,4 @@ Feature: Authentication
     When I enter the email "demo@studysprint.app" and password "wrongpassword" on the login form
     And I click Sign in
     Then I should see an error message on the login page
-    And I should remain on the home page
+    And I should remain on the login page
