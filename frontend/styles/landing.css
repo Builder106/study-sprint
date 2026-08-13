@@ -1,0 +1,223 @@
+/* Hallmark · genre: playful · macrostructure: Narrative Workflow · theme: DESIGN.md (locked)
+ * enrichment: Tier B reused VirtualPlant · nav: N7 brutal slab · footer: Ft5 statement
+ * tone: playful · audience: students · anchor hue: electric lime (var(--brand-lime))
+ * pre-emit critique: P5 H4 E4 S5 R5 V4
+ *
+ * Structural CSS for the landing page only. Everything that Tailwind utilities
+ * express cleanly stays in the JSX, matching how the rest of this codebase is
+ * written; this file carries the things utilities express badly — the growth
+ * spine, the bento spans, and the one page-load reveal.
+ *
+ * Token discipline: no literal colour or font values below this line.
+ */
+
+/* ---------------------------------------------------------------------------
+ * Root overflow guard.
+ *
+ * `clip` rather than `hidden`: hidden turns the root into a scroll container,
+ * which breaks position: sticky for any descendant. clip just prevents a stray
+ * wide child from producing a horizontal scrollbar.
+ * ------------------------------------------------------------------------- */
+
+html,
+body {
+  overflow-x: clip;
+}
+
+/* ---------------------------------------------------------------------------
+ * Page-load reveal — the single orchestrated entrance.
+ * Staggered by DOM index via --i, capped at ~480ms so the page settles fast.
+ * ------------------------------------------------------------------------- */
+
+.ss-reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: ss-reveal var(--dur-long) var(--ease-out) forwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+@keyframes ss-reveal {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Hero plant plane — a soft radial ground behind the VirtualPlant so the
+ * right column carries as much visual weight as the copy column on the left.
+ * ------------------------------------------------------------------------- */
+
+.ss-hero-plant {
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--brand-lime) 10%, transparent),
+    transparent 72%
+  );
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Growth spine — the vertical rule threading the six stages together.
+ *
+ * The rule is drawn on the marker column rather than as a border on the list so
+ * it can stop short at the final stage instead of running past the last plant.
+ * ------------------------------------------------------------------------- */
+
+.ss-stage-marker {
+  position: relative;
+}
+
+.ss-stage-marker::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 50%;
+  width: var(--rule-hair);
+  transform: translateX(-50%);
+  background: currentColor;
+  opacity: 0.18;
+}
+
+.dark .ss-stage-marker::before {
+  opacity: 0.3;
+}
+
+.ss-stage:first-child .ss-stage-marker::before {
+  inset-block-start: 50%;
+}
+
+.ss-stage:last-child .ss-stage-marker::before {
+  inset-block-end: 50%;
+}
+
+/* The final stage carries no trailing gap — the section's own padding closes
+   the list, so the extra space would read as an unfinished seventh row. */
+.ss-stage:last-child .ss-stage-body {
+  padding-bottom: 0;
+}
+
+/* The dot sits above the spine and masks it, so the rule reads as passing
+   behind each stage rather than colliding with it. */
+.ss-stage-dot {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------------------------------------------------------------------------
+ * Feature bento — asymmetric spans, not a uniform 3-column feature grid.
+ * ------------------------------------------------------------------------- */
+
+.ss-bento {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rule-hair);
+}
+
+.ss-bento > * {
+  min-width: 0;
+}
+
+/* A filled seam behind uniform-width gaps draws a perfect grid over
+   asymmetric spans, which reads as a spreadsheet before it reads as a bento.
+   Each tile carries its own subtle fill instead — the varied spans do the
+   talking, not a border grid. A warm terracotta wash (the same #8b5a3c the
+   pots are drawn in) reads as a planter box rather than a neutral card. */
+.ss-tile {
+  background: color-mix(in oklab, #8b5a3c 5%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+ * Planter sill — the pot in each tile rests on a soil-toned ledge, so the row
+ * of tiles reads as pots lined up on a windowsill rather than icons floating
+ * over text.
+ * ------------------------------------------------------------------------- */
+
+.ss-planter {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 16px;
+}
+
+.ss-planter::after {
+  content: "";
+  position: absolute;
+  inset-inline: -1.75rem;
+  inset-block-end: 0;
+  height: 6px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, #a5714c 45%, transparent),
+    color-mix(in oklab, #5a3a26 55%, transparent)
+  );
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+
+@media (min-width: 40rem) {
+  .ss-bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ss-bento__wide {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 64rem) {
+  .ss-bento {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .ss-bento__wide {
+    grid-column: span 2;
+  }
+}
+
+/* Hover-lift — one signal, transform only, and only where a pointer can hover. */
+@media (hover: hover) and (pointer: fine) {
+  .ss-tile {
+    transition: transform var(--dur-short) var(--ease-out);
+  }
+
+  .ss-tile:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Display headings — long words wrap rather than forcing a horizontal scroll.
+ * ------------------------------------------------------------------------- */
+
+.ss-display {
+  overflow-wrap: anywhere;
+  min-width: 0;
+  text-wrap: balance;
+}
+
+/* ---------------------------------------------------------------------------
+ * Reduced motion — spatial motion collapses to an opacity crossfade.
+ * ------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-reveal {
+    animation: ss-reveal-reduced 150ms linear forwards;
+    animation-delay: 0ms;
+  }
+
+  @keyframes ss-reveal-reduced {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .ss-tile {
+    transition-duration: 150ms;
+  }
+
+  .ss-tile:hover {
+    transform: none;
+  }
+}

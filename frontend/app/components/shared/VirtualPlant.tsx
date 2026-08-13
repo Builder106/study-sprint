@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 export type PlantStage =
   | "seed"
@@ -32,6 +32,7 @@ const STAGES: Record<PlantStage, () => React.ReactElement> = {
 export function VirtualPlant({ stage, size = 120, className }: Props) {
   const StageGlyph = STAGES[stage];
   const swayAmount = stage === "seed" ? 0 : stage === "sprout" ? 1 : 1.8;
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <svg
@@ -54,11 +55,15 @@ export function VirtualPlant({ stage, size = 120, className }: Props) {
         >
           <motion.g
             animate={
-              swayAmount > 0
+              swayAmount > 0 && !shouldReduceMotion
                 ? { rotate: [-swayAmount, swayAmount, -swayAmount] }
                 : undefined
             }
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            transition={{
+              duration: 5,
+              repeat: shouldReduceMotion ? 0 : Infinity,
+              ease: "easeInOut",
+            }}
             style={PIVOT}
           >
             <StageGlyph />
@@ -107,14 +112,73 @@ function Sapling() {
   );
 }
 
+/** Tapered trunk with a pair of branch flares — shared shape language across
+ * the three tallest stages, scaled by how tall the canopy sits above it. */
+function Trunk({ canopyBase }: { canopyBase: number }) {
+  return (
+    <>
+      <path
+        d={`M57 96 C57 ${canopyBase + 30} 58 ${canopyBase + 8} 60 ${canopyBase} C62 ${canopyBase + 8} 63 ${canopyBase + 30} 63 96 Z`}
+        fill="#8b5a3c"
+      />
+      <path
+        d={`M60 ${canopyBase + 24} C52 ${canopyBase + 20} 49 ${canopyBase + 12} 48 ${canopyBase + 4} C55 ${canopyBase + 7} 59 ${canopyBase + 15} 60 ${canopyBase + 24} Z`}
+        fill="#8b5a3c"
+      />
+      <path
+        d={`M60 ${canopyBase + 24} C68 ${canopyBase + 20} 71 ${canopyBase + 12} 72 ${canopyBase + 4} C65 ${canopyBase + 7} 61 ${canopyBase + 15} 60 ${canopyBase + 24} Z`}
+        fill="#8b5a3c"
+      />
+    </>
+  );
+}
+
+/** An organic canopy built from overlapping puffs rather than a few plain
+ * circles — a shadow layer, a mid-tone body, and a sunlit crown, so the
+ * silhouette reads as foliage instead of stacked bubbles. */
+function Canopy({ cx, cy, r }: { cx: number; cy: number; r: number }) {
+  const puffs: Array<{ dx: number; dy: number; scale: number; fill: string }> = [
+    { dx: -0.62, dy: 0.22, scale: 0.62, fill: "#87a635" },
+    { dx: 0.62, dy: 0.22, scale: 0.62, fill: "#87a635" },
+    { dx: -0.38, dy: -0.28, scale: 0.72, fill: "#b3e600" },
+    { dx: 0.38, dy: -0.28, scale: 0.72, fill: "#b3e600" },
+    { dx: 0, dy: -0.08, scale: 0.92, fill: "#ccff00" },
+    { dx: -0.14, dy: -0.58, scale: 0.5, fill: "#e5ff4d" },
+    { dx: 0.2, dy: -0.5, scale: 0.42, fill: "#e5ff4d" },
+  ];
+
+  return (
+    <g>
+      {puffs.map(({ dx, dy, scale, fill }, i) => (
+        <circle
+          key={i}
+          cx={cx + dx * r}
+          cy={cy + dy * r}
+          r={r * scale}
+          fill={fill}
+        />
+      ))}
+    </g>
+  );
+}
+
+function Blossom({ cx, cy, r = 3 }: { cx: number; cy: number; r?: number }) {
+  return (
+    <g>
+      <ellipse cx={cx} cy={cy - r} rx={r * 0.6} ry={r} fill="#fff" />
+      <ellipse cx={cx} cy={cy + r} rx={r * 0.6} ry={r} fill="#fff" />
+      <ellipse cx={cx - r} cy={cy} rx={r} ry={r * 0.6} fill="#fff" />
+      <ellipse cx={cx + r} cy={cy} rx={r} ry={r * 0.6} fill="#fff" />
+      <circle cx={cx} cy={cy} r={r * 0.55} fill="#e5ff4d" />
+    </g>
+  );
+}
+
 function YoungTree() {
   return (
     <>
-      <path d="M44 100 Q60 94 76 100 Q76 103 60 104 Q44 103 44 100 Z" fill="#8b5a3c" />
-      <path d="M57 96 L57 54 L63 54 L63 96 Z" fill="#8b5a3c" />
-      <circle cx="60" cy="42" r="24" fill="#ccff00" />
-      <circle cx="46" cy="50" r="12" fill="#b3e600" />
-      <circle cx="74" cy="50" r="12" fill="#b3e600" />
+      <Trunk canopyBase={48} />
+      <Canopy cx={60} cy={44} r={22} />
     </>
   );
 }
@@ -122,14 +186,8 @@ function YoungTree() {
 function MatureTree() {
   return (
     <>
-      <path d="M44 100 Q60 94 76 100 Q76 103 60 104 Q44 103 44 100 Z" fill="#8b5a3c" />
-      <path d="M55 96 L55 48 L65 48 L65 96 Z" fill="#8b5a3c" />
-      <path d="M60 72 L50 80 L50 78 L58 68 Z" fill="#8b5a3c" />
-      <path d="M60 72 L70 80 L70 78 L62 68 Z" fill="#8b5a3c" />
-      <circle cx="60" cy="36" r="28" fill="#ccff00" />
-      <circle cx="40" cy="48" r="16" fill="#b3e600" />
-      <circle cx="80" cy="48" r="16" fill="#b3e600" />
-      <circle cx="60" cy="20" r="14" fill="#e5ff4d" />
+      <Trunk canopyBase={42} />
+      <Canopy cx={60} cy={36} r={27} />
     </>
   );
 }
@@ -137,22 +195,16 @@ function MatureTree() {
 function BloomingTree() {
   return (
     <>
-      <path d="M44 100 Q60 94 76 100 Q76 103 60 104 Q44 103 44 100 Z" fill="#8b5a3c" />
-      <path d="M55 96 L55 48 L65 48 L65 96 Z" fill="#8b5a3c" />
-      <path d="M60 72 L48 80 L48 78 L58 68 Z" fill="#8b5a3c" />
-      <path d="M60 72 L72 80 L72 78 L62 68 Z" fill="#8b5a3c" />
-      <circle cx="60" cy="34" r="30" fill="#ccff00" />
-      <circle cx="36" cy="48" r="18" fill="#b3e600" />
-      <circle cx="84" cy="48" r="18" fill="#b3e600" />
-      <circle cx="60" cy="16" r="16" fill="#e5ff4d" />
-      {/* Blossoms */}
-      <circle cx="42" cy="38" r="3" fill="#fff" />
-      <circle cx="78" cy="34" r="3" fill="#fff" />
-      <circle cx="60" cy="26" r="2.5" fill="#fff" />
-      <circle cx="50" cy="52" r="2.5" fill="#fff" />
-      <circle cx="70" cy="56" r="3" fill="#fff" />
-      <circle cx="30" cy="58" r="2.5" fill="#fff" />
-      <circle cx="90" cy="56" r="2.5" fill="#fff" />
+      <Trunk canopyBase={40} />
+      <Canopy cx={60} cy={32} r={29} />
+      <Blossom cx={38} cy={38} r={2.6} />
+      <Blossom cx={82} cy={34} r={2.4} />
+      <Blossom cx={60} cy={16} r={2.8} />
+      <Blossom cx={48} cy={54} r={2.2} />
+      <Blossom cx={72} cy={56} r={2.6} />
+      <Blossom cx={30} cy={54} r={2.2} />
+      <Blossom cx={90} cy={50} r={2.2} />
+      <Blossom cx={60} cy={44} r={2} />
     </>
   );
 }

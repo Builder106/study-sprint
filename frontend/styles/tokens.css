@@ -1,0 +1,35 @@
+/* Hallmark · pre-emit critique: P5 H4 E4 S5 R5 V4 */
+/**
+ * Portable token export for the StudySprint landing page.
+ *
+ * The authoritative system is DESIGN.md plus theme.css — this file exists so the
+ * landing page's structural tokens (motion, rhythm, rules) are declared in one
+ * named place rather than improvised inline. Colour and type tokens are NOT
+ * redeclared here; they are consumed from theme.css so there is exactly one
+ * source of truth for the palette.
+ *
+ * Hallmark's default is to write tokens.css at the project root. It sits here
+ * instead: the repo root already carries design-tokens.json, and a second
+ * root-level token file would compete with it for authority.
+ */
+
+:root {
+  /* Motion — the three named easings. Never the browser default `ease`. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+
+  /* Page rhythm. Sections deliberately do NOT share one padding value. */
+  --page-gutter: clamp(1rem, 4vw, 2rem);
+  --section-gap-tight: clamp(3rem, 7vw, 5rem);
+  --section-gap: clamp(4.5rem, 10vw, 8rem);
+  --section-gap-wide: clamp(5.5rem, 11vw, 8.5rem);
+
+  /* Rules. The slab nav is heavy; everything below it is hairline. */
+  --rule-slab: 2px;
+  --rule-hair: 1px;
+}

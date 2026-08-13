@@ -2,6 +2,8 @@
 
 :root {
   --font-size: 16px;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --background: #ffffff;
   --foreground: oklch(0.145 0 0);
   --card: #ffffff;
@@ -78,7 +80,41 @@
   --sidebar-ring: oklch(0.439 0 0);
 }
 
+/**
+ * Core brand tokens.
+ *
+ * DESIGN.md § Core brand tokens has named these three values since the design
+ * system was written, but they were only ever hardcoded as literal `#ccff00`
+ * inside components. Declaring them here makes the accent adjustable in one
+ * place. Electric lime is deliberately outside the light/dark split — DESIGN.md
+ * § High contrast theme balance specifies one unified highlight across both
+ * modes — so these live on :root and are not overridden in .dark.
+ */
+:root {
+  --brand-lime: #ccff00;
+  --brand-lime-hover: #b3e600;
+  --brand-lime-highlight: #e5ff4d;
+
+  /**
+   * Lime as *text*, on a light surface.
+   *
+   * DESIGN.md § Accessibility only covers lime as a background fill paired with
+   * dark text. As foreground text on white, the brand values fail WCAG AA badly
+   * — #ccff00 measures 1.18:1 and #b3e600 measures 1.48:1 against #ffffff, where
+   * AA for body text needs 4.5:1. This darkened lime measures 5.92:1 and stays
+   * in the same hue family. Use it wherever lime carries text in light mode;
+   * dark mode keeps --brand-lime, which measures 16.85:1 on #0a0a0a.
+   */
+  --brand-lime-ink: #526d00;
+}
+
 @theme inline {
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --color-brand-lime: var(--brand-lime);
+  --color-brand-lime-hover: var(--brand-lime-hover);
+  --color-brand-lime-highlight: var(--brand-lime-highlight);
+  --color-brand-lime-ink: var(--brand-lime-ink);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -141,24 +177,34 @@
     font-size: var(--text-2xl);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
+    font-family: var(--font-display);
   }
 
   h2 {
     font-size: var(--text-xl);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
+    font-family: var(--font-display);
   }
 
   h3 {
     font-size: var(--text-lg);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
+    font-family: var(--font-display);
   }
 
   h4 {
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
+    font-family: var(--font-display);
+  }
+
+  h5, h6 {
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family: var(--font-display);
   }
 
   label {
