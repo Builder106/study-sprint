@@ -17,6 +17,19 @@ const STAGE_LABEL: Record<PlantStage, string> = {
   blooming: "Blooming",
 };
 
+// TEMPORARY BRIDGE — remove when sub-project 2 replaces VirtualPlant with a
+// battery component. current_charge_pct (0-100) buckets evenly into the old
+// six-stage names purely so this page keeps compiling and rendering
+// something coherent in the meantime.
+function stageFromCharge(pct: number): PlantStage {
+  if (pct <= 0) return "seed";
+  if (pct <= 20) return "sprout";
+  if (pct <= 40) return "sapling";
+  if (pct <= 60) return "young_tree";
+  if (pct <= 80) return "mature_tree";
+  return "blooming";
+}
+
 export function Garden() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -64,9 +77,9 @@ export function Garden() {
             <section className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
               <div className="md:col-span-1 flex justify-center">
                 <div className="p-8 rounded-2xl border border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-zinc-50">
-                  <VirtualPlant stage={profile.pet_stage} size={160} />
+                  <VirtualPlant stage={stageFromCharge(profile.current_charge_pct)} size={160} />
                   <div className="mt-4 text-center text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                    {STAGE_LABEL[profile.pet_stage]}
+                    {STAGE_LABEL[stageFromCharge(profile.current_charge_pct)]}
                   </div>
                 </div>
               </div>
@@ -102,14 +115,14 @@ export function Garden() {
                 <div className="grid grid-cols-3 gap-4">
                   <StatBox
                     icon={<Flame className="w-4 h-4" />}
-                    label="Current streak"
-                    value={`${profile.current_streak_days}d`}
+                    label="Current charge"
+                    value={`${profile.current_charge_pct}%`}
                     accent
                   />
                   <StatBox
                     icon={<Flame className="w-4 h-4" />}
-                    label="Longest streak"
-                    value={`${profile.longest_streak_days}d`}
+                    label="Days since empty"
+                    value={`${profile.days_since_empty}d`}
                   />
                   <StatBox
                     icon={<Zap className="w-4 h-4" />}

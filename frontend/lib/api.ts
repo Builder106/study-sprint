@@ -435,8 +435,9 @@ interface AnalyticsResult {
    totals: {
       minutes: number;
       sessions_last_365: number;
-      current_streak_days: number;
-      longest_streak_days: number;
+      current_charge_pct: number;
+      days_since_empty: number;
+      longest_days_since_empty: number;
    };
 }
 

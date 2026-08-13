@@ -153,14 +153,14 @@ export function Analytics() {
                 icon={<CalendarDays className="w-4 h-4" />}
               />
               <StatCard
-                label="Current streak"
-                value={`${data.totals.current_streak_days}d`}
+                label="Current charge"
+                value={`${data.totals.current_charge_pct}%`}
                 icon={<Flame className="w-4 h-4" />}
                 accent
               />
               <StatCard
-                label="Longest streak"
-                value={`${data.totals.longest_streak_days}d`}
+                label="Days since empty"
+                value={`${data.totals.days_since_empty}d`}
                 icon={<Flame className="w-4 h-4" />}
               />
             </section>
