@@ -61,22 +61,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: denoland/setup-deno@v2
         with:
-          node-version: "26"
-      - name: Install deps
-        # package.json mirrors deno.json for Node/Vercel build environments.
-        # Deno's npm runtime has a require.resolve incompatibility with
-        # @tailwindcss/node on Linux; Node avoids this entirely.
-        run: npm install --legacy-peer-deps
-      - name: Node dependency audit
-        run: npm audit --audit-level=high
+          deno-version: v2.x
       - name: Build
         # Vite inlines VITE_* values at build time. CI builds with placeholders
         # so we can verify "is this buildable?" without exposing real keys to
         # PR forks. The deployed bundle is built locally with real .env values
         # via `vercel --prod --yes`.
-        run: npm run build
+        run: deno run -A npm:vite build
         env:
           VITE_SUPABASE_URL: https://placeholder.supabase.co
           VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_placeholder
@@ -94,11 +87,7 @@ jobs:
   # E2E only runs on push to main (not on every PR push). The suite hits the
   # real Supabase project — running it from PR CI would race against local dev
   # on the shared demo account and burn through Supabase's signup rate limit.
-  # continue-on-error: true — browser install hangs indefinitely on ubuntu-latest
-  # when Deno's node_modules/.bin/playwright wrapper (which re-invokes Deno) is
-  # used via npx. Fixing this properly requires a separate Node-only install
-  # step for Playwright; in the meantime E2E is a soft gate so deploy is
-  # not blocked.
+  # continue-on-error: true — retained as a soft gate; the native Deno Playwright runner (deno run -A npm:@playwright/test/cli.js) avoids the old npx→Deno wrapper hang on ubuntu-latest.
   e2e:
     name: E2E
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -111,11 +100,6 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - uses: actions/setup-node@v7
-        with:
-          node-version: "26"
-      - name: Install deps
-        run: npm install --legacy-peer-deps
       - name: Cache Playwright browsers
         uses: actions/cache@v6
         id: pw-cache
@@ -124,7 +108,7 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package.json') }}
       - name: Install Playwright browsers
         if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium
+        run: deno run -A npm:playwright install chromium
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
       - name: Bootstrap demo account
@@ -132,8 +116,17 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      - name: Generate BDD tests
+        run: deno run -A npm:playwright-bdd --config=playwright.config.ts
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
       - name: Run E2E suite
-        run: npm run test:e2e
+        run: deno run -A npm:@playwright/test/cli.js test --config=playwright.config.ts
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
