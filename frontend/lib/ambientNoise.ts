@@ -7,6 +7,12 @@ interface Controller {
   dispose: () => void;
 }
 
+declare global {
+  interface Window {
+    webkitAudioContext?: typeof AudioContext;
+  }
+}
+
 export function createAmbientNoise(): Controller {
   let ctx: AudioContext | null = null;
   let source: AudioBufferSourceNode | null = null;
@@ -15,9 +21,8 @@ export function createAmbientNoise(): Controller {
 
   const ensureContext = () => {
     if (!ctx) {
-      const AudioContextClass =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) throw new Error("Web Audio API not supported");
       ctx = new AudioContextClass();
     }
     if (ctx.state === "suspended") void ctx.resume();

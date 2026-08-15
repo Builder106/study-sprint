@@ -309,18 +309,95 @@ export type Database = {
       }
     }
     Functions: {
-      analytics_summary: { Args: never; Returns: Json }
+      analytics_summary: {
+        Args: never
+        Returns: {
+          daily: { date: string; minutes: number }[]
+          hourly: { hour: number; minutes: number }[]
+          weekday: { dow: number; minutes: number }[]
+          by_subject: { subject: string; minutes: number }[]
+          totals: {
+            minutes: number
+            sessions_last_365: number
+            current_charge_pct: number
+            days_since_empty: number
+            longest_days_since_empty: number
+          }
+        }
+      }
       create_room: {
         Args: { p_name: string; p_description?: string | null; p_passcode?: string | null }
-        Returns: Json
+        Returns: { slug: string }
       }
-      get_public_profile: { Args: { p_username: string }; Returns: Json }
-      get_room: { Args: { p_slug: string }; Returns: Json }
-      join_room: { Args: { p_slug: string; p_passcode?: string | null }; Returns: Json }
-      leaderboard: { Args: never; Returns: Json }
+      get_public_profile: {
+        Args: { p_username: string }
+        Returns: {
+          user: {
+            username: string
+            display_name: string | null
+            bio: string | null
+            joined_at: string
+          }
+          stats: { total_minutes: number; total_sessions: number; total_goals: number }
+          recent_sessions: {
+            duration_minutes: number
+            logged_at: string
+            goal_title: string
+          }[]
+        }
+      }
+      get_room: {
+        Args: { p_slug: string }
+        Returns: {
+          room: {
+            slug: string
+            name: string
+            description: string | null
+            created_at: string
+            is_owner: boolean
+            has_passcode: boolean
+          }
+          members: {
+            username: string | null
+            display_name: string | null
+            is_public: boolean
+            joined_at: string
+          }[]
+          recent_activity: {
+            id: string
+            duration_minutes: number
+            logged_at: string
+            username: string | null
+            display_name: string | null
+            goal_title: string
+          }[]
+        }
+      }
+      join_room: {
+        Args: { p_slug: string; p_passcode?: string | null }
+        Returns: { ok: boolean }
+      }
+      leaderboard: {
+        Args: never
+        Returns: {
+          entries: { username: string; display_name: string | null; weekly_minutes: number }[]
+        }
+      }
       leave_room: { Args: { p_slug: string }; Returns: undefined }
-      list_my_rooms: { Args: never; Returns: Json }
-      reset_account: { Args: never; Returns: Json }
+      list_my_rooms: {
+        Args: never
+        Returns: {
+          rooms: {
+            slug: string
+            name: string
+            description: string | null
+            created_at: string
+            has_passcode: boolean
+            member_count: number
+          }[]
+        }
+      }
+      reset_account: { Args: never; Returns: { ok: boolean; message: string } }
       set_goal_subjects: {
         Args: { p_goal_id: string; p_names: string[] }
         Returns: undefined

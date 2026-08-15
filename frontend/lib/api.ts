@@ -531,7 +531,7 @@ export const api = {
    async analyticsSummary(): Promise<AnalyticsResult> {
       const { data, error } = await supabase.rpc("analytics_summary");
       if (error) throw new ApiError(500, error.message);
-      return data as unknown as AnalyticsResult;
+      return data as AnalyticsResult;
    },
 
    async gamificationProfile(): Promise<GamificationProfile> {
@@ -611,19 +611,19 @@ export const api = {
          p_username: username,
       });
       if (error) throw rpcError(error.message);
-      return data as unknown as PublicProfileResult;
+      return data as PublicProfileResult;
    },
 
    async leaderboard(): Promise<LeaderboardResult> {
       const { data, error } = await supabase.rpc("leaderboard");
       if (error) throw rpcError(error.message);
-      return data as unknown as LeaderboardResult;
+      return data as LeaderboardResult;
    },
 
    async listRooms(): Promise<{ rooms: RoomSummary[] }> {
       const { data, error } = await supabase.rpc("list_my_rooms");
       if (error) throw rpcError(error.message);
-      return data as unknown as { rooms: RoomSummary[] };
+      return data as { rooms: RoomSummary[] };
    },
 
    async createRoom(input: {
@@ -637,13 +637,13 @@ export const api = {
          p_passcode: input.passcode ?? null,
       });
       if (error) throw rpcError(error.message);
-      return data as unknown as { slug: string };
+      return data as { slug: string };
    },
 
    async getRoom(slug: string): Promise<RoomDetail> {
       const { data, error } = await supabase.rpc("get_room", { p_slug: slug });
       if (error) throw rpcError(error.message);
-      return data as unknown as RoomDetail;
+      return data as RoomDetail;
    },
 
    async joinRoom(slug: string, passcode?: string): Promise<{ ok: boolean }> {
@@ -652,7 +652,7 @@ export const api = {
          p_passcode: passcode ?? null,
       });
       if (error) throw rpcError(error.message);
-      return data as unknown as { ok: boolean };
+      return data as { ok: boolean };
    },
 
    async leaveRoom(slug: string): Promise<void> {
