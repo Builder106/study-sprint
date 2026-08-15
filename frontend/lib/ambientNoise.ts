@@ -14,7 +14,12 @@ export function createAmbientNoise(): Controller {
   let volume = 0.2;
 
   const ensureContext = () => {
-    if (!ctx) ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    if (!ctx) {
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      ctx = new AudioContextClass();
+    }
     if (ctx.state === "suspended") void ctx.resume();
     return ctx;
   };

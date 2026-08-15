@@ -85,7 +85,7 @@ export function SyllabusImport({ onClose, onCreated }: Props) {
     setSelected(next);
   };
 
-  const updateField = (i: number, field: keyof Suggested, value: any) => {
+  const updateField = <K extends keyof Suggested>(i: number, field: K, value: Suggested[K]) => {
     if (!suggested) return;
     const copy = [...suggested];
     copy[i] = { ...copy[i], [field]: value };

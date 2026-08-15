@@ -143,8 +143,10 @@ Before(async ({ page }) => {
     const sampleLocator = page.locator("body");
     const proto = Object.getPrototypeOf(sampleLocator);
     const originalFill = proto.fill;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    proto.fill = async function (value: string, options?: any) {
+    proto.fill = async function (
+      value: string,
+      options?: Parameters<typeof originalFill>[1],
+    ) {
       await originalFill.call(this, "", options);
       if (value) await this.pressSequentially(value, { delay: DEMO_TYPE_DELAY });
     };
