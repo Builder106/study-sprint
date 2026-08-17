@@ -129,8 +129,10 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      - name: Install dependencies
+        run: deno install
       - name: Generate BDD tests
-        run: deno run -A npm:playwright-bdd --config=playwright.config.ts
+        run: deno run -A npm:playwright-bdd/bddgen --config=playwright.config.ts
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
