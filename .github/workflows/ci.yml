@@ -141,7 +141,7 @@ jobs:
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
       - name: Run E2E suite
-        run: deno run -A npm:@playwright/test/cli.js test --config=playwright.config.ts
+        run: deno run -A npm:@playwright/test/playwright test --config=playwright.config.ts
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
