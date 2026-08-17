@@ -33,10 +33,8 @@ export function TimerCard({ onLogSession }: Props) {
   const [mode, setMode] = useState<TimerMode>("stopwatch");
   const [running, setRunning] = useState(false);
 
-  // Stopwatch state
   const [elapsed, setElapsed] = useState(0);
 
-  // Pomodoro state
   const [phase, setPhase] = useState<PomodoroPhase>("work");
   const [remaining, setRemaining] = useState<number>(WORK_SECONDS);
   const [cycles, setCycles] = useState(0);
@@ -53,7 +51,6 @@ export function TimerCard({ onLogSession }: Props) {
       } else {
         setRemaining((prev) => {
           if (prev <= 1) {
-            // Phase complete
             handlePhaseComplete();
             return 0;
           }

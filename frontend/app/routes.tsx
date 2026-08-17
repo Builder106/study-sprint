@@ -23,9 +23,7 @@ function RedirectToGoal() {
 export const router = createBrowserRouter([
   { path: "/", Component: Landing },
   { path: "/login", Component: Login },
-  // "/" used to render the sign-in form directly. Anything that linked or
-  // bookmarked it as the sign-in URL lands on the marketing page now, so keep
-  // an explicit alias rather than relying on people re-finding the form.
+  // Retain /login as alias for direct sign-in routing.
   { path: "/signin", element: <Navigate to="/login" replace /> },
   { path: "/register", Component: Register },
   {

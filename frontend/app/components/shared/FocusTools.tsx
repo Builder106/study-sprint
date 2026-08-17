@@ -58,7 +58,6 @@ export function FocusTools({ goalId }: Props) {
     controllerRef.current?.setVolume(volume);
   }, [volume]);
 
-  // Debounced autosave
   useEffect(() => {
     const handle = setTimeout(() => {
       try {
@@ -74,7 +73,6 @@ export function FocusTools({ goalId }: Props) {
     return () => clearTimeout(handle);
   }, [notes, goalId]);
 
-  // Hydrate when goalId changes
   useEffect(() => {
     setNotes(readFocusNotes(goalId));
   }, [goalId]);

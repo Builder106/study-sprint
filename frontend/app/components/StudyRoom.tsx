@@ -51,7 +51,6 @@ export function StudyRoom() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
-  // Poll while joined
   useEffect(() => {
     if (!data || needsJoin) return;
     const interval = setInterval(load, REFRESH_MS);
