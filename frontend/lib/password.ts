@@ -10,14 +10,14 @@
 // password dump. Prefix (not exact) so that "password1", "password123",
 // "qwerty123", "admin2024" etc. all get rejected with a single entry.
 const COMMON_PREFIXES = [
-  "password",
-  "123456",
-  "qwerty",
-  "letmein",
-  "welcome",
-  "admin",
-  "iloveyou",
-  "abc123",
+  'password',
+  '123456',
+  'qwerty',
+  'letmein',
+  'welcome',
+  'admin',
+  'iloveyou',
+  'abc123',
 ];
 
 export const PASSWORD_MIN_LENGTH = 8;
@@ -32,7 +32,7 @@ export function validatePassword(password: string): string | null {
   const lower = password.toLowerCase();
   for (const prefix of COMMON_PREFIXES) {
     if (lower.startsWith(prefix)) {
-      return "That password is too common — try something less guessable.";
+      return 'That password is too common — try something less guessable.';
     }
   }
   return null;

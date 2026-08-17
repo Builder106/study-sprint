@@ -201,7 +201,8 @@
     font-family: var(--font-display);
   }
 
-  h5, h6 {
+  h5,
+  h6 {
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
     font-family: var(--font-display);

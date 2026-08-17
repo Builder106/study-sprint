@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
-import { Clock, X } from "lucide-react";
-import { api, ApiError } from "@/lib/api";
-import type { SessionQuality, StudySession } from "@/lib/types";
+import { useEffect, useState } from 'react';
+import type { FormEvent } from 'react';
+import { Clock, X } from 'lucide-react';
+import { api, ApiError } from '@/lib/api';
+import type { SessionQuality, StudySession } from '@/lib/types';
 
 interface Props {
   goalId: string;
@@ -14,11 +14,11 @@ interface Props {
 }
 
 const QUALITY_LABELS: Record<SessionQuality, { label: string; days: number }> = {
-  1: { label: "Poor", days: 1 },
-  2: { label: "Okay", days: 2 },
-  3: { label: "Good", days: 4 },
-  4: { label: "Great", days: 7 },
-  5: { label: "Mastered", days: 14 },
+  1: { label: 'Poor', days: 1 },
+  2: { label: 'Okay', days: 2 },
+  3: { label: 'Good', days: 4 },
+  4: { label: 'Great', days: 7 },
+  5: { label: 'Mastered', days: 14 },
 };
 
 export function SessionModal({
@@ -33,10 +33,10 @@ export function SessionModal({
     session
       ? String(Math.round((session.duration_minutes / 60) * 10) / 10)
       : initialMinutes
-        ? String(Math.round((initialMinutes / 60) * 10) / 10)
-        : "1.0",
+      ? String(Math.round((initialMinutes / 60) * 10) / 10)
+      : '1.0',
   );
-  const [notes, setNotes] = useState<string>(session?.notes ?? initialNotes ?? "");
+  const [notes, setNotes] = useState<string>(session?.notes ?? initialNotes ?? '');
   const [quality, setQuality] = useState<SessionQuality | null>(session?.quality ?? null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,10 +44,10 @@ export function SessionModal({
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === 'Escape') onClose();
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
   const onSubmit = async (e: FormEvent) => {
@@ -56,7 +56,7 @@ export function SessionModal({
     setDurationError(null);
     const h = Number(hours);
     if (!Number.isFinite(h) || h <= 0) {
-      setDurationError("Duration must be greater than 0 hours.");
+      setDurationError('Duration must be greater than 0 hours.');
       return;
     }
     const minutes = Math.max(1, Math.round(h * 60));
@@ -67,7 +67,7 @@ export function SessionModal({
         : await api.createSession(goalId, { duration_minutes: minutes, notes, quality });
       onSaved(res.session);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Failed to save session");
+      setError(err instanceof ApiError ? err.message : 'Failed to save session');
     } finally {
       setSubmitting(false);
     }
@@ -75,108 +75,108 @@ export function SessionModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className='fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4'
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-[#0a0a0a] border border-zinc-200 dark:border-white/10 rounded-2xl w-full max-w-lg overflow-hidden flex flex-col shadow-2xl"
+        className='bg-white dark:bg-[#0a0a0a] border border-zinc-200 dark:border-white/10 rounded-2xl w-full max-w-lg overflow-hidden flex flex-col shadow-2xl'
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="px-8 py-6 border-b border-zinc-200 dark:border-white/10 flex items-center justify-between">
-          <h3 className="text-sm font-bold tracking-widest uppercase text-zinc-900 dark:text-zinc-50">
-            {session ? "Edit Session" : "Log Study Session"}
+        <div className='px-8 py-6 border-b border-zinc-200 dark:border-white/10 flex items-center justify-between'>
+          <h3 className='text-sm font-bold tracking-widest uppercase text-zinc-900 dark:text-zinc-50'>
+            {session ? 'Edit Session' : 'Log Study Session'}
           </h3>
           <button
             onClick={onClose}
-            aria-label="Close"
-            className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+            aria-label='Close'
+            className='p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors'
           >
-            <X className="w-5 h-5" />
+            <X className='w-5 h-5' />
           </button>
         </div>
 
-        <form onSubmit={onSubmit} className="p-8 space-y-8" noValidate>
-          <div className="space-y-4">
-            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+        <form onSubmit={onSubmit} className='p-8 space-y-8' noValidate>
+          <div className='space-y-4'>
+            <label className='block text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
               Duration (hours)
             </label>
-            <div className="relative">
+            <div className='relative'>
               <input
-                type="number"
+                type='number'
                 min={0.1}
                 step={0.1}
                 value={hours}
                 aria-invalid={!!durationError}
-                aria-describedby="session-duration-help"
+                aria-describedby='session-duration-help'
                 onChange={(e) => {
                   setHours(e.target.value);
                   if (durationError) setDurationError(null);
                 }}
                 className={`w-full bg-transparent border-b pl-8 pr-0 py-3 text-zinc-900 dark:text-zinc-50 text-xl font-medium focus:outline-none transition-colors rounded-none ${
                   durationError
-                    ? "border-red-400 focus:border-red-400"
-                    : "border-zinc-300 dark:border-white/20 focus:border-[#ccff00]"
+                    ? 'border-red-400 focus:border-red-400'
+                    : 'border-zinc-300 dark:border-white/20 focus:border-[#ccff00]'
                 }`}
               />
-              <Clock className="w-5 h-5 text-zinc-500 absolute left-0 top-3.5" />
+              <Clock className='w-5 h-5 text-zinc-500 absolute left-0 top-3.5' />
             </div>
             <p
-              id="session-duration-help"
+              id='session-duration-help'
               className={`text-[10px] font-medium tracking-wide ${
-                durationError ? "text-red-400" : "text-zinc-400 dark:text-zinc-600"
+                durationError ? 'text-red-400' : 'text-zinc-400 dark:text-zinc-600'
               }`}
-              role={durationError ? "alert" : undefined}
+              role={durationError ? 'alert' : undefined}
             >
-              {durationError ?? "Must be greater than 0 hours."}
+              {durationError ?? 'Must be greater than 0 hours.'}
             </p>
           </div>
 
-          <div className="space-y-4">
-            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+          <div className='space-y-4'>
+            <label className='block text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
               Session Notes
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="What did you focus on?"
+              placeholder='What did you focus on?'
               rows={4}
-              className="w-full bg-transparent border border-zinc-300 dark:border-white/20 p-4 text-zinc-900 dark:text-zinc-50 text-sm font-light focus:outline-none focus:border-[#ccff00] transition-colors rounded-xl resize-none"
+              className='w-full bg-transparent border border-zinc-300 dark:border-white/20 p-4 text-zinc-900 dark:text-zinc-50 text-sm font-light focus:outline-none focus:border-[#ccff00] transition-colors rounded-xl resize-none'
             />
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+          <div className='space-y-3'>
+            <div className='flex items-center justify-between'>
+              <label className='block text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
                 How did it go? (optional)
               </label>
               {quality !== null && (
                 <button
-                  type="button"
+                  type='button'
                   onClick={() => setQuality(null)}
-                  className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 uppercase tracking-widest"
+                  className='text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 uppercase tracking-widest'
                 >
                   Clear
                 </button>
               )}
             </div>
             <div
-              className="grid grid-cols-5 gap-2"
-              role="radiogroup"
-              aria-label="Session quality"
+              className='grid grid-cols-5 gap-2'
+              role='radiogroup'
+              aria-label='Session quality'
             >
               {([1, 2, 3, 4, 5] as SessionQuality[]).map((q) => {
                 const selected = quality === q;
                 return (
                   <button
                     key={q}
-                    type="button"
-                    role="radio"
+                    type='button'
+                    role='radio'
                     aria-checked={selected}
                     onClick={() => setQuality(q)}
                     className={`py-3 px-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-colors ${
                       selected
-                        ? "border-[#ccff00] bg-[#ccff00]/10 text-[#ccff00]"
-                        : "border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50"
+                        ? 'border-[#ccff00] bg-[#ccff00]/10 text-[#ccff00]'
+                        : 'border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50'
                     }`}
                   >
                     {QUALITY_LABELS[q].label}
@@ -185,33 +185,33 @@ export function SessionModal({
               })}
             </div>
             {quality !== null && (
-              <p className="text-[10px] text-zinc-500 font-medium tracking-wide">
-                Next review suggested in {QUALITY_LABELS[quality].days}{" "}
-                {QUALITY_LABELS[quality].days === 1 ? "day" : "days"}.
+              <p className='text-[10px] text-zinc-500 font-medium tracking-wide'>
+                Next review suggested in {QUALITY_LABELS[quality].days}{' '}
+                {QUALITY_LABELS[quality].days === 1 ? 'day' : 'days'}.
               </p>
             )}
           </div>
 
           {error && (
-            <div className="text-xs text-red-400 font-medium" role="alert">
+            <div className='text-xs text-red-400 font-medium' role='alert'>
               {error}
             </div>
           )}
 
-          <div className="flex gap-4 pt-4">
+          <div className='flex gap-4 pt-4'>
             <button
-              type="button"
+              type='button'
               onClick={onClose}
-              className="flex-1 py-4 px-4 rounded-full text-xs font-bold tracking-widest uppercase text-zinc-900 dark:text-zinc-50 border border-zinc-300 dark:border-white/20 hover:border-zinc-500 dark:hover:border-white/50 transition-colors"
+              className='flex-1 py-4 px-4 rounded-full text-xs font-bold tracking-widest uppercase text-zinc-900 dark:text-zinc-50 border border-zinc-300 dark:border-white/20 hover:border-zinc-500 dark:hover:border-white/50 transition-colors'
             >
               Cancel
             </button>
             <button
-              type="submit"
+              type='submit'
               disabled={submitting}
-              className="flex-1 py-4 px-4 rounded-full text-xs font-bold tracking-widest uppercase text-black bg-[#ccff00] hover:bg-[#b3e600] transition-colors disabled:opacity-50"
+              className='flex-1 py-4 px-4 rounded-full text-xs font-bold tracking-widest uppercase text-black bg-[#ccff00] hover:bg-[#b3e600] transition-colors disabled:opacity-50'
             >
-              {submitting ? "Saving…" : session ? "Save changes" : "Save session"}
+              {submitting ? 'Saving…' : session ? 'Save changes' : 'Save session'}
             </button>
           </div>
         </form>

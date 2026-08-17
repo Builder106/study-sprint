@@ -1,21 +1,21 @@
-import { CircleDot } from "lucide-react";
-import type { GoalStatus } from "@/lib/types";
+import { CircleDot } from 'lucide-react';
+import type { GoalStatus } from '@/lib/types';
 
 const STYLES: Record<GoalStatus, { wrap: string; dot: string; label: string }> = {
   Active: {
-    wrap: "bg-[#ccff00]/10 text-[#ccff00] border border-[#ccff00]/20",
-    dot: "fill-[#ccff00] text-transparent",
-    label: "Active",
+    wrap: 'bg-[#ccff00]/10 text-[#ccff00] border border-[#ccff00]/20',
+    dot: 'fill-[#ccff00] text-transparent',
+    label: 'Active',
   },
   Paused: {
-    wrap: "text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-white/10",
-    dot: "fill-zinc-500 text-transparent",
-    label: "Paused",
+    wrap: 'text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-white/10',
+    dot: 'fill-zinc-500 text-transparent',
+    label: 'Paused',
   },
   Completed: {
-    wrap: "text-emerald-400 border border-emerald-400/20 bg-emerald-400/10",
-    dot: "fill-emerald-400 text-transparent",
-    label: "Done",
+    wrap: 'text-emerald-400 border border-emerald-400/20 bg-emerald-400/10',
+    dot: 'fill-emerald-400 text-transparent',
+    label: 'Done',
   },
 };
 

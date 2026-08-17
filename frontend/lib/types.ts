@@ -1,4 +1,4 @@
-export type GoalStatus = "Active" | "Paused" | "Completed";
+export type GoalStatus = 'Active' | 'Paused' | 'Completed';
 
 export interface User {
   id: string;

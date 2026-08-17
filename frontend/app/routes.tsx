@@ -1,19 +1,19 @@
-import { createBrowserRouter, Navigate, useParams } from "react-router";
-import { Landing } from "./components/Landing";
-import { Login } from "./components/Login";
-import { Register } from "./components/Register";
-import { Dashboard } from "./components/Dashboard";
-import { GoalDetailWithPanel } from "./components/GoalDetailWithPanel";
-import { NewGoal } from "./components/NewGoal";
-import { Analytics } from "./components/Analytics";
-import { Garden } from "./components/Garden";
-import { Community } from "./components/Community";
-import { StudyRoom } from "./components/StudyRoom";
-import { PublicProfile } from "./components/PublicProfile";
-import { Privacy } from "./components/Privacy";
-import { Terms } from "./components/Terms";
-import { Settings } from "./components/Settings";
-import { ProtectedRoute } from "./components/shared/ProtectedRoute";
+import { createBrowserRouter, Navigate, useParams } from 'react-router';
+import { Landing } from './components/Landing';
+import { Login } from './components/Login';
+import { Register } from './components/Register';
+import { Dashboard } from './components/Dashboard';
+import { GoalDetailWithPanel } from './components/GoalDetailWithPanel';
+import { NewGoal } from './components/NewGoal';
+import { Analytics } from './components/Analytics';
+import { Garden } from './components/Garden';
+import { Community } from './components/Community';
+import { StudyRoom } from './components/StudyRoom';
+import { PublicProfile } from './components/PublicProfile';
+import { Privacy } from './components/Privacy';
+import { Terms } from './components/Terms';
+import { Settings } from './components/Settings';
+import { ProtectedRoute } from './components/shared/ProtectedRoute';
 
 function RedirectToGoal() {
   const { id } = useParams();
@@ -21,13 +21,13 @@ function RedirectToGoal() {
 }
 
 export const router = createBrowserRouter([
-  { path: "/", Component: Landing },
-  { path: "/login", Component: Login },
+  { path: '/', Component: Landing },
+  { path: '/login', Component: Login },
   // Retain /login as alias for direct sign-in routing.
-  { path: "/signin", element: <Navigate to="/login" replace /> },
-  { path: "/register", Component: Register },
+  { path: '/signin', element: <Navigate to='/login' replace /> },
+  { path: '/register', Component: Register },
   {
-    path: "/dashboard",
+    path: '/dashboard',
     element: (
       <ProtectedRoute>
         <Dashboard />
@@ -35,7 +35,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: "/goals/new",
+    path: '/goals/new',
     element: (
       <ProtectedRoute>
         <NewGoal />
@@ -43,16 +43,16 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: "/goal/:id",
+    path: '/goal/:id',
     element: (
       <ProtectedRoute>
         <GoalDetailWithPanel />
       </ProtectedRoute>
     ),
   },
-  { path: "/goal/:id/details", element: <RedirectToGoal /> },
+  { path: '/goal/:id/details', element: <RedirectToGoal /> },
   {
-    path: "/analytics",
+    path: '/analytics',
     element: (
       <ProtectedRoute>
         <Analytics />
@@ -60,7 +60,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: "/garden",
+    path: '/garden',
     element: (
       <ProtectedRoute>
         <Garden />
@@ -68,7 +68,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: "/community",
+    path: '/community',
     element: (
       <ProtectedRoute>
         <Community />
@@ -76,18 +76,18 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: "/rooms/:slug",
+    path: '/rooms/:slug',
     element: (
       <ProtectedRoute>
         <StudyRoom />
       </ProtectedRoute>
     ),
   },
-  { path: "/u/:username", Component: PublicProfile },
-  { path: "/privacy", Component: Privacy },
-  { path: "/terms", Component: Terms },
+  { path: '/u/:username', Component: PublicProfile },
+  { path: '/privacy', Component: Privacy },
+  { path: '/terms', Component: Terms },
   {
-    path: "/settings",
+    path: '/settings',
     element: (
       <ProtectedRoute>
         <Settings />

@@ -7,31 +7,31 @@
 // running on a fork that doesn't have the secret), we log and exit cleanly
 // instead of failing the build.
 
-import { existsSync, readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { createClient } from "@supabase/supabase-js";
+import { existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { createClient } from '@supabase/supabase-js';
 
 // Mirror playwright.config.ts's .env loader so this works whether the user
 // exports vars or relies on .env. Existing process.env wins. fileURLToPath
 // handles project paths that contain spaces / parens.
-const envPath = fileURLToPath(new URL("../../.env", import.meta.url));
+const envPath = fileURLToPath(new URL('../../.env', import.meta.url));
 if (existsSync(envPath)) {
-  for (const line of readFileSync(envPath, "utf8").split("\n")) {
+  for (const line of readFileSync(envPath, 'utf8').split('\n')) {
     const m = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/);
     if (m && process.env[m[1]] === undefined) {
-      process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+      process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
     }
   }
 }
 
 const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
 const SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
-const SIGNUP_PREFIX = process.env.E2E_SIGNUP_PREFIX ?? "demo_signup_";
+const SIGNUP_PREFIX = process.env.E2E_SIGNUP_PREFIX ?? 'demo_signup_';
 
 export default async function teardown() {
   if (!SUPABASE_URL || !SECRET_KEY) {
     console.warn(
-      "[teardown] SUPABASE_SECRET_KEY not set; skipping demo_signup_* cleanup. " +
+      '[teardown] SUPABASE_SECRET_KEY not set; skipping demo_signup_* cleanup. ' +
         "Sweep manually with: delete from auth.users where email like 'demo_signup_%@studysprint.app';",
     );
     return;

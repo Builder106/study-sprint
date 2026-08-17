@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Page } from '@playwright/test';
 
 // Test-only helpers for talking to Supabase from inside step definitions.
 // Setup steps (e.g. "I have a goal titled X") create rows directly via the
@@ -14,18 +14,18 @@ export function supabaseUrl(): string {
   const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
   if (!url) {
     throw new Error(
-      "e2e: SUPABASE_URL (or VITE_SUPABASE_URL) is not set. " +
-        "Source your .env or pass them as env vars before running tests.",
+      'e2e: SUPABASE_URL (or VITE_SUPABASE_URL) is not set. ' +
+        'Source your .env or pass them as env vars before running tests.',
     );
   }
-  return url.replace(/\/$/, "");
+  return url.replace(/\/$/, '');
 }
 
 export function supabasePublishableKey(): string {
   const key = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
   if (!key) {
     throw new Error(
-      "e2e: SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY) is not set.",
+      'e2e: SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY) is not set.',
     );
   }
   return key;
@@ -56,15 +56,15 @@ export async function getAccessToken(page: Page): Promise<string | null> {
 export async function getUserId(page: Page): Promise<string> {
   const ref = projectRef();
   const raw = await page.evaluate((key) => localStorage.getItem(key), `sb-${ref}-auth-token`);
-  if (!raw) throw new Error("e2e: no Supabase session in localStorage");
+  if (!raw) throw new Error('e2e: no Supabase session in localStorage');
   const parsed = JSON.parse(raw);
   const id = parsed.user?.id;
-  if (!id) throw new Error("e2e: Supabase session has no user.id");
+  if (!id) throw new Error('e2e: Supabase session has no user.id');
   return id;
 }
 
 export interface RestOptions {
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
   body?: unknown;
   /** Adds Prefer: return=representation so the response body has the row(s). */
   returnRow?: boolean;
@@ -76,17 +76,17 @@ export async function rest<T = unknown>(
   options: RestOptions = {},
 ): Promise<T> {
   const token = await getAccessToken(page);
-  if (!token) throw new Error("e2e: no Supabase session in localStorage");
+  if (!token) throw new Error('e2e: no Supabase session in localStorage');
 
   const headers: Record<string, string> = {
     apikey: supabasePublishableKey(),
     Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   };
-  if (options.returnRow) headers.Prefer = "return=representation";
+  if (options.returnRow) headers.Prefer = 'return=representation';
 
   const res = await page.request.fetch(`${supabaseUrl()}/rest/v1${path}`, {
-    method: options.method ?? "GET",
+    method: options.method ?? 'GET',
     headers,
     data: options.body ? JSON.stringify(options.body) : undefined,
     failOnStatusCode: false,
@@ -95,7 +95,7 @@ export async function rest<T = unknown>(
   if (!res.ok()) {
     const text = await res.text();
     throw new Error(
-      `e2e: Supabase REST ${options.method ?? "GET"} ${path} → ${res.status()} ${text}`,
+      `e2e: Supabase REST ${options.method ?? 'GET'} ${path} → ${res.status()} ${text}`,
     );
   }
 
@@ -114,5 +114,5 @@ export async function rpc<T = unknown>(
   fn: string,
   args: Record<string, unknown> = {},
 ): Promise<T> {
-  return rest<T>(page, `/rpc/${fn}`, { method: "POST", body: args });
+  return rest<T>(page, `/rpc/${fn}`, { method: 'POST', body: args });
 }

@@ -1,34 +1,34 @@
-import { Link, useNavigate } from "react-router";
-import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from 'react-router';
+import { useEffect, useMemo, useState } from 'react';
 import {
-  Plus,
-  ChevronRight,
   Activity,
   BarChart3,
-  Sparkles,
+  Check,
+  CheckCircle,
+  ChevronRight,
+  Copy,
+  ExternalLink,
   Leaf,
-  Users,
   Pause,
   Play,
-  CheckCircle,
-  Copy,
+  Plus,
+  Sparkles,
   Trash2,
-  ExternalLink,
-  Check,
+  Users,
   X,
-} from "lucide-react";
-import { toast } from "sonner";
-import { api, ApiError } from "@/lib/api";
-import { minutesToHours, progressPercent } from "@/lib/format";
-import type { Goal, GoalStatus } from "@/lib/types";
-import { useConfirm } from "./shared/ConfirmDialog";
-import { StatusBadge } from "./shared/StatusBadge";
-import { ProgressBar } from "./shared/ProgressBar";
-import { TopNav } from "./shared/TopNav";
-import { Spinner } from "./shared/Spinner";
-import { SyllabusImport } from "./SyllabusImport";
-import { GoogleCalendarBadge } from "./shared/GoogleCalendarBadge";
-import { UpcomingCalendarEvents } from "./shared/UpcomingCalendarEvents";
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { api, ApiError } from '@/lib/api';
+import { minutesToHours, progressPercent } from '@/lib/format';
+import type { Goal, GoalStatus } from '@/lib/types';
+import { useConfirm } from './shared/ConfirmDialog';
+import { StatusBadge } from './shared/StatusBadge';
+import { ProgressBar } from './shared/ProgressBar';
+import { TopNav } from './shared/TopNav';
+import { Spinner } from './shared/Spinner';
+import { SyllabusImport } from './SyllabusImport';
+import { GoogleCalendarBadge } from './shared/GoogleCalendarBadge';
+import { UpcomingCalendarEvents } from './shared/UpcomingCalendarEvents';
 import {
   ContextMenuContent,
   ContextMenuItem,
@@ -36,7 +36,7 @@ import {
   ContextMenuRoot,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "./shared/ContextMenuPrimitives";
+} from './shared/ContextMenuPrimitives';
 import {
   SelectContent,
   SelectItem,
@@ -44,17 +44,17 @@ import {
   SelectRoot,
   SelectTrigger,
   SelectValue,
-} from "./shared/SelectPrimitives";
+} from './shared/SelectPrimitives';
 
-type StatusFilter = "All" | GoalStatus;
-type SortKey = "recent" | "logged" | "remaining" | "progress";
+type StatusFilter = 'All' | GoalStatus;
+type SortKey = 'recent' | 'logged' | 'remaining' | 'progress';
 
-const STATUS_FILTERS: StatusFilter[] = ["All", "Active", "Paused", "Completed"];
+const STATUS_FILTERS: StatusFilter[] = ['All', 'Active', 'Paused', 'Completed'];
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
-  { value: "recent", label: "Recent" },
-  { value: "logged", label: "Most logged" },
-  { value: "remaining", label: "Least remaining" },
-  { value: "progress", label: "Most progress" },
+  { value: 'recent', label: 'Recent' },
+  { value: 'logged', label: 'Most logged' },
+  { value: 'remaining', label: 'Least remaining' },
+  { value: 'progress', label: 'Most progress' },
 ];
 
 export function Dashboard() {
@@ -62,8 +62,8 @@ export function Dashboard() {
   const confirm = useConfirm();
   const [goals, setGoals] = useState<Goal[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
-  const [sortKey, setSortKey] = useState<SortKey>("recent");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('All');
+  const [sortKey, setSortKey] = useState<SortKey>('recent');
   const [showImport, setShowImport] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -90,19 +90,19 @@ export function Dashboard() {
     const results = await Promise.allSettled(
       ids.map((id) => api.updateGoal(id, { status })),
     );
-    const ok = results.filter((r) => r.status === "fulfilled").length;
+    const ok = results.filter((r) => r.status === 'fulfilled').length;
     const failed = results.length - ok;
     setGoals((prev) =>
       prev
         ? prev.map((g) => {
-            const idx = ids.indexOf(g.id);
-            if (idx < 0) return g;
-            const r = results[idx];
-            return r.status === "fulfilled" ? r.value.goal : g;
-          })
-        : prev,
+          const idx = ids.indexOf(g.id);
+          if (idx < 0) return g;
+          const r = results[idx];
+          return r.status === 'fulfilled' ? r.value.goal : g;
+        })
+        : prev
     );
-    if (failed === 0) toast.success(`Updated ${ok} goal${ok === 1 ? "" : "s"} to ${status}.`);
+    if (failed === 0) toast.success(`Updated ${ok} goal${ok === 1 ? '' : 's'} to ${status}.`);
     else toast.error(`Updated ${ok}, failed ${failed}.`);
     exitSelectMode();
   };
@@ -111,21 +111,21 @@ export function Dashboard() {
     const ids = [...selectedIds];
     if (ids.length === 0) return;
     const ok = await confirm({
-      title: `Delete ${ids.length} goal${ids.length === 1 ? "" : "s"}?`,
-      description: "This removes all associated sessions too. This cannot be undone.",
-      confirmLabel: "Delete",
-      tone: "danger",
+      title: `Delete ${ids.length} goal${ids.length === 1 ? '' : 's'}?`,
+      description: 'This removes all associated sessions too. This cannot be undone.',
+      confirmLabel: 'Delete',
+      tone: 'danger',
     });
     if (!ok) return;
     const results = await Promise.allSettled(ids.map((id) => api.deleteGoal(id)));
     const succeeded = results
-      .map((r, i) => (r.status === "fulfilled" ? ids[i] : null))
+      .map((r, i) => (r.status === 'fulfilled' ? ids[i] : null))
       .filter((v): v is string => v !== null);
     const failed = ids.length - succeeded.length;
     setGoals((prev) => (prev ? prev.filter((g) => !succeeded.includes(g.id)) : prev));
-    if (failed === 0)
-      toast.success(`Deleted ${succeeded.length} goal${succeeded.length === 1 ? "" : "s"}.`);
-    else toast.error(`Deleted ${succeeded.length}, failed ${failed}.`);
+    if (failed === 0) {
+      toast.success(`Deleted ${succeeded.length} goal${succeeded.length === 1 ? '' : 's'}.`);
+    } else toast.error(`Deleted ${succeeded.length}, failed ${failed}.`);
     exitSelectMode();
   };
 
@@ -134,28 +134,26 @@ export function Dashboard() {
       .listGoals()
       .then((res) => setGoals(res.goals))
       .catch((err: unknown) =>
-        setError(err instanceof ApiError ? err.message : "Failed to load goals"),
+        setError(err instanceof ApiError ? err.message : 'Failed to load goals')
       );
   };
 
   const setGoalStatus = async (goal: Goal, status: GoalStatus) => {
     try {
       const res = await api.updateGoal(goal.id, { status });
-      setGoals((prev) =>
-        prev ? prev.map((g) => (g.id === goal.id ? res.goal : g)) : prev,
-      );
+      setGoals((prev) => prev ? prev.map((g) => (g.id === goal.id ? res.goal : g)) : prev);
       toast.success(`Marked "${goal.title}" as ${status}.`);
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : "Failed to update goal");
+      toast.error(err instanceof ApiError ? err.message : 'Failed to update goal');
     }
   };
 
   const deleteGoalFromMenu = async (goal: Goal) => {
     const ok = await confirm({
       title: `Delete "${goal.title}"?`,
-      description: "This removes all sessions too.",
-      confirmLabel: "Delete",
-      tone: "danger",
+      description: 'This removes all sessions too.',
+      confirmLabel: 'Delete',
+      tone: 'danger',
     });
     if (!ok) return;
     try {
@@ -163,7 +161,7 @@ export function Dashboard() {
       setGoals((prev) => (prev ? prev.filter((g) => g.id !== goal.id) : prev));
       toast.success(`Deleted "${goal.title}".`);
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : "Failed to delete goal");
+      toast.error(err instanceof ApiError ? err.message : 'Failed to delete goal');
     }
   };
 
@@ -171,7 +169,7 @@ export function Dashboard() {
     const url = `${window.location.origin}/goal/${goal.id}`;
     try {
       await navigator.clipboard.writeText(url);
-      toast.success("Link copied.");
+      toast.success('Link copied.');
     } catch {
       toast.message(url);
     }
@@ -183,24 +181,24 @@ export function Dashboard() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const status = params.get("google");
-    if (status === "connected") toast.success("Google Calendar connected.");
-    else if (status === "denied") toast.message("Google Calendar connection cancelled.");
-    else if (status === "error") toast.error("Google Calendar connection failed. Try again.");
+    const status = params.get('google');
+    if (status === 'connected') toast.success('Google Calendar connected.');
+    else if (status === 'denied') toast.message('Google Calendar connection cancelled.');
+    else if (status === 'error') toast.error('Google Calendar connection failed. Try again.');
     if (status) {
-      params.delete("google");
+      params.delete('google');
       const qs = params.toString();
       window.history.replaceState(
         {},
-        "",
-        window.location.pathname + (qs ? `?${qs}` : ""),
+        '',
+        window.location.pathname + (qs ? `?${qs}` : ''),
       );
     }
   }, []);
 
   const stats = useMemo(() => {
     if (!goals) return { active: 0, hours: 0 };
-    const active = goals.filter((g) => g.status === "Active").length;
+    const active = goals.filter((g) => g.status === 'Active').length;
     const hours = Math.round(
       goals.reduce((sum, g) => sum + g.logged_minutes, 0) / 60,
     );
@@ -209,28 +207,29 @@ export function Dashboard() {
 
   const visibleGoals = useMemo(() => {
     if (!goals) return null;
-    const filtered =
-      statusFilter === "All" ? goals : goals.filter((g) => g.status === statusFilter);
+    const filtered = statusFilter === 'All'
+      ? goals
+      : goals.filter((g) => g.status === statusFilter);
     const sorted = [...filtered];
     switch (sortKey) {
-      case "logged":
+      case 'logged':
         sorted.sort((a, b) => b.logged_minutes - a.logged_minutes);
         break;
-      case "remaining":
+      case 'remaining':
         sorted.sort((a, b) => {
           const aRem = Math.max(0, Number(a.target_hours) * 60 - a.logged_minutes);
           const bRem = Math.max(0, Number(b.target_hours) * 60 - b.logged_minutes);
           return aRem - bRem;
         });
         break;
-      case "progress":
+      case 'progress':
         sorted.sort(
           (a, b) =>
             progressPercent(b.logged_minutes, b.target_hours) -
             progressPercent(a.logged_minutes, a.target_hours),
         );
         break;
-      case "recent":
+      case 'recent':
       default:
         sorted.sort(
           (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
@@ -240,84 +239,84 @@ export function Dashboard() {
   }, [goals, statusFilter, sortKey]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black">
+    <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black'>
       <TopNav
         right={
-          <div className="flex items-center gap-3">
+          <div className='flex items-center gap-3'>
             <Link
-              to="/community"
-              aria-label="Community"
-              className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors"
+              to='/community'
+              aria-label='Community'
+              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors'
             >
-              <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">Community</span>
+              <Users className='w-4 h-4' />
+              <span className='hidden sm:inline'>Community</span>
             </Link>
             <Link
-              to="/garden"
-              aria-label="Garden"
-              className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors"
+              to='/garden'
+              aria-label='Garden'
+              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors'
             >
-              <Leaf className="w-4 h-4" />
-              <span className="hidden sm:inline">Garden</span>
+              <Leaf className='w-4 h-4' />
+              <span className='hidden sm:inline'>Garden</span>
             </Link>
             <Link
-              to="/analytics"
-              aria-label="Analytics"
-              className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors"
+              to='/analytics'
+              aria-label='Analytics'
+              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors'
             >
-              <BarChart3 className="w-4 h-4" />
-              <span className="hidden sm:inline">Analytics</span>
+              <BarChart3 className='w-4 h-4' />
+              <span className='hidden sm:inline'>Analytics</span>
             </Link>
             <button
               onClick={() => setShowImport(true)}
-              aria-label="Import from syllabus"
-              className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors"
+              aria-label='Import from syllabus'
+              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors'
             >
-              <Sparkles className="w-4 h-4" />
-              <span className="hidden sm:inline">Import</span>
+              <Sparkles className='w-4 h-4' />
+              <span className='hidden sm:inline'>Import</span>
             </button>
             <Link
-              to="/goals/new"
-              aria-label="New goal"
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-[#ccff00] text-black hover:bg-[#b3e600] transition-colors focus:outline-none"
+              to='/goals/new'
+              aria-label='New goal'
+              className='flex items-center justify-center w-10 h-10 rounded-full bg-[#ccff00] text-black hover:bg-[#b3e600] transition-colors focus:outline-none'
             >
-              <Plus className="w-5 h-5" />
+              <Plus className='w-5 h-5' />
             </Link>
           </div>
         }
       />
 
-      <main className="max-w-5xl mx-auto px-8 py-16">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+      <main className='max-w-5xl mx-auto px-8 py-16'>
+        <div className='flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16'>
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4">
-              <Activity className="w-4 h-4" />
+            <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4'>
+              <Activity className='w-4 h-4' />
               Welcome back
             </div>
-            <h1 className="text-4xl md:text-5xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50">
+            <h1 className='text-4xl md:text-5xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50'>
               Your sprints.
             </h1>
-            <p className="text-zinc-600 dark:text-zinc-400 mt-2 font-light text-lg">
+            <p className='text-zinc-600 dark:text-zinc-400 mt-2 font-light text-lg'>
               Ready to conquer your goals today?
             </p>
           </div>
 
-          <div className="flex flex-col items-end gap-4">
+          <div className='flex flex-col items-end gap-4'>
             <GoogleCalendarBadge onChange={setGoogleConnected} />
-            <div className="flex gap-8 text-right">
+            <div className='flex gap-8 text-right'>
               <div>
-                <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">
+                <div className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1'>
                   Active
                 </div>
-                <div className="text-3xl font-medium tracking-tighter text-[#ccff00]">
+                <div className='text-3xl font-medium tracking-tighter text-[#ccff00]'>
                   {stats.active}
                 </div>
               </div>
               <div>
-                <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">
+                <div className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1'>
                   Hours Logged
                 </div>
-                <div className="text-3xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50">
+                <div className='text-3xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50'>
                   {stats.hours}
                 </div>
               </div>
@@ -336,41 +335,44 @@ export function Dashboard() {
         )}
 
         {error && (
-          <div className="mb-8 text-xs text-red-400 font-medium" role="alert">
+          <div className='mb-8 text-xs text-red-400 font-medium' role='alert'>
             {error}
           </div>
         )}
 
         {goals === null && !error && (
-          <div className="py-16">
-            <Spinner label="Loading goals" />
+          <div className='py-16'>
+            <Spinner label='Loading goals' />
           </div>
         )}
 
         {goals && goals.length === 0 && (
-          <div className="border border-zinc-200 dark:border-white/10 rounded-2xl py-16 px-8 text-center space-y-4">
-            <div className="text-sm text-zinc-600 dark:text-zinc-400 font-light">No goals yet.</div>
+          <div className='border border-zinc-200 dark:border-white/10 rounded-2xl py-16 px-8 text-center space-y-4'>
+            <div className='text-sm text-zinc-600 dark:text-zinc-400 font-light'>No goals yet.</div>
             <Link
-              to="/goals/new"
-              className="inline-flex items-center gap-2 py-3 px-6 rounded-full text-xs font-bold tracking-widest uppercase bg-[#ccff00] text-black hover:bg-[#b3e600] transition-colors"
+              to='/goals/new'
+              className='inline-flex items-center gap-2 py-3 px-6 rounded-full text-xs font-bold tracking-widest uppercase bg-[#ccff00] text-black hover:bg-[#b3e600] transition-colors'
             >
-              <Plus className="w-4 h-4" /> Create first goal
+              <Plus className='w-4 h-4' /> Create first goal
             </Link>
           </div>
         )}
 
         {goals && goals.length > 0 && (
           <div
-            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-zinc-200 dark:border-white/10"
-            role="toolbar"
-            aria-label="Filter and sort goals"
+            className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-zinc-200 dark:border-white/10'
+            role='toolbar'
+            aria-label='Filter and sort goals'
           >
-            <div className="flex items-center gap-2 flex-wrap" role="group" aria-label="Filter by status">
+            <div
+              className='flex items-center gap-2 flex-wrap'
+              role='group'
+              aria-label='Filter by status'
+            >
               {STATUS_FILTERS.map((status) => {
-                const count =
-                  status === "All"
-                    ? goals.length
-                    : goals.filter((g) => g.status === status).length;
+                const count = status === 'All'
+                  ? goals.length
+                  : goals.filter((g) => g.status === status).length;
                 const active = statusFilter === status;
                 return (
                   <button
@@ -379,37 +381,39 @@ export function Dashboard() {
                     aria-pressed={active}
                     className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border transition-colors ${
                       active
-                        ? "border-[#ccff00] bg-[#ccff00]/10 text-[#ccff00]"
-                        : "border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50"
+                        ? 'border-[#ccff00] bg-[#ccff00]/10 text-[#ccff00]'
+                        : 'border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50'
                     }`}
                   >
                     {status}
-                    <span className="ml-1.5 opacity-60 tabular-nums">{count}</span>
+                    <span className='ml-1.5 opacity-60 tabular-nums'>{count}</span>
                   </button>
                 );
               })}
             </div>
-            <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+            <div className='flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500'>
               <button
                 onClick={() => {
-                  if (selectMode) exitSelectMode();
-                  else setSelectMode(true);
+                  if (selectMode) {
+                    exitSelectMode();
+                  } else setSelectMode(true);
                 }}
                 aria-pressed={selectMode}
                 className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border transition-colors ${
                   selectMode
-                    ? "border-[#ccff00] bg-[#ccff00]/10 text-[#ccff00]"
-                    : "border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50"
+                    ? 'border-[#ccff00] bg-[#ccff00]/10 text-[#ccff00]'
+                    : 'border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50'
                 }`}
               >
-                {selectMode ? "Done" : "Select"}
+                {selectMode ? 'Done' : 'Select'}
               </button>
-              <span id="sort-label">Sort</span>
+              <span id='sort-label'>Sort</span>
               <SelectRoot
                 value={sortKey}
-                onValueChange={(v) => setSortKey(v as SortKey)}
+                onValueChange={(v) =>
+                  setSortKey(v as SortKey)}
               >
-                <SelectTrigger aria-labelledby="sort-label">
+                <SelectTrigger aria-labelledby='sort-label'>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectPortal>
@@ -427,69 +431,79 @@ export function Dashboard() {
         )}
 
         {visibleGoals && visibleGoals.length === 0 && goals && goals.length > 0 && (
-          <div className="py-16 text-center text-xs font-bold text-zinc-500 uppercase tracking-widest">
-            No {statusFilter === "All" ? "" : statusFilter.toLowerCase() + " "}goals match.
+          <div className='py-16 text-center text-xs font-bold text-zinc-500 uppercase tracking-widest'>
+            No {statusFilter === 'All' ? '' : statusFilter.toLowerCase() + ' '}goals match.
           </div>
         )}
 
         {visibleGoals && visibleGoals.length > 0 && (
-          <div className="border-b border-zinc-200 dark:border-white/10">
+          <div className='border-b border-zinc-200 dark:border-white/10'>
             {visibleGoals.map((goal) => {
               const percent = progressPercent(goal.logged_minutes, goal.target_hours);
               const logged = minutesToHours(goal.logged_minutes);
               const target = Number(goal.target_hours);
               const checked = selectedIds.has(goal.id);
               const rowInner = (
-                <div className={`py-8 border-b border-zinc-200 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8 transition-colors -mx-4 px-4 rounded-xl ${
-                  selectMode
-                    ? checked
-                      ? "bg-[#ccff00]/5"
-                      : "hover:bg-zinc-50 dark:hover:bg-white/[0.02]"
-                    : "group-hover:bg-zinc-50 dark:group-hover:bg-white/[0.02]"
-                }`}>
+                <div
+                  className={`py-8 border-b border-zinc-200 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8 transition-colors -mx-4 px-4 rounded-xl ${
+                    selectMode
+                      ? checked ? 'bg-[#ccff00]/5' : 'hover:bg-zinc-50 dark:hover:bg-white/[0.02]'
+                      : 'group-hover:bg-zinc-50 dark:group-hover:bg-white/[0.02]'
+                  }`}
+                >
                   {selectMode && (
-                    <div className="flex-shrink-0 self-start md:self-center">
+                    <div className='flex-shrink-0 self-start md:self-center'>
                       <span
                         aria-hidden
                         className={`flex items-center justify-center w-5 h-5 rounded-md border transition-colors ${
                           checked
-                            ? "border-[#ccff00] bg-[#ccff00] text-black"
-                            : "border-zinc-300 dark:border-white/20"
+                            ? 'border-[#ccff00] bg-[#ccff00] text-black'
+                            : 'border-zinc-300 dark:border-white/20'
                         }`}
                       >
-                        {checked && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
+                        {checked && <Check className='w-3.5 h-3.5' strokeWidth={3} />}
                       </span>
                     </div>
                   )}
-                  <div className="flex-1 space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
-                      <h3 className={`text-xl md:text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 transition-colors ${selectMode ? "" : "group-hover:text-[#ccff00]"}`}>
+                  <div className='flex-1 space-y-3'>
+                    <div className='flex flex-col sm:flex-row sm:items-center gap-4 justify-between'>
+                      <h3
+                        className={`text-xl md:text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 transition-colors ${
+                          selectMode ? '' : 'group-hover:text-[#ccff00]'
+                        }`}
+                      >
                         {goal.title}
                       </h3>
-                      <div className="flex-shrink-0">
+                      <div className='flex-shrink-0'>
                         <StatusBadge status={goal.status} />
                       </div>
                     </div>
-                    <div className="flex gap-6 text-sm text-zinc-500 font-light">
+                    <div className='flex gap-6 text-sm text-zinc-500 font-light'>
                       <span>
-                        Target: <span className="text-zinc-700 dark:text-zinc-300">{Number(goal.target_hours)}h</span>
+                        Target:{' '}
+                        <span className='text-zinc-700 dark:text-zinc-300'>
+                          {Number(goal.target_hours)}h
+                        </span>
                       </span>
                       <span>
-                        Logged: <span className="text-[#ccff00]">{minutesToHours(goal.logged_minutes)}h</span>
+                        Logged:{' '}
+                        <span className='text-[#ccff00]'>
+                          {minutesToHours(goal.logged_minutes)}h
+                        </span>
                       </span>
                     </div>
-                    <div className="w-full max-w-xl flex items-center gap-4 mt-2">
-                      <div className="flex-1">
+                    <div className='w-full max-w-xl flex items-center gap-4 mt-2'>
+                      <div className='flex-1'>
                         <ProgressBar percent={percent} />
                       </div>
-                      <span className="text-xs font-medium text-zinc-500 tabular-nums w-10 text-right">
+                      <span className='text-xs font-medium text-zinc-500 tabular-nums w-10 text-right'>
                         {percent}%
                       </span>
                     </div>
                   </div>
                   {!selectMode && (
-                    <div className="hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-zinc-200 dark:border-white/10 group-hover:border-[#ccff00] group-hover:text-[#ccff00] transition-colors">
-                      <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                    <div className='hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-zinc-200 dark:border-white/10 group-hover:border-[#ccff00] group-hover:text-[#ccff00] transition-colors'>
+                      <ChevronRight className='w-5 h-5 group-hover:translate-x-0.5 transition-transform' />
                     </div>
                   )}
                 </div>
@@ -499,10 +513,10 @@ export function Dashboard() {
                 return (
                   <button
                     key={goal.id}
-                    type="button"
+                    type='button'
                     onClick={() => toggleSelected(goal.id)}
                     aria-pressed={checked}
-                    className="block w-full text-left"
+                    className='block w-full text-left'
                   >
                     {rowInner}
                   </button>
@@ -512,39 +526,40 @@ export function Dashboard() {
               return (
                 <ContextMenuRoot key={goal.id}>
                   <ContextMenuTrigger asChild>
-                    <Link to={`/goal/${goal.id}`} className="block group">
-                      <div className="py-8 border-b border-zinc-200 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8 group-hover:bg-zinc-50 dark:group-hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl">
-                        <div className="flex-1 space-y-3">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
-                            <h3 className="text-xl md:text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 group-hover:text-[#ccff00] transition-colors">
+                    <Link to={`/goal/${goal.id}`} className='block group'>
+                      <div className='py-8 border-b border-zinc-200 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8 group-hover:bg-zinc-50 dark:group-hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl'>
+                        <div className='flex-1 space-y-3'>
+                          <div className='flex flex-col sm:flex-row sm:items-center gap-4 justify-between'>
+                            <h3 className='text-xl md:text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 group-hover:text-[#ccff00] transition-colors'>
                               {goal.title}
                             </h3>
-                            <div className="flex-shrink-0">
+                            <div className='flex-shrink-0'>
                               <StatusBadge status={goal.status} />
                             </div>
                           </div>
 
-                          <div className="flex gap-6 text-sm text-zinc-500 font-light">
+                          <div className='flex gap-6 text-sm text-zinc-500 font-light'>
                             <span>
-                              Target: <span className="text-zinc-700 dark:text-zinc-300">{target}h</span>
+                              Target:{' '}
+                              <span className='text-zinc-700 dark:text-zinc-300'>{target}h</span>
                             </span>
                             <span>
-                              Logged: <span className="text-[#ccff00]">{logged}h</span>
+                              Logged: <span className='text-[#ccff00]'>{logged}h</span>
                             </span>
                           </div>
 
-                          <div className="w-full max-w-xl flex items-center gap-4 mt-2">
-                            <div className="flex-1">
+                          <div className='w-full max-w-xl flex items-center gap-4 mt-2'>
+                            <div className='flex-1'>
                               <ProgressBar percent={percent} />
                             </div>
-                            <span className="text-xs font-medium text-zinc-500 tabular-nums w-10 text-right">
+                            <span className='text-xs font-medium text-zinc-500 tabular-nums w-10 text-right'>
                               {percent}%
                             </span>
                           </div>
                         </div>
 
-                        <div className="hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-zinc-200 dark:border-white/10 group-hover:border-[#ccff00] group-hover:text-[#ccff00] transition-colors">
-                          <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                        <div className='hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-zinc-200 dark:border-white/10 group-hover:border-[#ccff00] group-hover:text-[#ccff00] transition-colors'>
+                          <ChevronRight className='w-5 h-5 group-hover:translate-x-0.5 transition-transform' />
                         </div>
                       </div>
                     </Link>
@@ -552,52 +567,52 @@ export function Dashboard() {
                   <ContextMenuPortal>
                     <ContextMenuContent>
                       <ContextMenuItem
-                        icon={<ExternalLink className="w-full h-full" />}
+                        icon={<ExternalLink className='w-full h-full' />}
                         onSelect={() => navigate(`/goal/${goal.id}`)}
                       >
                         Open
                       </ContextMenuItem>
-                      {goal.status === "Active" && (
+                      {goal.status === 'Active' && (
                         <ContextMenuItem
-                          icon={<Pause className="w-full h-full" />}
-                          onSelect={() => setGoalStatus(goal, "Paused")}
+                          icon={<Pause className='w-full h-full' />}
+                          onSelect={() => setGoalStatus(goal, 'Paused')}
                         >
                           Pause
                         </ContextMenuItem>
                       )}
-                      {goal.status === "Paused" && (
+                      {goal.status === 'Paused' && (
                         <ContextMenuItem
-                          icon={<Play className="w-full h-full" />}
-                          onSelect={() => setGoalStatus(goal, "Active")}
+                          icon={<Play className='w-full h-full' />}
+                          onSelect={() => setGoalStatus(goal, 'Active')}
                         >
                           Resume
                         </ContextMenuItem>
                       )}
-                      {goal.status === "Completed" && (
+                      {goal.status === 'Completed' && (
                         <ContextMenuItem
-                          icon={<Play className="w-full h-full" />}
-                          onSelect={() => setGoalStatus(goal, "Active")}
+                          icon={<Play className='w-full h-full' />}
+                          onSelect={() => setGoalStatus(goal, 'Active')}
                         >
                           Reactivate
                         </ContextMenuItem>
                       )}
-                      {goal.status !== "Completed" && (
+                      {goal.status !== 'Completed' && (
                         <ContextMenuItem
-                          icon={<CheckCircle className="w-full h-full" />}
-                          onSelect={() => setGoalStatus(goal, "Completed")}
+                          icon={<CheckCircle className='w-full h-full' />}
+                          onSelect={() => setGoalStatus(goal, 'Completed')}
                         >
                           Mark complete
                         </ContextMenuItem>
                       )}
                       <ContextMenuItem
-                        icon={<Copy className="w-full h-full" />}
+                        icon={<Copy className='w-full h-full' />}
                         onSelect={() => copyGoalLink(goal)}
                       >
                         Copy link
                       </ContextMenuItem>
                       <ContextMenuSeparator />
                       <ContextMenuItem
-                        icon={<Trash2 className="w-full h-full" />}
+                        icon={<Trash2 className='w-full h-full' />}
                         danger
                         onSelect={() => deleteGoalFromMenu(goal)}
                       >
@@ -614,54 +629,53 @@ export function Dashboard() {
 
       {selectMode && (() => {
         const selected = goals?.filter((g) => selectedIds.has(g.id)) ?? [];
-        const allCompleted =
-          selected.length > 0 && selected.every((g) => g.status === "Completed");
-        const activateLabel = allCompleted ? "Reactivate" : "Resume";
+        const allCompleted = selected.length > 0 && selected.every((g) => g.status === 'Completed');
+        const activateLabel = allCompleted ? 'Reactivate' : 'Resume';
         return (
-        <div
-          role="toolbar"
-          aria-label="Bulk actions"
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-white dark:bg-[#0a0a0a] border border-zinc-200 dark:border-white/10 shadow-2xl backdrop-blur-md"
-        >
-          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 px-2">
-            {selectedIds.size} selected
-          </span>
-          <button
-            disabled={selectedIds.size === 0}
-            onClick={() => bulkUpdateStatus("Paused")}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          <div
+            role='toolbar'
+            aria-label='Bulk actions'
+            className='fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-white dark:bg-[#0a0a0a] border border-zinc-200 dark:border-white/10 shadow-2xl backdrop-blur-md'
           >
-            <Pause className="w-3 h-3" /> Pause
-          </button>
-          <button
-            disabled={selectedIds.size === 0}
-            onClick={() => bulkUpdateStatus("Active")}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            <Play className="w-3 h-3" /> {activateLabel}
-          </button>
-          <button
-            disabled={selectedIds.size === 0}
-            onClick={() => bulkUpdateStatus("Completed")}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            <CheckCircle className="w-3 h-3" /> Complete
-          </button>
-          <button
-            disabled={selectedIds.size === 0}
-            onClick={bulkDelete}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            <Trash2 className="w-3 h-3" /> Delete
-          </button>
-          <button
-            onClick={exitSelectMode}
-            aria-label="Exit selection mode"
-            className="flex items-center justify-center w-7 h-7 rounded-full border border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
+            <span className='text-[10px] font-bold uppercase tracking-widest text-zinc-500 px-2'>
+              {selectedIds.size} selected
+            </span>
+            <button
+              disabled={selectedIds.size === 0}
+              onClick={() => bulkUpdateStatus('Paused')}
+              className='flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors'
+            >
+              <Pause className='w-3 h-3' /> Pause
+            </button>
+            <button
+              disabled={selectedIds.size === 0}
+              onClick={() => bulkUpdateStatus('Active')}
+              className='flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors'
+            >
+              <Play className='w-3 h-3' /> {activateLabel}
+            </button>
+            <button
+              disabled={selectedIds.size === 0}
+              onClick={() => bulkUpdateStatus('Completed')}
+              className='flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors'
+            >
+              <CheckCircle className='w-3 h-3' /> Complete
+            </button>
+            <button
+              disabled={selectedIds.size === 0}
+              onClick={bulkDelete}
+              className='flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors'
+            >
+              <Trash2 className='w-3 h-3' /> Delete
+            </button>
+            <button
+              onClick={exitSelectMode}
+              aria-label='Exit selection mode'
+              className='flex items-center justify-center w-7 h-7 rounded-full border border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors'
+            >
+              <X className='w-3.5 h-3.5' />
+            </button>
+          </div>
         );
       })()}
 
@@ -670,7 +684,7 @@ export function Dashboard() {
           onClose={() => setShowImport(false)}
           onCreated={(count) => {
             setShowImport(false);
-            toast.success(`Created ${count} goal${count === 1 ? "" : "s"} from syllabus.`);
+            toast.success(`Created ${count} goal${count === 1 ? '' : 's'} from syllabus.`);
             loadGoals();
           }}
         />

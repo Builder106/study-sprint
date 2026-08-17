@@ -1,6 +1,6 @@
-import * as S from "@radix-ui/react-select";
-import { Check, ChevronDown } from "lucide-react";
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import * as S from '@radix-ui/react-select';
+import { Check, ChevronDown } from 'lucide-react';
+import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 
 export const SelectRoot = S.Root;
 export const SelectValue = S.Value;
@@ -8,7 +8,7 @@ export const SelectPortal = S.Portal;
 
 export function SelectTrigger({
   children,
-  className = "",
+  className = '',
   ...props
 }: ComponentPropsWithoutRef<typeof S.Trigger>) {
   return (
@@ -18,7 +18,7 @@ export function SelectTrigger({
     >
       {children}
       <S.Icon>
-        <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+        <ChevronDown className='w-3.5 h-3.5 opacity-60' />
       </S.Icon>
     </S.Trigger>
   );
@@ -30,12 +30,12 @@ export function SelectContent({
 }: ComponentPropsWithoutRef<typeof S.Content>) {
   return (
     <S.Content
-      position="popper"
+      position='popper'
       sideOffset={6}
       {...props}
-      className="z-50 min-w-[var(--radix-select-trigger-width)] bg-white dark:bg-[#0a0a0a] border border-zinc-200 dark:border-white/10 rounded-xl p-1 shadow-2xl backdrop-blur-md overflow-hidden"
+      className='z-50 min-w-[var(--radix-select-trigger-width)] bg-white dark:bg-[#0a0a0a] border border-zinc-200 dark:border-white/10 rounded-xl p-1 shadow-2xl backdrop-blur-md overflow-hidden'
     >
-      <S.Viewport className="p-0">{children}</S.Viewport>
+      <S.Viewport className='p-0'>{children}</S.Viewport>
     </S.Content>
   );
 }
@@ -48,11 +48,11 @@ export function SelectItem({ children, ...props }: ItemProps) {
   return (
     <S.Item
       {...props}
-      className="flex items-center justify-between gap-3 px-3 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg cursor-pointer outline-none select-none text-zinc-700 dark:text-zinc-300 data-[highlighted]:bg-zinc-100 dark:data-[highlighted]:bg-white/5 data-[highlighted]:text-[#ccff00] data-[state=checked]:text-[#ccff00] data-[disabled]:opacity-40 data-[disabled]:cursor-not-allowed"
+      className='flex items-center justify-between gap-3 px-3 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg cursor-pointer outline-none select-none text-zinc-700 dark:text-zinc-300 data-[highlighted]:bg-zinc-100 dark:data-[highlighted]:bg-white/5 data-[highlighted]:text-[#ccff00] data-[state=checked]:text-[#ccff00] data-[disabled]:opacity-40 data-[disabled]:cursor-not-allowed'
     >
       <S.ItemText>{children}</S.ItemText>
       <S.ItemIndicator>
-        <Check className="w-3 h-3" />
+        <Check className='w-3 h-3' />
       </S.ItemIndicator>
     </S.Item>
   );

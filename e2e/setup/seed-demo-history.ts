@@ -47,18 +47,18 @@
 //                                      acceptance criteria before touching
 //                                      production data)
 
-import "jsr:@std/dotenv/load";
-import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
+import 'jsr:@std/dotenv/load';
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? Deno.env.get("VITE_SUPABASE_URL");
-const SECRET_KEY = Deno.env.get("SUPABASE_SECRET_KEY");
-const DEMO_EMAIL = Deno.env.get("E2E_DEMO_EMAIL") ?? "demo@studysprint.app";
-const DRY_RUN = Deno.args.includes("--dry-run");
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? Deno.env.get('VITE_SUPABASE_URL');
+const SECRET_KEY = Deno.env.get('SUPABASE_SECRET_KEY');
+const DEMO_EMAIL = Deno.env.get('E2E_DEMO_EMAIL') ?? 'demo@studysprint.app';
+const DRY_RUN = Deno.args.includes('--dry-run');
 
 if (!DRY_RUN && (!SUPABASE_URL || !SECRET_KEY)) {
   console.error(
-    "seed-demo-history: SUPABASE_URL and SUPABASE_SECRET_KEY must be set.\n" +
-      "Pull them from the Supabase dashboard (Project Settings → API Keys).",
+    'seed-demo-history: SUPABASE_URL and SUPABASE_SECRET_KEY must be set.\n' +
+      'Pull them from the Supabase dashboard (Project Settings → API Keys).',
   );
   Deno.exit(1);
 }
@@ -90,7 +90,7 @@ const FILLER_MIN_DURATION = 15;
 const FILLER_MAX_DURATION = 235; // just under the day cap; isolated day, no conflict
 const FILLER_MAX_ITER = 30;
 
-const SUBJECTS = ["Computer Science", "Mathematics", "Languages", "Writing", "Science"] as const;
+const SUBJECTS = ['Computer Science', 'Mathematics', 'Languages', 'Writing', 'Science'] as const;
 type Subject = (typeof SUBJECTS)[number];
 // Target shares ~35/25/18/12/10, in SUBJECTS order.
 const SUBJECT_WEIGHTS = [0.35, 0.25, 0.18, 0.12, 0.1];
@@ -224,12 +224,12 @@ function levelFromXp(xp: number): number {
   return Math.max(0, Math.floor(Math.sqrt(xp / 100)));
 }
 const PET_STAGES = [
-  { level: 0, key: "seed" },
-  { level: 1, key: "sprout" },
-  { level: 4, key: "sapling" },
-  { level: 8, key: "young_tree" },
-  { level: 14, key: "mature_tree" },
-  { level: 22, key: "blooming" },
+  { level: 0, key: 'seed' },
+  { level: 1, key: 'sprout' },
+  { level: 4, key: 'sapling' },
+  { level: 8, key: 'young_tree' },
+  { level: 14, key: 'mature_tree' },
+  { level: 22, key: 'blooming' },
 ] as const;
 function stageForLevel(level: number): string {
   let current: (typeof PET_STAGES)[number] = PET_STAGES[0];
@@ -370,7 +370,7 @@ interface GoalDef {
   key: string;
   title: string;
   subject: Subject;
-  status: "Active" | "Completed" | "Paused";
+  status: 'Active' | 'Completed' | 'Paused';
   target_hours: number;
   target_date_days: number | null; // days from today, null = no target date
   description: string;
@@ -378,76 +378,76 @@ interface GoalDef {
 
 const GOAL_DEFS: GoalDef[] = [
   {
-    key: "cs_active",
-    title: "CS 201: Data Structures & Algorithms",
-    subject: "Computer Science",
-    status: "Active",
+    key: 'cs_active',
+    title: 'CS 201: Data Structures & Algorithms',
+    subject: 'Computer Science',
+    status: 'Active',
     target_hours: 80,
     target_date_days: 40,
-    description: "Trees, graphs, and the algorithms that live on them, before the midterm.",
+    description: 'Trees, graphs, and the algorithms that live on them, before the midterm.',
   },
   {
-    key: "math_active",
-    title: "Linear Algebra Review",
-    subject: "Mathematics",
-    status: "Active",
+    key: 'math_active',
+    title: 'Linear Algebra Review',
+    subject: 'Mathematics',
+    status: 'Active',
     target_hours: 60,
     target_date_days: 30,
-    description: "Eigenvalues, decompositions, and the proofs I keep forgetting.",
+    description: 'Eigenvalues, decompositions, and the proofs I keep forgetting.',
   },
   {
-    key: "lang_active",
-    title: "Spanish B2 Immersion",
-    subject: "Languages",
-    status: "Active",
+    key: 'lang_active',
+    title: 'Spanish B2 Immersion',
+    subject: 'Languages',
+    status: 'Active',
     target_hours: 50,
     target_date_days: 60,
-    description: "Daily listening + conversation practice toward a B2 certificate.",
+    description: 'Daily listening + conversation practice toward a B2 certificate.',
   },
   {
-    key: "writing_completed",
-    title: "Technical Writing Practice",
-    subject: "Writing",
-    status: "Completed",
+    key: 'writing_completed',
+    title: 'Technical Writing Practice',
+    subject: 'Writing',
+    status: 'Completed',
     target_hours: 20,
     target_date_days: null,
-    description: "Clear, short documentation. Wrapped up ahead of schedule.",
+    description: 'Clear, short documentation. Wrapped up ahead of schedule.',
   },
   {
-    key: "science_completed",
-    title: "Intro to Physics",
-    subject: "Science",
-    status: "Completed",
+    key: 'science_completed',
+    title: 'Intro to Physics',
+    subject: 'Science',
+    status: 'Completed',
     target_hours: 30,
     target_date_days: null,
-    description: "Mechanics through waves — finished last semester.",
+    description: 'Mechanics through waves — finished last semester.',
   },
   {
-    key: "cs_paused",
-    title: "Machine Learning Specialization",
-    subject: "Computer Science",
-    status: "Paused",
+    key: 'cs_paused',
+    title: 'Machine Learning Specialization',
+    subject: 'Computer Science',
+    status: 'Paused',
     target_hours: 100,
     target_date_days: null,
-    description: "On hold until CS 201 wraps up.",
+    description: 'On hold until CS 201 wraps up.',
   },
 ];
 
 // Session-log target for the Tier 2 recording — the active goal it logs
 // against. Kept stable/deterministic so e2e/demo/steps/tour.steps.ts can
 // reference it by title.
-const RECORDING_TARGET_GOAL_KEY = "cs_active";
+const RECORDING_TARGET_GOAL_KEY = 'cs_active';
 
 function goalKeyForSession(subject: Subject, dayIndex: number): string {
-  if (subject === "Computer Science") {
-    return dayIndex >= OLD_START && rand() < 0.5 ? "cs_paused" : "cs_active";
+  if (subject === 'Computer Science') {
+    return dayIndex >= OLD_START && rand() < 0.5 ? 'cs_paused' : 'cs_active';
   }
   const bySubject: Record<Subject, string> = {
-    "Computer Science": "cs_active",
-    Mathematics: "math_active",
-    Languages: "lang_active",
-    Writing: "writing_completed",
-    Science: "science_completed",
+    'Computer Science': 'cs_active',
+    Mathematics: 'math_active',
+    Languages: 'lang_active',
+    Writing: 'writing_completed',
+    Science: 'science_completed',
   };
   return bySubject[subject];
 }
@@ -459,7 +459,7 @@ function goalKeyForSession(subject: Subject, dayIndex: number): string {
 // never a hardcoded id list.
 // ============================================================================
 
-const SOCIAL_DOMAIN = "demo.studysprint.invalid";
+const SOCIAL_DOMAIN = 'demo.studysprint.invalid';
 
 // These are real, email-confirmed accounts on the live Supabase project, so
 // their password must never be a literal in this file — the repo is public,
@@ -468,7 +468,7 @@ const SOCIAL_DOMAIN = "demo.studysprint.invalid";
 // or in the recording ever needs to sign in as a social fixture, so a password
 // nobody records is fine. Set SEED_SOCIAL_PASSWORD only if you actually need
 // to log in as one of them to debug.
-const SOCIAL_PASSWORD = Deno.env.get("SEED_SOCIAL_PASSWORD") ??
+const SOCIAL_PASSWORD = Deno.env.get('SEED_SOCIAL_PASSWORD') ??
   `ss-demo-${crypto.randomUUID()}`;
 
 interface SocialUserDef {
@@ -486,74 +486,74 @@ interface SocialUserDef {
 // regardless of the exact PRNG output.
 const SOCIAL_USERS: SocialUserDef[] = [
   {
-    slug: "priya",
-    displayName: "Priya K.",
-    bio: "Chasing a 4.0, one pomodoro at a time.",
-    subject: "Computer Science",
+    slug: 'priya',
+    displayName: 'Priya K.',
+    bio: 'Chasing a 4.0, one pomodoro at a time.',
+    subject: 'Computer Science',
     weeklyMinuteMultiplier: 1.6,
     inRoom: true,
   },
   {
-    slug: "marcus",
-    displayName: "Marcus T.",
-    bio: "MCAT prep, mostly at 6am.",
-    subject: "Science",
+    slug: 'marcus',
+    displayName: 'Marcus T.',
+    bio: 'MCAT prep, mostly at 6am.',
+    subject: 'Science',
     weeklyMinuteMultiplier: 1.25,
     inRoom: true,
   },
   {
-    slug: "elena",
-    displayName: "Elena R.",
-    bio: "Learning German for a semester abroad.",
-    subject: "Languages",
+    slug: 'elena',
+    displayName: 'Elena R.',
+    bio: 'Learning German for a semester abroad.',
+    subject: 'Languages',
     weeklyMinuteMultiplier: 0.75,
     inRoom: true,
   },
   {
-    slug: "davidk",
-    displayName: "David K.",
-    bio: "Bar prep, one outline at a time.",
-    subject: "Writing",
+    slug: 'davidk',
+    displayName: 'David K.',
+    bio: 'Bar prep, one outline at a time.',
+    subject: 'Writing',
     weeklyMinuteMultiplier: 0.55,
     inRoom: true,
   },
   {
-    slug: "sofia",
-    displayName: "Sofia M.",
-    bio: "Calc II study group organizer.",
-    subject: "Mathematics",
+    slug: 'sofia',
+    displayName: 'Sofia M.',
+    bio: 'Calc II study group organizer.',
+    subject: 'Mathematics',
     weeklyMinuteMultiplier: 0.4,
     inRoom: false,
   },
   {
-    slug: "jamal",
-    displayName: "Jamal B.",
-    bio: "Self-taught, building in public.",
-    subject: "Computer Science",
+    slug: 'jamal',
+    displayName: 'Jamal B.',
+    bio: 'Self-taught, building in public.',
+    subject: 'Computer Science',
     weeklyMinuteMultiplier: 0.28,
     inRoom: false,
   },
   {
-    slug: "wei",
-    displayName: "Wei L.",
-    bio: "Grad school apps + GRE review.",
-    subject: "Mathematics",
+    slug: 'wei',
+    displayName: 'Wei L.',
+    bio: 'Grad school apps + GRE review.',
+    subject: 'Mathematics',
     weeklyMinuteMultiplier: 0.15,
     inRoom: false,
   },
   {
-    slug: "amara",
-    displayName: "Amara O.",
-    bio: "Studying between shifts.",
-    subject: "Science",
+    slug: 'amara',
+    displayName: 'Amara O.',
+    bio: 'Studying between shifts.',
+    subject: 'Science',
     weeklyMinuteMultiplier: 0.08,
     inRoom: false,
   },
 ];
 
-const ROOM_SLUG = "ss-demo-study-squad";
-const ROOM_NAME = "Study Squad";
-const ROOM_DESCRIPTION = "Evening check-ins, mostly CS and pre-med.";
+const ROOM_SLUG = 'ss-demo-study-squad';
+const ROOM_NAME = 'Study Squad';
+const ROOM_DESCRIPTION = 'Evening check-ins, mostly CS and pre-med.';
 
 // ============================================================================
 // Supabase IO
@@ -602,7 +602,7 @@ async function main() {
   const postLog = computeProfile([
     ...sessions,
     {
-      subject: "Computer Science",
+      subject: 'Computer Science',
       duration_minutes: SESSION_LOG_MINUTES,
       quality: SESSION_LOG_QUALITY,
       logged_at: new Date(TODAY.getTime() + 60_000),
@@ -611,46 +611,46 @@ async function main() {
     },
   ]);
 
-  console.log("seed-demo-history: pre-log profile:", profile);
-  console.log("seed-demo-history: demo weekly (7d) minutes:", demoWeeklyMinutes);
-  console.log("seed-demo-history: post-recorded-session profile:", postLog);
+  console.log('seed-demo-history: pre-log profile:', profile);
+  console.log('seed-demo-history: demo weekly (7d) minutes:', demoWeeklyMinutes);
+  console.log('seed-demo-history: post-recorded-session profile:', postLog);
   console.log(
     `seed-demo-history: stage flip ${profile.pet_stage} -> ${postLog.pet_stage} ` +
       `(${
-        postLog.pet_stage === "mature_tree"
-          ? "OK"
-          : "MISMATCH — check SESSION_LOG_MINUTES/QUALITY vs 10-tour.feature"
+        postLog.pet_stage === 'mature_tree'
+          ? 'OK'
+          : 'MISMATCH — check SESSION_LOG_MINUTES/QUALITY vs 10-tour.feature'
       })`,
   );
 
   const checks: Record<string, boolean> = {
-    "current_streak_days >= 40": profile.current_streak_days >= 40,
+    'current_streak_days >= 40': profile.current_streak_days >= 40,
     [`xp within ${XP_TOLERANCE} of ${TARGET_XP_BEFORE_LOG}`]:
       Math.abs(profile.xp - TARGET_XP_BEFORE_LOG) <= XP_TOLERANCE,
-    "pet_stage === young_tree (pre-log)": profile.pet_stage === "young_tree",
-    "pet_stage === mature_tree (post-log)": postLog.pet_stage === "mature_tree",
-    "total_sessions < 100 (century locked)": profile.total_sessions < 100,
-    "max_session_day < 10 (sprint_day locked)": profile.max_session_day < 10,
-    "total_hours >= 100 (marathon)": profile.total_hours >= 100,
-    "mastered_count >= 5": profile.mastered_count >= 5,
-    "subjects_used === 5 (polymath)": profile.subjects_used === 5,
-    "has_dawn (dawn_patrol)": profile.has_dawn,
-    "has_night (night_owl)": profile.has_night,
+    'pet_stage === young_tree (pre-log)': profile.pet_stage === 'young_tree',
+    'pet_stage === mature_tree (post-log)': postLog.pet_stage === 'mature_tree',
+    'total_sessions < 100 (century locked)': profile.total_sessions < 100,
+    'max_session_day < 10 (sprint_day locked)': profile.max_session_day < 10,
+    'total_hours >= 100 (marathon)': profile.total_hours >= 100,
+    'mastered_count >= 5': profile.mastered_count >= 5,
+    'subjects_used === 5 (polymath)': profile.subjects_used === 5,
+    'has_dawn (dawn_patrol)': profile.has_dawn,
+    'has_night (night_owl)': profile.has_night,
   };
   let allPass = true;
   for (const [k, v] of Object.entries(checks)) {
-    console.log(`  ${v ? "PASS" : "FAIL"}  ${k}`);
+    console.log(`  ${v ? 'PASS' : 'FAIL'}  ${k}`);
     if (!v) allPass = false;
   }
   if (!allPass) {
     console.error(
-      "seed-demo-history: acceptance checks failed — not writing anything. Retune the generator constants.",
+      'seed-demo-history: acceptance checks failed — not writing anything. Retune the generator constants.',
     );
     Deno.exit(1);
   }
 
   if (DRY_RUN) {
-    console.log("seed-demo-history: --dry-run, no writes performed.");
+    console.log('seed-demo-history: --dry-run, no writes performed.');
     return;
   }
 
@@ -668,33 +668,33 @@ async function main() {
   }
   const demoUserId = demoUser.id;
 
-  console.log("seed-demo-history: upserting subjects…");
+  console.log('seed-demo-history: upserting subjects…');
   for (const name of SUBJECTS) {
-    const { error } = await admin.from("subjects").upsert({ name }, { onConflict: "name" });
+    const { error } = await admin.from('subjects').upsert({ name }, { onConflict: 'name' });
     if (error) throw new Error(`subjects upsert(${name}) failed: ${error.message}`);
   }
-  const { data: subjectRows, error: subjectsErr } = await admin.from("subjects").select("id, name")
-    .in("name", SUBJECTS);
+  const { data: subjectRows, error: subjectsErr } = await admin.from('subjects').select('id, name')
+    .in('name', SUBJECTS);
   if (subjectsErr || !subjectRows) {
     throw new Error(`subjects select failed: ${subjectsErr?.message}`);
   }
   const subjectIdByName = new Map(subjectRows.map((r) => [r.name as string, r.id as string]));
 
-  console.log("seed-demo-history: wiping existing demo-account goals/sessions…");
-  const { error: wipeGoalsErr } = await admin.from("study_goals").delete().eq(
-    "user_id",
+  console.log('seed-demo-history: wiping existing demo-account goals/sessions…');
+  const { error: wipeGoalsErr } = await admin.from('study_goals').delete().eq(
+    'user_id',
     demoUserId,
   );
   if (wipeGoalsErr) throw new Error(`wipe study_goals failed: ${wipeGoalsErr.message}`);
 
-  console.log("seed-demo-history: creating goals…");
+  console.log('seed-demo-history: creating goals…');
   const goalIdByKey = new Map<string, string>();
   for (const g of GOAL_DEFS) {
     const target_date = g.target_date_days == null
       ? null
       : dateKeyUTC(new Date(TODAY.getTime() + g.target_date_days * MS_PER_DAY));
     const { data, error } = await admin
-      .from("study_goals")
+      .from('study_goals')
       .insert({
         user_id: demoUserId,
         title: g.title,
@@ -703,13 +703,13 @@ async function main() {
         status: g.status,
         target_date,
       })
-      .select("id")
+      .select('id')
       .single();
     if (error || !data) throw new Error(`insert goal ${g.key} failed: ${error?.message}`);
     goalIdByKey.set(g.key, data.id as string);
     const subjectId = subjectIdByName.get(g.subject);
     if (subjectId) {
-      const { error: tagErr } = await admin.from("goal_subjects").insert({
+      const { error: tagErr } = await admin.from('goal_subjects').insert({
         goal_id: data.id,
         subject_id: subjectId,
       });
@@ -734,27 +734,27 @@ async function main() {
   });
   const BATCH = 200;
   for (let i = 0; i < rows.length; i += BATCH) {
-    const { error } = await admin.from("study_sessions").insert(rows.slice(i, i + BATCH));
+    const { error } = await admin.from('study_sessions').insert(rows.slice(i, i + BATCH));
     if (error) throw new Error(`study_sessions insert batch @${i} failed: ${error.message}`);
   }
 
-  console.log("seed-demo-history: setting demo profile public…");
+  console.log('seed-demo-history: setting demo profile public…');
   const { error: profileErr } = await admin
-    .from("profiles")
+    .from('profiles')
     .update({
-      username: "demo_sprinter",
-      display_name: "Demo Sprinter",
-      bio: "The account behind the README GIFs.",
+      username: 'demo_sprinter',
+      display_name: 'Demo Sprinter',
+      bio: 'The account behind the README GIFs.',
       is_public: true,
     })
-    .eq("id", demoUserId);
+    .eq('id', demoUserId);
   if (profileErr) throw new Error(`profiles update failed: ${profileErr.message}`);
 
   // ── Social fixtures ────────────────────────────────────────────────────
-  console.log("seed-demo-history: seeding synthetic public profiles…");
-  if (!Deno.env.get("SEED_SOCIAL_PASSWORD")) {
+  console.log('seed-demo-history: seeding synthetic public profiles…');
+  if (!Deno.env.get('SEED_SOCIAL_PASSWORD')) {
     console.log(`seed-demo-history: generated social-fixture password: ${SOCIAL_PASSWORD}`);
-    console.log("seed-demo-history: not stored anywhere — re-run to rotate it.");
+    console.log('seed-demo-history: not stored anywhere — re-run to rotate it.');
   }
   const socialUserIds: string[] = [];
   const roomMemberIds: string[] = [demoUserId];
@@ -763,30 +763,30 @@ async function main() {
     const userId = await ensureUser(admin, email, SOCIAL_PASSWORD);
     socialUserIds.push(userId);
     const { error: pErr } = await admin
-      .from("profiles")
+      .from('profiles')
       .update({
         username: `ss_demo_${u.slug}`,
         display_name: u.displayName,
         bio: u.bio,
         is_public: true,
       })
-      .eq("id", userId);
+      .eq('id', userId);
     if (pErr) throw new Error(`social profile update(${u.slug}) failed: ${pErr.message}`);
 
     // Wipe this user's prior goals (cascades sessions) and give them one
     // active goal + a handful of sessions inside the last 7 days, sized so
     // their weekly total is a fixed multiple of the demo account's — this
     // is what pins the demo account's leaderboard rank, not luck.
-    await admin.from("study_goals").delete().eq("user_id", userId);
+    await admin.from('study_goals').delete().eq('user_id', userId);
     const subjectId = subjectIdByName.get(u.subject);
     const { data: goalRow, error: gErr } = await admin
-      .from("study_goals")
-      .insert({ user_id: userId, title: `${u.subject} sprint`, target_hours: 20, status: "Active" })
-      .select("id")
+      .from('study_goals')
+      .insert({ user_id: userId, title: `${u.subject} sprint`, target_hours: 20, status: 'Active' })
+      .select('id')
       .single();
     if (gErr || !goalRow) throw new Error(`social goal insert(${u.slug}) failed: ${gErr?.message}`);
     if (subjectId) {
-      await admin.from("goal_subjects").insert({ goal_id: goalRow.id, subject_id: subjectId });
+      await admin.from('goal_subjects').insert({ goal_id: goalRow.id, subject_id: subjectId });
     }
 
     // One session per day across the last 7 days, each capped at 180min, so
@@ -811,17 +811,17 @@ async function main() {
       remaining -= duration;
     }
     if (socialSessions.length > 0) {
-      const { error: sErr } = await admin.from("study_sessions").insert(socialSessions);
+      const { error: sErr } = await admin.from('study_sessions').insert(socialSessions);
       if (sErr) throw new Error(`social sessions insert(${u.slug}) failed: ${sErr.message}`);
     }
     if (u.inRoom) roomMemberIds.push(userId);
   }
 
   // ── Study room ──────────────────────────────────────────────────────────
-  console.log("seed-demo-history: seeding study room…");
-  await admin.from("study_rooms").delete().eq("slug", ROOM_SLUG);
+  console.log('seed-demo-history: seeding study room…');
+  await admin.from('study_rooms').delete().eq('slug', ROOM_SLUG);
   const { data: roomRow, error: roomErr } = await admin
-    .from("study_rooms")
+    .from('study_rooms')
     .insert({
       slug: ROOM_SLUG,
       name: ROOM_NAME,
@@ -829,20 +829,20 @@ async function main() {
       passcode_hash: null,
       created_by: demoUserId,
     })
-    .select("id")
+    .select('id')
     .single();
   if (roomErr || !roomRow) throw new Error(`study_rooms insert failed: ${roomErr?.message}`);
   const { error: membersErr } = await admin
-    .from("room_members")
+    .from('room_members')
     .insert(roomMemberIds.map((user_id) => ({ room_id: roomRow.id, user_id })));
   if (membersErr) throw new Error(`room_members insert failed: ${membersErr.message}`);
 
   // get_room()'s activity feed only looks back 48h — give a few room
   // members a session inside that window so it's non-empty.
   const { data: memberGoals, error: mgErr } = await admin
-    .from("study_goals")
-    .select("id, user_id")
-    .in("user_id", roomMemberIds.filter((id) => id !== demoUserId))
+    .from('study_goals')
+    .select('id, user_id')
+    .in('user_id', roomMemberIds.filter((id) => id !== demoUserId))
     .limit(3);
   if (mgErr) throw new Error(`member goals lookup failed: ${mgErr.message}`);
   if (memberGoals && memberGoals.length > 0) {
@@ -852,7 +852,7 @@ async function main() {
       quality: pick([3, 4, 5]),
       logged_at: new Date(TODAY.getTime() - i * 3 * 60 * 60 * 1000).toISOString(), // within the last ~9h
     }));
-    const { error: actErr } = await admin.from("study_sessions").insert(activityRows);
+    const { error: actErr } = await admin.from('study_sessions').insert(activityRows);
     if (actErr) throw new Error(`room activity session insert failed: ${actErr.message}`);
   }
 
@@ -864,6 +864,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error("seed-demo-history: fatal:", err);
+  console.error('seed-demo-history: fatal:', err);
   Deno.exit(1);
 });

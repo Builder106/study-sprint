@@ -1,4 +1,4 @@
-export type NoiseMode = "off" | "white" | "pink" | "brown";
+export type NoiseMode = 'off' | 'white' | 'pink' | 'brown';
 
 interface Controller {
   start: (mode: NoiseMode) => void;
@@ -22,10 +22,10 @@ export function createAmbientNoise(): Controller {
   const ensureContext = () => {
     if (!ctx) {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) throw new Error("Web Audio API not supported");
+      if (!AudioContextClass) throw new Error('Web Audio API not supported');
       ctx = new AudioContextClass();
     }
-    if (ctx.state === "suspended") void ctx.resume();
+    if (ctx.state === 'suspended') void ctx.resume();
     return ctx;
   };
 
@@ -35,9 +35,9 @@ export function createAmbientNoise(): Controller {
     const buffer = audioCtx.createBuffer(1, length, sampleRate);
     const data = buffer.getChannelData(0);
 
-    if (mode === "white") {
+    if (mode === 'white') {
       for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
-    } else if (mode === "pink") {
+    } else if (mode === 'pink') {
       // Paul Kellet's refined pink noise filter
       let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
       for (let i = 0; i < length; i++) {
@@ -76,7 +76,7 @@ export function createAmbientNoise(): Controller {
   };
 
   const start = (mode: NoiseMode) => {
-    if (mode === "off") {
+    if (mode === 'off') {
       stop();
       return;
     }

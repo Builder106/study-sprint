@@ -10,24 +10,24 @@
 //   - Set GIF_FPS / GIF_WIDTH env vars to override the defaults.
 //   - Requires ffmpeg on PATH (`brew install ffmpeg` on macOS).
 
-import { ensureDir } from "jsr:@std/fs";
-import { basename, extname } from "jsr:@std/path";
+import { ensureDir } from 'jsr:@std/fs';
+import { basename, extname } from 'jsr:@std/path';
 
 // e2e/reporter.ts writes the demo mp4s here. test-results/ is gitignored
 // so the sources aren't committed; the rendered gifs in OUT_DIR are.
-const SRC_DIR = "test-results/videos";
-const OUT_DIR = "docs/gifs";
-const FPS = Number(Deno.env.get("GIF_FPS") ?? "10");
-const WIDTH = Number(Deno.env.get("GIF_WIDTH") ?? "960");
+const SRC_DIR = 'test-results/videos';
+const OUT_DIR = 'docs/gifs';
+const FPS = Number(Deno.env.get('GIF_FPS') ?? '10');
+const WIDTH = Number(Deno.env.get('GIF_WIDTH') ?? '960');
 
 // Sanity-check ffmpeg before scanning the file list — failing on the first
 // mp4 with "command not found" is more confusing than failing up front.
 async function ffmpegOnPath(): Promise<boolean> {
   try {
-    const { code } = await new Deno.Command("ffmpeg", {
-      args: ["-version"],
-      stdout: "null",
-      stderr: "null",
+    const { code } = await new Deno.Command('ffmpeg', {
+      args: ['-version'],
+      stdout: 'null',
+      stderr: 'null',
     }).output();
     return code === 0;
   } catch {
@@ -37,9 +37,9 @@ async function ffmpegOnPath(): Promise<boolean> {
 
 if (!(await ffmpegOnPath())) {
   console.error(
-    "ffmpeg not found on PATH. Install it first:\n" +
-      "  brew install ffmpeg          # macOS\n" +
-      "  apt-get install ffmpeg       # Debian/Ubuntu",
+    'ffmpeg not found on PATH. Install it first:\n' +
+      '  brew install ffmpeg          # macOS\n' +
+      '  apt-get install ffmpeg       # Debian/Ubuntu',
   );
   Deno.exit(1);
 }
@@ -49,7 +49,7 @@ await ensureDir(OUT_DIR);
 const sources: string[] = [];
 try {
   for await (const entry of Deno.readDir(SRC_DIR)) {
-    if (entry.isFile && entry.name.endsWith(".mp4")) {
+    if (entry.isFile && entry.name.endsWith('.mp4')) {
       sources.push(`${SRC_DIR}/${entry.name}`);
     }
   }
@@ -92,15 +92,15 @@ for (const src of sources) {
   console.log(`→ ${src} → ${out}`);
   const filter =
     `fps=${FPS},scale=${WIDTH}:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse`;
-  const { code, stderr } = await new Deno.Command("ffmpeg", {
-    args: ["-y", "-i", src, "-vf", filter, "-loop", "0", out],
-    stdout: "null",
-    stderr: "piped",
+  const { code, stderr } = await new Deno.Command('ffmpeg', {
+    args: ['-y', '-i', src, '-vf', filter, '-loop', '0', out],
+    stdout: 'null',
+    stderr: 'piped',
   }).output();
 
   if (code !== 0) {
     console.error(`✗ ffmpeg exited ${code} on ${src}:`);
-    console.error(new TextDecoder().decode(stderr).split("\n").slice(-15).join("\n"));
+    console.error(new TextDecoder().decode(stderr).split('\n').slice(-15).join('\n'));
     failed += 1;
     continue;
   }
@@ -116,8 +116,6 @@ for (const src of sources) {
 }
 
 console.log(
-  `\nDone. ${converted} converted, ${skipped} up to date${
-    failed > 0 ? `, ${failed} failed` : ""
-  }.`,
+  `\nDone. ${converted} converted, ${skipped} up to date${failed > 0 ? `, ${failed} failed` : ''}.`,
 );
 if (failed > 0) Deno.exit(1);

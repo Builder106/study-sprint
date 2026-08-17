@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { Calendar, Link as LinkIcon, Unlink } from "lucide-react";
-import { api, ApiError } from "@/lib/api";
+import { useEffect, useState } from 'react';
+import { Calendar, Link as LinkIcon, Unlink } from 'lucide-react';
+import { api, ApiError } from '@/lib/api';
 
 interface Props {
   onChange?: (connected: boolean) => void;
@@ -34,7 +34,7 @@ export function GoogleCalendarBadge({ onChange }: Props) {
       const { url } = await api.googleAuthUrl();
       window.location.href = url;
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Failed to start Google connect");
+      setError(err instanceof ApiError ? err.message : 'Failed to start Google connect');
       setBusy(false);
     }
   };
@@ -47,7 +47,7 @@ export function GoogleCalendarBadge({ onChange }: Props) {
       setStatus({ configured: true, connected: false });
       onChange?.(false);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Failed to disconnect");
+      setError(err instanceof ApiError ? err.message : 'Failed to disconnect');
     } finally {
       setBusy(false);
     }
@@ -56,32 +56,34 @@ export function GoogleCalendarBadge({ onChange }: Props) {
   if (!status || !status.configured) return null;
 
   return (
-    <div className="flex items-center gap-3">
-      {status.connected ? (
-        <>
-          <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#ccff00]">
-            <Calendar className="w-4 h-4" /> Calendar linked
-          </span>
+    <div className='flex items-center gap-3'>
+      {status.connected
+        ? (
+          <>
+            <span className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#ccff00]'>
+              <Calendar className='w-4 h-4' /> Calendar linked
+            </span>
+            <button
+              onClick={disconnect}
+              disabled={busy}
+              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-red-400 transition-colors disabled:opacity-50'
+              aria-label='Disconnect Google Calendar'
+            >
+              <Unlink className='w-3 h-3' /> Unlink
+            </button>
+          </>
+        )
+        : (
           <button
-            onClick={disconnect}
+            onClick={connect}
             disabled={busy}
-            className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-red-400 transition-colors disabled:opacity-50"
-            aria-label="Disconnect Google Calendar"
+            className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors disabled:opacity-50'
           >
-            <Unlink className="w-3 h-3" /> Unlink
+            <LinkIcon className='w-3 h-3' /> {busy ? 'Connecting…' : 'Connect Calendar'}
           </button>
-        </>
-      ) : (
-        <button
-          onClick={connect}
-          disabled={busy}
-          className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors disabled:opacity-50"
-        >
-          <LinkIcon className="w-3 h-3" /> {busy ? "Connecting…" : "Connect Calendar"}
-        </button>
-      )}
+        )}
       {error && (
-        <span className="text-[10px] text-red-400 font-medium" role="alert">
+        <span className='text-[10px] text-red-400 font-medium' role='alert'>
           {error}
         </span>
       )}

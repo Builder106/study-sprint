@@ -1,47 +1,47 @@
-import { createBdd } from "playwright-bdd";
-import { expect } from "@playwright/test";
-import { dwellForDemo } from "../../steps/hooks";
+import { createBdd } from 'playwright-bdd';
+import { expect } from '@playwright/test';
+import { dwellForDemo } from '../../steps/hooks';
 
 const { Given, When, Then } = createBdd();
 
 // ── Goal navigation by title (not "first goal" — dashboard sort order isn't
 // guaranteed to put the recording target goal first) ──────────────────────
 
-When("I navigate to the goal titled {string}", async ({ page }, title: string) => {
-  await page.goto("/dashboard");
-  await page.waitForLoadState("networkidle");
+When('I navigate to the goal titled {string}', async ({ page }, title: string) => {
+  await page.goto('/dashboard');
+  await page.waitForLoadState('networkidle');
   const goalLink = page.locator('a[href*="/goal/"]').filter({ hasText: title });
   await goalLink.first().waitFor({ timeout: 8_000 });
   await goalLink.first().click();
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState('networkidle');
   // Same hydration anchor as e2e/steps/goal-detail.steps.ts's "first goal"
   // step — networkidle alone doesn't mean the timer's mounted yet.
   await page
-    .getByRole("button", { name: "Stopwatch", exact: true })
-    .waitFor({ state: "visible", timeout: 15_000 });
+    .getByRole('button', { name: 'Stopwatch', exact: true })
+    .waitFor({ state: 'visible', timeout: 15_000 });
 });
 
 // ── Session quality (sessions.steps.ts covers open/duration/save/close) ──
 
-When("I rate the session {string}", async ({ page }, label: string) => {
-  await page.getByRole("radio", { name: label }).click();
+When('I rate the session {string}', async ({ page }, label: string) => {
+  await page.getByRole('radio', { name: label }).click();
 });
 
-Then("I should see the session in the recent sessions list", async ({ page }) => {
-  await expect(page.getByText("1h 30m").first()).toBeVisible({ timeout: 8_000 });
+Then('I should see the session in the recent sessions list', async ({ page }) => {
+  await expect(page.getByText('1h 30m').first()).toBeVisible({ timeout: 8_000 });
   await dwellForDemo(page);
 });
 
 // ── Garden / plant stage ──────────────────────────────────────────────────
 
-Then("the plant stage should be {string}", async ({ page }, stage: string) => {
-  const label = stage.replace(/_/, " ");
-  await expect(page.getByRole("img", { name: `Your study plant, ${label}` })).toBeVisible({
+Then('the plant stage should be {string}', async ({ page }, stage: string) => {
+  const label = stage.replace(/_/, ' ');
+  await expect(page.getByRole('img', { name: `Your study plant, ${label}` })).toBeVisible({
     timeout: 8_000,
   });
 });
 
-Then("I should see the achievements grid", async ({ page }) => {
+Then('I should see the achievements grid', async ({ page }) => {
   await expect(page.getByText(/Achievements \(\d+\/\d+\)/)).toBeVisible({ timeout: 5_000 });
   await dwellForDemo(page, 2_500);
 });
@@ -61,22 +61,22 @@ Then("I should see the achievements grid", async ({ page }) => {
 // the broken path during recording.
 const STUBBED_GOALS = [
   {
-    title: "CHEM 301: Organic Reactions",
-    description: "Mechanisms, synthesis pathways, and reaction prediction.",
+    title: 'CHEM 301: Organic Reactions',
+    description: 'Mechanisms, synthesis pathways, and reaction prediction.',
     target_hours: 40,
     target_date: null,
     subjects: [] as string[],
   },
   {
-    title: "Lab Notebook & Reports",
+    title: 'Lab Notebook & Reports',
     description: "Write-ups for each week's lab session.",
     target_hours: 15,
     target_date: null,
     subjects: [] as string[],
   },
   {
-    title: "Midterm + Final Review",
-    description: "Cumulative review before each exam.",
+    title: 'Midterm + Final Review',
+    description: 'Cumulative review before each exam.',
     target_hours: 20,
     target_date: null,
     subjects: [] as string[],
@@ -84,44 +84,44 @@ const STUBBED_GOALS = [
 ];
 
 Given(
-  "the syllabus parser is stubbed with {int} suggested goals",
+  'the syllabus parser is stubbed with {int} suggested goals',
   async ({ page }, count: number) => {
     const goals = STUBBED_GOALS.slice(0, count);
-    await page.route("**/functions/v1/syllabus-parse", async (route) => {
+    await page.route('**/functions/v1/syllabus-parse', async (route) => {
       await route.fulfill({
         status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({ goals, model: "stubbed/demo" }),
+        contentType: 'application/json',
+        body: JSON.stringify({ goals, model: 'stubbed/demo' }),
       });
     });
   },
 );
 
-When("I paste syllabus text", async ({ page }) => {
+When('I paste syllabus text', async ({ page }) => {
   await page
     .getByPlaceholder(/Paste course description/)
     .fill(
-      "CHEM 301 — Organic Chemistry I\nWeekly labs, two midterms, cumulative final.\nLab reports due each Friday.",
+      'CHEM 301 — Organic Chemistry I\nWeekly labs, two midterms, cumulative final.\nLab reports due each Friday.',
     );
 });
 
-When("I click the Suggest goals button", async ({ page }) => {
-  await page.getByRole("button", { name: "Suggest goals" }).click();
+When('I click the Suggest goals button', async ({ page }) => {
+  await page.getByRole('button', { name: 'Suggest goals' }).click();
 });
 
-Then("I should see the suggested goals", async ({ page }) => {
-  await expect(page.getByRole("button", { name: /Create \d+ goals?/ })).toBeVisible({
+Then('I should see the suggested goals', async ({ page }) => {
+  await expect(page.getByRole('button', { name: /Create \d+ goals?/ })).toBeVisible({
     timeout: 8_000,
   });
   await dwellForDemo(page, 2_500);
 });
 
-When("I create the suggested goals", async ({ page }) => {
-  await page.getByRole("button", { name: /Create \d+ goals?/ }).click();
+When('I create the suggested goals', async ({ page }) => {
+  await page.getByRole('button', { name: /Create \d+ goals?/ }).click();
 });
 
-Then("the syllabus import modal should not be visible", async ({ page }) => {
-  await expect(page.getByRole("heading", { name: /Import from syllabus/i })).not.toBeVisible({
+Then('the syllabus import modal should not be visible', async ({ page }) => {
+  await expect(page.getByRole('heading', { name: /Import from syllabus/i })).not.toBeVisible({
     timeout: 8_000,
   });
   await dwellForDemo(page);
@@ -129,8 +129,8 @@ Then("the syllabus import modal should not be visible", async ({ page }) => {
 
 // ── Community: leaderboard + a real room's members/activity ──────────────
 
-Then("I should see the weekly leaderboard", async ({ page }) => {
-  await expect(page.getByText("Weekly leaderboard", { exact: false })).toBeVisible({
+Then('I should see the weekly leaderboard', async ({ page }) => {
+  await expect(page.getByText('Weekly leaderboard', { exact: false })).toBeVisible({
     timeout: 8_000,
   });
   await dwellForDemo(page, 2_500);
@@ -139,20 +139,20 @@ Then("I should see the weekly leaderboard", async ({ page }) => {
 // Navigates directly by slug rather than clicking through the room card —
 // the seeded room's slug (e2e/setup/seed-demo-history.ts, ROOM_SLUG) is
 // fixed and known, so this is more robust than locating a specific card.
-When("I open my study room", async ({ page }) => {
-  await page.goto("/rooms/ss-demo-study-squad");
-  await page.waitForLoadState("networkidle");
+When('I open my study room', async ({ page }) => {
+  await page.goto('/rooms/ss-demo-study-squad');
+  await page.waitForLoadState('networkidle');
   await dwellForDemo(page);
 });
 
-Then("I should see the room members list", async ({ page }) => {
-  await expect(page.getByRole("heading", { name: /Members \(\d+\)/ })).toBeVisible({
+Then('I should see the room members list', async ({ page }) => {
+  await expect(page.getByRole('heading', { name: /Members \(\d+\)/ })).toBeVisible({
     timeout: 8_000,
   });
 });
 
-Then("I should see the room activity feed", async ({ page }) => {
-  await expect(page.getByRole("heading", { name: "Recent activity (48h)" })).toBeVisible({
+Then('I should see the room activity feed', async ({ page }) => {
+  await expect(page.getByRole('heading', { name: 'Recent activity (48h)' })).toBeVisible({
     timeout: 8_000,
   });
   await dwellForDemo(page, 2_500);

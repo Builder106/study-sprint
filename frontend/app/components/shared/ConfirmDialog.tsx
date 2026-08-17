@@ -1,8 +1,8 @@
-import * as AD from "@radix-ui/react-alert-dialog";
-import { createContext, useCallback, useContext, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import * as AD from '@radix-ui/react-alert-dialog';
+import { createContext, useCallback, useContext, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 
-type Tone = "default" | "danger";
+type Tone = 'default' | 'danger';
 
 interface ConfirmOptions {
   title: string;
@@ -18,7 +18,7 @@ const ConfirmContext = createContext<ConfirmFn | null>(null);
 
 export function useConfirm(): ConfirmFn {
   const ctx = useContext(ConfirmContext);
-  if (!ctx) throw new Error("useConfirm must be used within <ConfirmProvider>");
+  if (!ctx) throw new Error('useConfirm must be used within <ConfirmProvider>');
   return ctx;
 }
 
@@ -41,34 +41,33 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     setOpen(false);
   };
 
-  const tone = opts?.tone ?? "default";
-  const confirmClass =
-    tone === "danger"
-      ? "bg-red-500 text-white hover:bg-red-600"
-      : "bg-[#ccff00] text-black hover:bg-[#b3e600]";
+  const tone = opts?.tone ?? 'default';
+  const confirmClass = tone === 'danger'
+    ? 'bg-red-500 text-white hover:bg-red-600'
+    : 'bg-[#ccff00] text-black hover:bg-[#b3e600]';
 
   return (
     <ConfirmContext.Provider value={confirm}>
       {children}
       <AD.Root open={open} onOpenChange={(v) => !v && settle(false)}>
         <AD.Portal>
-          <AD.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0" />
-          <AD.Content className="fixed left-1/2 top-1/2 z-50 w-[min(440px,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0a0a0a] p-6 shadow-2xl focus:outline-none">
-            <AD.Title className="text-lg font-medium tracking-tight text-zinc-900 dark:text-zinc-50">
+          <AD.Overlay className='fixed inset-0 z-50 bg-black/60 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0' />
+          <AD.Content className='fixed left-1/2 top-1/2 z-50 w-[min(440px,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0a0a0a] p-6 shadow-2xl focus:outline-none'>
+            <AD.Title className='text-lg font-medium tracking-tight text-zinc-900 dark:text-zinc-50'>
               {opts?.title}
             </AD.Title>
             {opts?.description && (
-              <AD.Description className="mt-2 text-sm font-light text-zinc-600 dark:text-zinc-400">
+              <AD.Description className='mt-2 text-sm font-light text-zinc-600 dark:text-zinc-400'>
                 {opts.description}
               </AD.Description>
             )}
-            <div className="mt-6 flex justify-end gap-2">
+            <div className='mt-6 flex justify-end gap-2'>
               <AD.Cancel asChild>
                 <button
                   onClick={() => settle(false)}
-                  className="px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors"
+                  className='px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors'
                 >
-                  {opts?.cancelLabel ?? "Cancel"}
+                  {opts?.cancelLabel ?? 'Cancel'}
                 </button>
               </AD.Cancel>
               <AD.Action asChild>
@@ -76,7 +75,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                   onClick={() => settle(true)}
                   className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${confirmClass}`}
                 >
-                  {opts?.confirmLabel ?? "Confirm"}
+                  {opts?.confirmLabel ?? 'Confirm'}
                 </button>
               </AD.Action>
             </div>

@@ -1,35 +1,30 @@
-import { Link, useNavigate, useParams } from "react-router";
-import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
+import { Link, useNavigate, useParams } from 'react-router';
+import { useEffect, useState } from 'react';
+import type { FormEvent } from 'react';
 import {
   ArrowLeft,
-  Play,
-  Pause,
-  X,
-  Edit2,
-  Check,
   Calendar,
+  Check,
   CheckCheck,
-  Pencil,
-  Trash2,
   Copy,
-} from "lucide-react";
-import { toast } from "sonner";
-import { api, ApiError } from "@/lib/api";
-import {
-  formatDate,
-  formatDuration,
-  minutesToHours,
-  progressPercent,
-} from "@/lib/format";
-import type { Goal, GoalStatus, StudySession } from "@/lib/types";
-import { ProgressBar } from "./shared/ProgressBar";
-import { TopNav } from "./shared/TopNav";
-import { SessionModal } from "./shared/SessionModal";
-import { TimerCard } from "./shared/TimerCard";
-import { FocusTools, clearFocusNotes, readFocusNotes } from "./shared/FocusTools";
-import { Spinner } from "./shared/Spinner";
-import { useConfirm } from "./shared/ConfirmDialog";
+  Edit2,
+  Pause,
+  Pencil,
+  Play,
+  Trash2,
+  X,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { api, ApiError } from '@/lib/api';
+import { formatDate, formatDuration, minutesToHours, progressPercent } from '@/lib/format';
+import type { Goal, GoalStatus, StudySession } from '@/lib/types';
+import { ProgressBar } from './shared/ProgressBar';
+import { TopNav } from './shared/TopNav';
+import { SessionModal } from './shared/SessionModal';
+import { TimerCard } from './shared/TimerCard';
+import { clearFocusNotes, FocusTools, readFocusNotes } from './shared/FocusTools';
+import { Spinner } from './shared/Spinner';
+import { useConfirm } from './shared/ConfirmDialog';
 import {
   ContextMenuContent,
   ContextMenuItem,
@@ -37,7 +32,7 @@ import {
   ContextMenuRoot,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "./shared/ContextMenuPrimitives";
+} from './shared/ContextMenuPrimitives';
 
 export function GoalDetailWithPanel() {
   const { id } = useParams();
@@ -50,7 +45,7 @@ export function GoalDetailWithPanel() {
   const [showPanel, setShowPanel] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalInitialMinutes, setModalInitialMinutes] = useState<number | undefined>(undefined);
-  const [modalInitialNotes, setModalInitialNotes] = useState<string>("");
+  const [modalInitialNotes, setModalInitialNotes] = useState<string>('');
   const [editingSession, setEditingSession] = useState<StudySession | null>(null);
   const [googleConnected, setGoogleConnected] = useState(false);
   const [exportingSessionId, setExportingSessionId] = useState<string | null>(null);
@@ -59,11 +54,11 @@ export function GoalDetailWithPanel() {
   const [editError, setEditError] = useState<string | null>(null);
   const [editHoursError, setEditHoursError] = useState<string | null>(null);
   const [form, setForm] = useState({
-    title: "",
-    description: "",
-    target_hours: "",
-    target_date: "",
-    subjects: "",
+    title: '',
+    description: '',
+    target_hours: '',
+    target_date: '',
+    subjects: '',
   });
 
   useEffect(() => {
@@ -74,7 +69,7 @@ export function GoalDetailWithPanel() {
         setSessions(s.sessions);
       })
       .catch((err: unknown) =>
-        setLoadError(err instanceof ApiError ? err.message : "Failed to load goal"),
+        setLoadError(err instanceof ApiError ? err.message : 'Failed to load goal')
       );
     api
       .googleStatus()
@@ -87,12 +82,10 @@ export function GoalDetailWithPanel() {
     try {
       await api.googleExportSession(sessionId);
       setSessions((prev) =>
-        prev.map((s) =>
-          s.id === sessionId ? { ...s, gcal_event_id: "synced" } : s,
-        ),
+        prev.map((s) => s.id === sessionId ? { ...s, gcal_event_id: 'synced' } : s)
       );
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : "Calendar export failed");
+      toast.error(err instanceof ApiError ? err.message : 'Calendar export failed');
     } finally {
       setExportingSessionId(null);
     }
@@ -105,10 +98,10 @@ export function GoalDetailWithPanel() {
 
   const deleteSession = async (session: StudySession) => {
     const ok = await confirm({
-      title: "Delete this session?",
-      description: "This permanently removes the session from your log.",
-      confirmLabel: "Delete",
-      tone: "danger",
+      title: 'Delete this session?',
+      description: 'This permanently removes the session from your log.',
+      confirmLabel: 'Delete',
+      tone: 'danger',
     });
     if (!ok) return;
     try {
@@ -116,7 +109,7 @@ export function GoalDetailWithPanel() {
       setSessions((prev) => prev.filter((s) => s.id !== session.id));
       reload().catch(() => {});
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : "Failed to delete session");
+      toast.error(err instanceof ApiError ? err.message : 'Failed to delete session');
     }
   };
 
@@ -133,10 +126,10 @@ export function GoalDetailWithPanel() {
     if (!goal) return;
     setForm({
       title: goal.title,
-      description: goal.description ?? "",
+      description: goal.description ?? '',
       target_hours: String(goal.target_hours),
-      target_date: goal.target_date?.slice(0, 10) ?? "",
-      subjects: goal.subjects.join(", "),
+      target_date: goal.target_date?.slice(0, 10) ?? '',
+      subjects: goal.subjects.join(', '),
     });
   }, [goal]);
 
@@ -165,7 +158,7 @@ export function GoalDetailWithPanel() {
     });
     setShowModal(false);
     setModalInitialMinutes(undefined);
-    setModalInitialNotes("");
+    setModalInitialNotes('');
     const wasEdit = editingSession !== null;
     setEditingSession(null);
     if (id && !wasEdit) clearFocusNotes(id);
@@ -174,22 +167,22 @@ export function GoalDetailWithPanel() {
 
   const togglePauseGoal = async () => {
     if (!goal) return;
-    const nextStatus: GoalStatus = goal.status === "Active" ? "Paused" : "Active";
+    const nextStatus: GoalStatus = goal.status === 'Active' ? 'Paused' : 'Active';
     try {
       const res = await api.updateGoal(goal.id, { status: nextStatus });
       setGoal(res.goal);
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : "Failed to update goal");
+      toast.error(err instanceof ApiError ? err.message : 'Failed to update goal');
     }
   };
 
   const markComplete = async () => {
     if (!goal) return;
     try {
-      const res = await api.updateGoal(goal.id, { status: "Completed" });
+      const res = await api.updateGoal(goal.id, { status: 'Completed' });
       setGoal(res.goal);
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : "Failed to update goal");
+      toast.error(err instanceof ApiError ? err.message : 'Failed to update goal');
     }
   };
 
@@ -197,16 +190,16 @@ export function GoalDetailWithPanel() {
     if (!goal) return;
     const ok = await confirm({
       title: `Delete goal "${goal.title}"?`,
-      description: "This removes all sessions too.",
-      confirmLabel: "Delete",
-      tone: "danger",
+      description: 'This removes all sessions too.',
+      confirmLabel: 'Delete',
+      tone: 'danger',
     });
     if (!ok) return;
     try {
       await api.deleteGoal(goal.id);
-      navigate("/dashboard", { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : "Failed to delete goal");
+      toast.error(err instanceof ApiError ? err.message : 'Failed to delete goal');
     }
   };
 
@@ -217,7 +210,7 @@ export function GoalDetailWithPanel() {
     setEditHoursError(null);
     const target = Number(form.target_hours);
     if (!Number.isFinite(target) || target <= 0) {
-      setEditHoursError("Must be greater than 0.");
+      setEditHoursError('Must be greater than 0.');
       return;
     }
     try {
@@ -227,22 +220,22 @@ export function GoalDetailWithPanel() {
         target_hours: target,
         target_date: form.target_date || null,
         subjects: form.subjects
-          .split(",")
+          .split(',')
           .map((s) => s.trim())
           .filter(Boolean),
       });
       setGoal(res.goal);
       setEditing(false);
     } catch (err) {
-      setEditError(err instanceof ApiError ? err.message : "Failed to save goal");
+      setEditError(err instanceof ApiError ? err.message : 'Failed to save goal');
     }
   };
 
   if (loadError) {
     return (
-      <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50">
+      <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50'>
         <TopNav />
-        <main className="max-w-5xl mx-auto px-8 py-16 text-xs text-red-400 font-medium">
+        <main className='max-w-5xl mx-auto px-8 py-16 text-xs text-red-400 font-medium'>
           {loadError}
         </main>
       </div>
@@ -251,10 +244,10 @@ export function GoalDetailWithPanel() {
 
   if (!goal) {
     return (
-      <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50">
+      <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50'>
         <TopNav />
-        <main className="max-w-5xl mx-auto px-8 py-16">
-          <Spinner label="Loading goal" />
+        <main className='max-w-5xl mx-auto px-8 py-16'>
+          <Spinner label='Loading goal' />
         </main>
       </div>
     );
@@ -266,38 +259,38 @@ export function GoalDetailWithPanel() {
   const percent = progressPercent(goal.logged_minutes, goal.target_hours);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black flex flex-col">
+    <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black flex flex-col'>
       <TopNav
-        right={
-          !showPanel ? (
+        right={!showPanel
+          ? (
             <button
               onClick={() => setShowPanel(true)}
-              className="text-[10px] font-bold uppercase tracking-widest text-[#ccff00] border border-[#ccff00]/20 bg-[#ccff00]/10 px-3 py-1.5 rounded-full hover:bg-[#ccff00]/20 transition-colors"
+              className='text-[10px] font-bold uppercase tracking-widest text-[#ccff00] border border-[#ccff00]/20 bg-[#ccff00]/10 px-3 py-1.5 rounded-full hover:bg-[#ccff00]/20 transition-colors'
             >
               Details
             </button>
-          ) : null
-        }
+          )
+          : null}
       />
 
-      <div className="flex flex-1 relative overflow-hidden">
+      <div className='flex flex-1 relative overflow-hidden'>
         <main
           className={`flex-1 px-8 py-12 lg:py-16 transition-all duration-300 ease-out overflow-y-auto ${
-            showPanel ? "mr-[380px] xl:mr-[460px]" : ""
+            showPanel ? 'mr-[380px] xl:mr-[460px]' : ''
           }`}
         >
-          <div className="max-w-4xl mx-auto">
+          <div className='max-w-4xl mx-auto'>
             <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] mb-12 transition-colors group"
+              to='/dashboard'
+              className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] mb-12 transition-colors group'
             >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
               Back to sprints
             </Link>
 
-            <div className="flex flex-col lg:flex-row gap-16 xl:gap-24">
-              <div className="flex-1 lg:max-w-xl space-y-12">
-                <h1 className="text-3xl md:text-5xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50 leading-[1.1]">
+            <div className='flex flex-col lg:flex-row gap-16 xl:gap-24'>
+              <div className='flex-1 lg:max-w-xl space-y-12'>
+                <h1 className='text-3xl md:text-5xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50 leading-[1.1]'>
                   {goal.title}
                 </h1>
 
@@ -306,125 +299,133 @@ export function GoalDetailWithPanel() {
                 <FocusTools goalId={goal.id} />
               </div>
 
-              <div className="flex-1 space-y-16 max-w-sm xl:max-w-md">
-                <div className="flex gap-8 sm:gap-12 border-b border-zinc-200 dark:border-white/10 pb-8">
+              <div className='flex-1 space-y-16 max-w-sm xl:max-w-md'>
+                <div className='flex gap-8 sm:gap-12 border-b border-zinc-200 dark:border-white/10 pb-8'>
                   <div>
-                    <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Target</div>
-                    <div className="text-2xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50">
+                    <div className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2'>
+                      Target
+                    </div>
+                    <div className='text-2xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50'>
                       {targetHours}
-                      <span className="text-zinc-500 font-light">h</span>
+                      <span className='text-zinc-500 font-light'>h</span>
                     </div>
                   </div>
                   <div>
-                    <div className="text-[10px] font-bold text-[#ccff00] uppercase tracking-widest mb-2">Logged</div>
-                    <div className="text-2xl font-medium tracking-tighter text-[#ccff00]">
+                    <div className='text-[10px] font-bold text-[#ccff00] uppercase tracking-widest mb-2'>
+                      Logged
+                    </div>
+                    <div className='text-2xl font-medium tracking-tighter text-[#ccff00]'>
                       {loggedHours}
-                      <span className="text-[#ccff00]/50 font-light">h</span>
+                      <span className='text-[#ccff00]/50 font-light'>h</span>
                     </div>
                   </div>
                   <div>
-                    <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Remaining</div>
-                    <div className="text-2xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50">
+                    <div className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2'>
+                      Remaining
+                    </div>
+                    <div className='text-2xl font-medium tracking-tighter text-zinc-900 dark:text-zinc-50'>
                       {remainingHours}
-                      <span className="text-zinc-500 font-light">h</span>
+                      <span className='text-zinc-500 font-light'>h</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex justify-between text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                <div className='space-y-4'>
+                  <div className='flex justify-between text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
                     <span>Overall Progress</span>
-                    <span className="text-[#ccff00]">{percent}%</span>
+                    <span className='text-[#ccff00]'>{percent}%</span>
                   </div>
                   <ProgressBar percent={percent} />
                 </div>
 
-                <div className="pt-8">
-                  <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-8">Recent Sessions</h2>
-                  {sessions.length === 0 ? (
-                    <div className="text-xs text-zinc-500 font-light">No sessions yet.</div>
-                  ) : (
-                    <div className="space-y-0">
-                      {sessions.slice(0, 6).map((session) => (
-                        <ContextMenuRoot key={session.id}>
-                          <ContextMenuTrigger asChild>
-                            <div
-                              className="py-6 border-b border-zinc-100 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl flex flex-col gap-2 group"
-                            >
-                              <div className="flex gap-4 justify-between items-baseline">
-                                <div className="text-xl font-medium tracking-tighter text-[#ccff00]">
-                                  {formatDuration(session.duration_minutes)}
+                <div className='pt-8'>
+                  <h2 className='text-sm font-bold text-zinc-500 uppercase tracking-widest mb-8'>
+                    Recent Sessions
+                  </h2>
+                  {sessions.length === 0
+                    ? <div className='text-xs text-zinc-500 font-light'>No sessions yet.</div>
+                    : (
+                      <div className='space-y-0'>
+                        {sessions.slice(0, 6).map((session) => (
+                          <ContextMenuRoot key={session.id}>
+                            <ContextMenuTrigger asChild>
+                              <div className='py-6 border-b border-zinc-100 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl flex flex-col gap-2 group'>
+                                <div className='flex gap-4 justify-between items-baseline'>
+                                  <div className='text-xl font-medium tracking-tighter text-[#ccff00]'>
+                                    {formatDuration(session.duration_minutes)}
+                                  </div>
+                                  <div className='text-[10px] font-bold uppercase tracking-widest text-zinc-500'>
+                                    {formatDate(session.logged_at)}
+                                  </div>
                                 </div>
-                                <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                                  {formatDate(session.logged_at)}
-                                </div>
+                                {session.notes && (
+                                  <div className='text-sm text-zinc-600 dark:text-zinc-400 font-light leading-relaxed'>
+                                    {session.notes}
+                                  </div>
+                                )}
+                                {googleConnected && (
+                                  <div className='flex justify-end'>
+                                    {session.gcal_event_id
+                                      ? (
+                                        <span className='inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#ccff00]'>
+                                          <CheckCheck className='w-3 h-3' /> On calendar
+                                        </span>
+                                      )
+                                      : (
+                                        <button
+                                          onClick={() => exportToCalendar(session.id)}
+                                          disabled={exportingSessionId === session.id}
+                                          className='inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors disabled:opacity-50'
+                                        >
+                                          <Calendar className='w-3 h-3' />
+                                          {exportingSessionId === session.id
+                                            ? 'Exporting…'
+                                            : 'Add to Calendar'}
+                                        </button>
+                                      )}
+                                  </div>
+                                )}
                               </div>
-                              {session.notes && (
-                                <div className="text-sm text-zinc-600 dark:text-zinc-400 font-light leading-relaxed">
-                                  {session.notes}
-                                </div>
-                              )}
-                              {googleConnected && (
-                                <div className="flex justify-end">
-                                  {session.gcal_event_id ? (
-                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#ccff00]">
-                                      <CheckCheck className="w-3 h-3" /> On calendar
-                                    </span>
-                                  ) : (
-                                    <button
-                                      onClick={() => exportToCalendar(session.id)}
-                                      disabled={exportingSessionId === session.id}
-                                      className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors disabled:opacity-50"
-                                    >
-                                      <Calendar className="w-3 h-3" />
-                                      {exportingSessionId === session.id
-                                        ? "Exporting…"
-                                        : "Add to Calendar"}
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </ContextMenuTrigger>
-                          <ContextMenuPortal>
-                            <ContextMenuContent>
-                              <ContextMenuItem
-                                icon={<Pencil className="w-full h-full" />}
-                                onSelect={() => openEditSession(session)}
-                              >
-                                Edit session
-                              </ContextMenuItem>
-                              {session.notes && (
+                            </ContextMenuTrigger>
+                            <ContextMenuPortal>
+                              <ContextMenuContent>
                                 <ContextMenuItem
-                                  icon={<Copy className="w-full h-full" />}
-                                  onSelect={() => copySessionNotes(session)}
+                                  icon={<Pencil className='w-full h-full' />}
+                                  onSelect={() => openEditSession(session)}
                                 >
-                                  Copy notes
+                                  Edit session
                                 </ContextMenuItem>
-                              )}
-                              {googleConnected && !session.gcal_event_id && (
+                                {session.notes && (
+                                  <ContextMenuItem
+                                    icon={<Copy className='w-full h-full' />}
+                                    onSelect={() => copySessionNotes(session)}
+                                  >
+                                    Copy notes
+                                  </ContextMenuItem>
+                                )}
+                                {googleConnected && !session.gcal_event_id && (
+                                  <ContextMenuItem
+                                    icon={<Calendar className='w-full h-full' />}
+                                    onSelect={() => exportToCalendar(session.id)}
+                                    disabled={exportingSessionId === session.id}
+                                  >
+                                    Add to Calendar
+                                  </ContextMenuItem>
+                                )}
+                                <ContextMenuSeparator />
                                 <ContextMenuItem
-                                  icon={<Calendar className="w-full h-full" />}
-                                  onSelect={() => exportToCalendar(session.id)}
-                                  disabled={exportingSessionId === session.id}
+                                  icon={<Trash2 className='w-full h-full' />}
+                                  danger
+                                  onSelect={() => deleteSession(session)}
                                 >
-                                  Add to Calendar
+                                  Delete session
                                 </ContextMenuItem>
-                              )}
-                              <ContextMenuSeparator />
-                              <ContextMenuItem
-                                icon={<Trash2 className="w-full h-full" />}
-                                danger
-                                onSelect={() => deleteSession(session)}
-                              >
-                                Delete session
-                              </ContextMenuItem>
-                            </ContextMenuContent>
-                          </ContextMenuPortal>
-                        </ContextMenuRoot>
-                      ))}
-                    </div>
-                  )}
+                              </ContextMenuContent>
+                            </ContextMenuPortal>
+                          </ContextMenuRoot>
+                        ))}
+                      </div>
+                    )}
                 </div>
               </div>
             </div>
@@ -432,50 +433,59 @@ export function GoalDetailWithPanel() {
         </main>
 
         <aside
-          aria-label="Goal details panel"
+          aria-label='Goal details panel'
           aria-hidden={!showPanel}
           className={`w-[380px] xl:w-[460px] bg-white dark:bg-[#0a0a0a] border-l border-zinc-200 dark:border-white/10 absolute right-0 top-0 bottom-0 flex flex-col z-20 shadow-2xl transition-transform duration-300 ease-out ${
-            showPanel ? "translate-x-0" : "translate-x-full"
+            showPanel ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
-            <div className="px-8 py-8 border-b border-zinc-200 dark:border-white/10 flex justify-between items-center">
-              <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-widest">Goal Details</h3>
-              <button
-                onClick={() => setShowPanel(false)}
-                aria-label="Close panel"
-                tabIndex={showPanel ? 0 : -1}
-                className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors rounded-full"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+          <div className='px-8 py-8 border-b border-zinc-200 dark:border-white/10 flex justify-between items-center'>
+            <h3 className='text-sm font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-widest'>
+              Goal Details
+            </h3>
+            <button
+              onClick={() => setShowPanel(false)}
+              aria-label='Close panel'
+              tabIndex={showPanel ? 0 : -1}
+              className='p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors rounded-full'
+            >
+              <X className='w-5 h-5' />
+            </button>
+          </div>
 
-            <div className="flex-1 overflow-y-auto p-8 space-y-12">
-              {editing ? (
-                <form onSubmit={saveEdits} className="space-y-8">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Title</label>
+          <div className='flex-1 overflow-y-auto p-8 space-y-12'>
+            {editing
+              ? (
+                <form onSubmit={saveEdits} className='space-y-8'>
+                  <div className='space-y-2'>
+                    <label className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
+                      Title
+                    </label>
                     <input
                       value={form.title}
                       onChange={(e) => setForm({ ...form, title: e.target.value })}
                       required
-                      className="w-full bg-transparent border-b border-zinc-300 dark:border-white/20 py-2 focus:outline-none focus:border-[#ccff00]"
+                      className='w-full bg-transparent border-b border-zinc-300 dark:border-white/20 py-2 focus:outline-none focus:border-[#ccff00]'
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Description</label>
+                  <div className='space-y-2'>
+                    <label className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
+                      Description
+                    </label>
                     <textarea
                       value={form.description}
                       onChange={(e) => setForm({ ...form, description: e.target.value })}
                       rows={4}
-                      className="w-full bg-transparent border border-zinc-300 dark:border-white/20 p-3 rounded-xl text-sm focus:outline-none focus:border-[#ccff00] resize-none"
+                      className='w-full bg-transparent border border-zinc-300 dark:border-white/20 p-3 rounded-xl text-sm focus:outline-none focus:border-[#ccff00] resize-none'
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Target hours</label>
+                  <div className='grid grid-cols-2 gap-4'>
+                    <div className='space-y-2'>
+                      <label className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
+                        Target hours
+                      </label>
                       <input
-                        type="number"
+                        type='number'
                         min={0.1}
                         step={0.1}
                         value={form.target_hours}
@@ -487,68 +497,79 @@ export function GoalDetailWithPanel() {
                         required
                         className={`w-full bg-transparent border-b py-2 focus:outline-none ${
                           editHoursError
-                            ? "border-red-400 focus:border-red-400"
-                            : "border-zinc-300 dark:border-white/20 focus:border-[#ccff00]"
+                            ? 'border-red-400 focus:border-red-400'
+                            : 'border-zinc-300 dark:border-white/20 focus:border-[#ccff00]'
                         }`}
                       />
                       {editHoursError && (
-                        <p className="text-[10px] text-red-400 font-medium" role="alert">{editHoursError}</p>
+                        <p className='text-[10px] text-red-400 font-medium' role='alert'>
+                          {editHoursError}
+                        </p>
                       )}
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Target date</label>
+                    <div className='space-y-2'>
+                      <label className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
+                        Target date
+                      </label>
                       <input
-                        type="date"
+                        type='date'
                         value={form.target_date}
                         onChange={(e) => setForm({ ...form, target_date: e.target.value })}
-                        className="w-full bg-transparent border-b border-zinc-300 dark:border-white/20 py-2 focus:outline-none focus:border-[#ccff00]"
+                        className='w-full bg-transparent border-b border-zinc-300 dark:border-white/20 py-2 focus:outline-none focus:border-[#ccff00]'
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Subjects (comma-separated)</label>
+                  <div className='space-y-2'>
+                    <label className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
+                      Subjects (comma-separated)
+                    </label>
                     <input
                       value={form.subjects}
                       onChange={(e) => setForm({ ...form, subjects: e.target.value })}
-                      placeholder="Math, Languages"
-                      className="w-full bg-transparent border-b border-zinc-300 dark:border-white/20 py-2 focus:outline-none focus:border-[#ccff00]"
+                      placeholder='Math, Languages'
+                      className='w-full bg-transparent border-b border-zinc-300 dark:border-white/20 py-2 focus:outline-none focus:border-[#ccff00]'
                     />
                   </div>
                   {editError && (
-                    <p className="text-xs text-red-400 font-medium" role="alert">{editError}</p>
+                    <p className='text-xs text-red-400 font-medium' role='alert'>{editError}</p>
                   )}
-                  <div className="flex gap-3">
+                  <div className='flex gap-3'>
                     <button
-                      type="submit"
-                      className="flex-1 py-3 rounded-full text-xs font-bold uppercase tracking-widest bg-[#ccff00] text-black hover:bg-[#b3e600] transition-colors flex items-center justify-center gap-2"
+                      type='submit'
+                      className='flex-1 py-3 rounded-full text-xs font-bold uppercase tracking-widest bg-[#ccff00] text-black hover:bg-[#b3e600] transition-colors flex items-center justify-center gap-2'
                     >
-                      <Check className="w-4 h-4" /> Save
+                      <Check className='w-4 h-4' /> Save
                     </button>
                     <button
-                      type="button"
+                      type='button'
                       onClick={() => {
                         setEditing(false);
                         setEditError(null);
                         setEditHoursError(null);
                       }}
-                      className="flex-1 py-3 rounded-full text-xs font-bold uppercase tracking-widest border border-zinc-300 dark:border-white/20 hover:border-zinc-500 dark:hover:border-white/50 transition-colors"
+                      className='flex-1 py-3 rounded-full text-xs font-bold uppercase tracking-widest border border-zinc-300 dark:border-white/20 hover:border-zinc-500 dark:hover:border-white/50 transition-colors'
                     >
                       Cancel
                     </button>
                   </div>
                 </form>
-              ) : (
+              )
+              : (
                 <>
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Subject Tags</label>
-                    <div className="flex flex-wrap gap-2">
+                  <div className='space-y-4'>
+                    <label className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
+                      Subject Tags
+                    </label>
+                    <div className='flex flex-wrap gap-2'>
                       {goal.subjects.length === 0 && (
-                        <span className="text-xs text-zinc-400 dark:text-zinc-600 font-light">None</span>
+                        <span className='text-xs text-zinc-400 dark:text-zinc-600 font-light'>
+                          None
+                        </span>
                       )}
                       {goal.subjects.map((tag) => (
                         <span
                           key={tag}
-                          className="bg-transparent border border-zinc-300 dark:border-white/20 text-zinc-700 dark:text-zinc-300 px-3 py-1 rounded-full text-xs font-medium"
+                          className='bg-transparent border border-zinc-300 dark:border-white/20 text-zinc-700 dark:text-zinc-300 px-3 py-1 rounded-full text-xs font-medium'
                         >
                           {tag}
                         </span>
@@ -556,69 +577,83 @@ export function GoalDetailWithPanel() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-8 border-t border-zinc-200 dark:border-white/10 pt-10">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Created</label>
-                      <div className="text-lg font-medium text-zinc-900 dark:text-zinc-50">{formatDate(goal.created_at)}</div>
+                  <div className='grid grid-cols-2 gap-8 border-t border-zinc-200 dark:border-white/10 pt-10'>
+                    <div className='space-y-2'>
+                      <label className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
+                        Created
+                      </label>
+                      <div className='text-lg font-medium text-zinc-900 dark:text-zinc-50'>
+                        {formatDate(goal.created_at)}
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-[#ccff00] uppercase tracking-widest">Target Date</label>
-                      <div className="text-lg font-medium text-[#ccff00]">
-                        {goal.target_date ? formatDate(goal.target_date) : "—"}
+                    <div className='space-y-2'>
+                      <label className='text-[10px] font-bold text-[#ccff00] uppercase tracking-widest'>
+                        Target Date
+                      </label>
+                      <div className='text-lg font-medium text-[#ccff00]'>
+                        {goal.target_date ? formatDate(goal.target_date) : '—'}
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-4 border-t border-zinc-200 dark:border-white/10 pt-10">
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Description</label>
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400 font-light leading-relaxed">
+                  <div className='space-y-4 border-t border-zinc-200 dark:border-white/10 pt-10'>
+                    <label className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
+                      Description
+                    </label>
+                    <p className='text-sm text-zinc-600 dark:text-zinc-400 font-light leading-relaxed'>
                       {goal.description || (
-                        <span className="text-zinc-400 dark:text-zinc-600">No description yet.</span>
+                        <span className='text-zinc-400 dark:text-zinc-600'>
+                          No description yet.
+                        </span>
                       )}
                     </p>
                   </div>
 
-                  <div className="space-y-4 pt-12 border-t border-zinc-200 dark:border-white/10">
+                  <div className='space-y-4 pt-12 border-t border-zinc-200 dark:border-white/10'>
                     <button
                       onClick={() => setEditing(true)}
-                      className="w-full py-4 px-4 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-50 bg-transparent border border-zinc-300 dark:border-white/20 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors flex items-center justify-center gap-2"
+                      className='w-full py-4 px-4 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-50 bg-transparent border border-zinc-300 dark:border-white/20 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors flex items-center justify-center gap-2'
                     >
-                      <Edit2 className="w-3 h-3 text-zinc-500" /> Edit goal
+                      <Edit2 className='w-3 h-3 text-zinc-500' /> Edit goal
                     </button>
                     <button
                       onClick={togglePauseGoal}
-                      className="w-full py-4 px-4 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-50 bg-transparent border border-zinc-300 dark:border-white/20 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors flex items-center justify-center gap-2"
+                      className='w-full py-4 px-4 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-50 bg-transparent border border-zinc-300 dark:border-white/20 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors flex items-center justify-center gap-2'
                     >
-                      {goal.status === "Active" ? (
-                        <>
-                          <Pause className="w-3 h-3 text-zinc-500" fill="currentColor" /> Pause goal
-                        </>
-                      ) : goal.status === "Paused" ? (
-                        <>
-                          <Play className="w-3 h-3 text-zinc-500" fill="currentColor" /> Resume goal
-                        </>
-                      ) : (
-                        <>Reactivate goal</>
-                      )}
+                      {goal.status === 'Active'
+                        ? (
+                          <>
+                            <Pause className='w-3 h-3 text-zinc-500' fill='currentColor' />{' '}
+                            Pause goal
+                          </>
+                        )
+                        : goal.status === 'Paused'
+                        ? (
+                          <>
+                            <Play className='w-3 h-3 text-zinc-500' fill='currentColor' />{' '}
+                            Resume goal
+                          </>
+                        )
+                        : <>Reactivate goal</>}
                     </button>
-                    {goal.status !== "Completed" && (
+                    {goal.status !== 'Completed' && (
                       <button
                         onClick={markComplete}
-                        className="w-full py-4 px-4 rounded-full text-xs font-bold uppercase tracking-widest text-emerald-400 bg-transparent border border-emerald-400/20 hover:bg-emerald-400/10 transition-colors"
+                        className='w-full py-4 px-4 rounded-full text-xs font-bold uppercase tracking-widest text-emerald-400 bg-transparent border border-emerald-400/20 hover:bg-emerald-400/10 transition-colors'
                       >
                         Mark complete
                       </button>
                     )}
                     <button
                       onClick={deleteGoal}
-                      className="w-full py-4 px-4 rounded-full text-xs font-bold uppercase tracking-widest text-red-500 bg-transparent border border-red-500/20 hover:bg-red-500/10 transition-colors mt-8"
+                      className='w-full py-4 px-4 rounded-full text-xs font-bold uppercase tracking-widest text-red-500 bg-transparent border border-red-500/20 hover:bg-red-500/10 transition-colors mt-8'
                     >
                       Delete goal
                     </button>
                   </div>
                 </>
               )}
-            </div>
+          </div>
         </aside>
       </div>
 
@@ -631,7 +666,7 @@ export function GoalDetailWithPanel() {
           onClose={() => {
             setShowModal(false);
             setModalInitialMinutes(undefined);
-            setModalInitialNotes("");
+            setModalInitialNotes('');
             setEditingSession(null);
           }}
           onSaved={onSessionSaved}

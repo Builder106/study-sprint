@@ -1,5 +1,5 @@
-import { createBdd } from "playwright-bdd";
-import type { Page } from "@playwright/test";
+import { createBdd } from 'playwright-bdd';
+import type { Page } from '@playwright/test';
 
 const { Before, After } = createBdd();
 
@@ -9,7 +9,7 @@ const { Before, After } = createBdd();
 // give the viewer time to register the new state. No-op outside DEMO mode.
 export const DEMO_DWELL_MS = Number(process.env.DEMO_DWELL_MS ?? 1500);
 export async function dwellForDemo(page: Page, ms: number = DEMO_DWELL_MS) {
-  if (process.env.DEMO !== "1") return;
+  if (process.env.DEMO !== '1') return;
   try {
     await page.waitForTimeout(ms);
   } catch {
@@ -109,8 +109,8 @@ const ZOOM_SCRIPT = `
 //
 // DEMO_THEME selects which one to record. Default "dark" for backward compat;
 // set DEMO_THEME=light to record a light-mode pass for theme-aware hero GIFs.
-const DEMO_THEME = process.env.DEMO_THEME === "light" ? "light" : "dark";
-const BG_COLOR = DEMO_THEME === "light" ? "#ffffff" : "#0a0a0a";
+const DEMO_THEME = process.env.DEMO_THEME === 'light' ? 'light' : 'dark';
+const BG_COLOR = DEMO_THEME === 'light' ? '#ffffff' : '#0a0a0a';
 const THEME_SCRIPT = `
   (() => {
     const theme = ${JSON.stringify(DEMO_THEME)};
@@ -133,21 +133,21 @@ const THEME_SCRIPT = `
 let locatorFillPatched = false;
 
 Before(async ({ page }) => {
-  if (process.env.DEMO !== "1") return;
+  if (process.env.DEMO !== '1') return;
   // Re-inject on every navigation so the cursor + zoom + theme bg survive route changes.
   await page.addInitScript(THEME_SCRIPT);
   await page.addInitScript(CURSOR_SCRIPT);
   if (DEMO_ZOOM !== 1) await page.addInitScript(ZOOM_SCRIPT);
 
   if (!locatorFillPatched) {
-    const sampleLocator = page.locator("body");
+    const sampleLocator = page.locator('body');
     const proto = Object.getPrototypeOf(sampleLocator);
     const originalFill = proto.fill;
     proto.fill = async function (
       value: string,
       options?: Parameters<typeof originalFill>[1],
     ) {
-      await originalFill.call(this, "", options);
+      await originalFill.call(this, '', options);
       if (value) await this.pressSequentially(value, { delay: DEMO_TYPE_DELAY });
     };
     locatorFillPatched = true;
@@ -155,7 +155,7 @@ Before(async ({ page }) => {
 });
 
 After(async ({ page }) => {
-  if (process.env.DEMO !== "1") return;
+  if (process.env.DEMO !== '1') return;
   try {
     await page.waitForTimeout(DEMO_TAIL_MS);
   } catch {

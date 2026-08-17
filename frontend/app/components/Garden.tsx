@@ -1,20 +1,20 @@
-import { Link } from "react-router";
-import { useEffect, useState } from "react";
-import { ArrowLeft, Flame, Sparkles, Trophy, Zap } from "lucide-react";
-import { api, ApiError } from "@/lib/api";
-import { TopNav } from "./shared/TopNav";
-import { VirtualPlant, type PlantStage } from "./shared/VirtualPlant";
-import { Spinner } from "./shared/Spinner";
+import { Link } from 'react-router';
+import { useEffect, useState } from 'react';
+import { ArrowLeft, Flame, Sparkles, Trophy, Zap } from 'lucide-react';
+import { api, ApiError } from '@/lib/api';
+import { TopNav } from './shared/TopNav';
+import { type PlantStage, VirtualPlant } from './shared/VirtualPlant';
+import { Spinner } from './shared/Spinner';
 
 type Profile = Awaited<ReturnType<typeof api.gamificationProfile>>;
 
 const STAGE_LABEL: Record<PlantStage, string> = {
-  seed: "Seed",
-  sprout: "Sprout",
-  sapling: "Sapling",
-  young_tree: "Young tree",
-  mature_tree: "Mature tree",
-  blooming: "Blooming",
+  seed: 'Seed',
+  sprout: 'Sprout',
+  sapling: 'Sapling',
+  young_tree: 'Young tree',
+  mature_tree: 'Mature tree',
+  blooming: 'Blooming',
 };
 
 // TEMPORARY BRIDGE — remove when sub-project 2 replaces VirtualPlant with a
@@ -22,12 +22,12 @@ const STAGE_LABEL: Record<PlantStage, string> = {
 // six-stage names purely so this page keeps compiling and rendering
 // something coherent in the meantime.
 function stageFromCharge(pct: number): PlantStage {
-  if (pct <= 0) return "seed";
-  if (pct <= 20) return "sprout";
-  if (pct <= 40) return "sapling";
-  if (pct <= 60) return "young_tree";
-  if (pct <= 80) return "mature_tree";
-  return "blooming";
+  if (pct <= 0) return 'seed';
+  if (pct <= 20) return 'sprout';
+  if (pct <= 40) return 'sapling';
+  if (pct <= 60) return 'young_tree';
+  if (pct <= 80) return 'mature_tree';
+  return 'blooming';
 }
 
 export function Garden() {
@@ -39,63 +39,61 @@ export function Garden() {
       .gamificationProfile()
       .then(setProfile)
       .catch((err: unknown) =>
-        setError(err instanceof ApiError ? err.message : "Failed to load garden"),
+        setError(err instanceof ApiError ? err.message : 'Failed to load garden')
       );
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans">
+    <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans'>
       <TopNav />
-      <main className="max-w-5xl mx-auto px-8 py-16 space-y-16">
+      <main className='max-w-5xl mx-auto px-8 py-16 space-y-16'>
         <Link
-          to="/dashboard"
-          className="inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] transition-colors group"
+          to='/dashboard'
+          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] transition-colors group'
         >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
           Back
         </Link>
 
         <div>
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4">
-            <Sparkles className="w-4 h-4" />
+          <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4'>
+            <Sparkles className='w-4 h-4' />
             Garden
           </div>
-          <h1 className="text-4xl md:text-5xl font-medium tracking-tighter">Keep it growing.</h1>
-          <p className="text-zinc-600 dark:text-zinc-400 mt-2 font-light text-lg">
+          <h1 className='text-4xl md:text-5xl font-medium tracking-tighter'>Keep it growing.</h1>
+          <p className='text-zinc-600 dark:text-zinc-400 mt-2 font-light text-lg'>
             Your plant grows as you log focused study sessions.
           </p>
         </div>
 
-        {error && (
-          <div className="text-xs text-red-400 font-medium" role="alert">{error}</div>
-        )}
+        {error && <div className='text-xs text-red-400 font-medium' role='alert'>{error}</div>}
 
-        {!profile && !error && <Spinner label="Loading garden" />}
+        {!profile && !error && <Spinner label='Loading garden' />}
 
         {profile && (
           <>
-            <section className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-              <div className="md:col-span-1 flex justify-center">
-                <div className="p-8 rounded-2xl border border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-zinc-50">
+            <section className='grid grid-cols-1 md:grid-cols-3 gap-8 items-center'>
+              <div className='md:col-span-1 flex justify-center'>
+                <div className='p-8 rounded-2xl border border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-zinc-50'>
                   <VirtualPlant stage={stageFromCharge(profile.current_charge_pct)} size={160} />
-                  <div className="mt-4 text-center text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                  <div className='mt-4 text-center text-[10px] font-bold uppercase tracking-widest text-zinc-500'>
                     {STAGE_LABEL[stageFromCharge(profile.current_charge_pct)]}
                   </div>
                 </div>
               </div>
 
-              <div className="md:col-span-2 space-y-6">
-                <div className="flex items-baseline gap-4">
+              <div className='md:col-span-2 space-y-6'>
+                <div className='flex items-baseline gap-4'>
                   <div>
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                    <div className='text-[10px] font-bold uppercase tracking-widest text-zinc-500'>
                       Level
                     </div>
-                    <div className="text-6xl font-medium tracking-tighter text-[#ccff00] tabular-nums">
+                    <div className='text-6xl font-medium tracking-tighter text-[#ccff00] tabular-nums'>
                       {profile.level}
                     </div>
                   </div>
-                  <div className="flex-1 space-y-2">
-                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                  <div className='flex-1 space-y-2'>
+                    <div className='flex justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-500'>
                       <span>
                         {profile.xp_into_level} / {profile.xp_for_next_level} XP
                       </span>
@@ -103,64 +101,66 @@ export function Garden() {
                         {Math.round(profile.progress_to_next * 100)}% to L{profile.level + 1}
                       </span>
                     </div>
-                    <div className="h-2 bg-zinc-200 dark:bg-white/5 rounded-full overflow-hidden">
+                    <div className='h-2 bg-zinc-200 dark:bg-white/5 rounded-full overflow-hidden'>
                       <div
-                        className="h-full bg-[#ccff00] transition-all duration-500"
+                        className='h-full bg-[#ccff00] transition-all duration-500'
                         style={{ width: `${profile.progress_to_next * 100}%` }}
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className='grid grid-cols-3 gap-4'>
                   <StatBox
-                    icon={<Flame className="w-4 h-4" />}
-                    label="Current charge"
+                    icon={<Flame className='w-4 h-4' />}
+                    label='Current charge'
                     value={`${profile.current_charge_pct}%`}
                     accent
                   />
                   <StatBox
-                    icon={<Flame className="w-4 h-4" />}
-                    label="Days since empty"
+                    icon={<Flame className='w-4 h-4' />}
+                    label='Days since empty'
                     value={`${profile.days_since_empty}d`}
                   />
                   <StatBox
-                    icon={<Zap className="w-4 h-4" />}
-                    label="Total XP"
+                    icon={<Zap className='w-4 h-4' />}
+                    label='Total XP'
                     value={profile.xp.toLocaleString()}
                   />
                 </div>
               </div>
             </section>
 
-            <section className="space-y-6">
-              <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                <Trophy className="w-4 h-4" /> Achievements ({profile.achievements.filter((a) => a.unlocked).length}/{profile.achievements.length})
+            <section className='space-y-6'>
+              <h2 className='text-sm font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2'>
+                <Trophy className='w-4 h-4' /> Achievements ({profile.achievements.filter((a) =>
+                  a.unlocked
+                ).length}/{profile.achievements.length})
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'>
                 {profile.achievements.map((a) => (
                   <div
                     key={a.id}
                     className={`p-4 rounded-xl border flex items-start gap-3 transition-colors ${
                       a.unlocked
-                        ? "border-[#ccff00]/30 bg-[#ccff00]/5"
-                        : "border-zinc-200 dark:border-white/10 opacity-50"
+                        ? 'border-[#ccff00]/30 bg-[#ccff00]/5'
+                        : 'border-zinc-200 dark:border-white/10 opacity-50'
                     }`}
                   >
                     <Trophy
                       className={`w-4 h-4 mt-1 flex-shrink-0 ${
-                        a.unlocked ? "text-[#ccff00]" : "text-zinc-400 dark:text-zinc-600"
+                        a.unlocked ? 'text-[#ccff00]' : 'text-zinc-400 dark:text-zinc-600'
                       }`}
                     />
                     <div>
                       <div
                         className={`text-xs font-bold uppercase tracking-widest ${
-                          a.unlocked ? "text-zinc-900 dark:text-zinc-50" : "text-zinc-500"
+                          a.unlocked ? 'text-zinc-900 dark:text-zinc-50' : 'text-zinc-500'
                         }`}
                       >
                         {a.label}
                       </div>
-                      <div className="text-xs text-zinc-500 font-light mt-1">
+                      <div className='text-xs text-zinc-500 font-light mt-1'>
                         {a.description}
                       </div>
                     </div>
@@ -189,18 +189,16 @@ function StatBox({
   return (
     <div
       className={`p-4 rounded-xl border ${
-        accent
-          ? "border-[#ccff00]/30 bg-[#ccff00]/5"
-          : "border-zinc-200 dark:border-white/10"
+        accent ? 'border-[#ccff00]/30 bg-[#ccff00]/5' : 'border-zinc-200 dark:border-white/10'
       }`}
     >
-      <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">
+      <div className='flex items-center gap-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1'>
         {icon}
         {label}
       </div>
       <div
         className={`text-2xl font-medium tracking-tighter tabular-nums ${
-          accent ? "text-[#ccff00]" : "text-zinc-900 dark:text-zinc-50"
+          accent ? 'text-[#ccff00]' : 'text-zinc-900 dark:text-zinc-50'
         }`}
       >
         {value}

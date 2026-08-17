@@ -16,17 +16,17 @@
 //
 // Usage: `deno task seed:demo:teardown`
 
-import "jsr:@std/dotenv/load";
-import { createClient } from "npm:@supabase/supabase-js@2";
+import 'jsr:@std/dotenv/load';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? Deno.env.get("VITE_SUPABASE_URL");
-const SECRET_KEY = Deno.env.get("SUPABASE_SECRET_KEY");
-const SOCIAL_DOMAIN = "demo.studysprint.invalid";
-const ROOM_SLUG = "ss-demo-study-squad";
-const DEMO_EMAIL = Deno.env.get("E2E_DEMO_EMAIL") ?? "demo@studysprint.app";
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? Deno.env.get('VITE_SUPABASE_URL');
+const SECRET_KEY = Deno.env.get('SUPABASE_SECRET_KEY');
+const SOCIAL_DOMAIN = 'demo.studysprint.invalid';
+const ROOM_SLUG = 'ss-demo-study-squad';
+const DEMO_EMAIL = Deno.env.get('E2E_DEMO_EMAIL') ?? 'demo@studysprint.app';
 
 if (!SUPABASE_URL || !SECRET_KEY) {
-  console.error("teardown-demo-history: SUPABASE_URL and SUPABASE_SECRET_KEY must be set.");
+  console.error('teardown-demo-history: SUPABASE_URL and SUPABASE_SECRET_KEY must be set.');
   Deno.exit(1);
 }
 
@@ -61,7 +61,7 @@ async function main() {
     `teardown-demo-history: found ${users.length} synthetic user(s) at @${SOCIAL_DOMAIN}`,
   );
 
-  const { error: roomErr } = await admin.from("study_rooms").delete().eq("slug", ROOM_SLUG);
+  const { error: roomErr } = await admin.from('study_rooms').delete().eq('slug', ROOM_SLUG);
   if (roomErr) console.warn(`teardown-demo-history: study_rooms delete failed: ${roomErr.message}`);
   else {console.log(
       `teardown-demo-history: deleted study room "${ROOM_SLUG}" (room_members cascades)`,
@@ -72,13 +72,13 @@ async function main() {
     // from auth.users on user deletion. room_members already gone with the
     // room above, but delete defensively in case membership in some other
     // room was ever added by hand.
-    const { error: goalsErr } = await admin.from("study_goals").delete().eq("user_id", u.id);
+    const { error: goalsErr } = await admin.from('study_goals').delete().eq('user_id', u.id);
     if (goalsErr) {
       console.warn(
         `teardown-demo-history: study_goals delete(${u.email}) failed: ${goalsErr.message}`,
       );
     }
-    const { error: membersErr } = await admin.from("room_members").delete().eq("user_id", u.id);
+    const { error: membersErr } = await admin.from('room_members').delete().eq('user_id', u.id);
     if (membersErr) {
       console.warn(
         `teardown-demo-history: room_members delete(${u.email}) failed: ${membersErr.message}`,
@@ -97,9 +97,9 @@ async function main() {
   // sessions stay put; only the visibility flag seeding set is reverted.
   if (demoUserId) {
     const { error: visErr } = await admin
-      .from("profiles")
+      .from('profiles')
       .update({ is_public: false })
-      .eq("id", demoUserId);
+      .eq('id', demoUserId);
     if (visErr) {
       console.warn(`teardown-demo-history: un-publishing ${DEMO_EMAIL} failed: ${visErr.message}`);
     } else console.log(`teardown-demo-history: ${DEMO_EMAIL} is_public -> false`);
@@ -107,10 +107,10 @@ async function main() {
     console.warn(`teardown-demo-history: ${DEMO_EMAIL} not found — left as-is.`);
   }
 
-  console.log("teardown-demo-history: done.");
+  console.log('teardown-demo-history: done.');
 }
 
 main().catch((err) => {
-  console.error("teardown-demo-history: fatal:", err);
+  console.error('teardown-demo-history: fatal:', err);
   Deno.exit(1);
 });

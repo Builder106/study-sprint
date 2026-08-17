@@ -7,12 +7,12 @@
 // Upload the resulting PNG at:
 //   https://github.com/Builder106/study-sprint/settings → Social preview
 
-import { chromium } from "npm:playwright@1.59.1";
-import { fromFileUrl, resolve } from "jsr:@std/path";
+import { chromium } from 'npm:playwright@1.59.1';
+import { fromFileUrl, resolve } from 'jsr:@std/path';
 
-const repoRoot = fromFileUrl(new URL("..", import.meta.url));
-const htmlPath = resolve(repoRoot, "docs/social-card.html");
-const pngPath = resolve(repoRoot, "docs/social-card.png");
+const repoRoot = fromFileUrl(new URL('..', import.meta.url));
+const htmlPath = resolve(repoRoot, 'docs/social-card.html');
+const pngPath = resolve(repoRoot, 'docs/social-card.png');
 
 const browser = await chromium.launch({ headless: true });
 try {

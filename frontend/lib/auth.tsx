@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import type { ReactNode } from "react";
-import type { User as SupabaseUser } from "@supabase/supabase-js";
-import { supabase } from "./supabase";
-import type { User } from "./types";
+import { createContext, useContext, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
+import { supabase } from './supabase';
+import type { User } from './types';
 
 interface AuthContextValue {
   user: User | null;
@@ -21,7 +21,7 @@ function toUser(supaUser: SupabaseUser | null | undefined): User | null {
   if (!supaUser) return null;
   return {
     id: supaUser.id,
-    email: supaUser.email ?? "",
+    email: supaUser.email ?? '',
     created_at: supaUser.created_at,
   };
 }
@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const syncIdentity = (supaUser: SupabaseUser | null | undefined) => {
       setHasPasswordIdentity(
-        !!supaUser?.identities?.some((i) => i.provider === "email"),
+        !!supaUser?.identities?.some((i) => i.provider === 'email'),
       );
     };
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // onAuthStateChange listener picks it up.
   const loginWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider: 'google',
       options: { redirectTo: `${window.location.origin}/dashboard` },
     });
     if (error) throw new Error(error.message);
@@ -88,8 +88,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     if (error) {
       const msg = error.message.toLowerCase();
-      if (msg.includes("current password") || msg.includes("invalid")) {
-        throw new Error("Current password is incorrect.");
+      if (msg.includes('current password') || msg.includes('invalid')) {
+        throw new Error('Current password is incorrect.');
       }
       throw new Error(error.message);
     }
@@ -115,6 +115,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 }

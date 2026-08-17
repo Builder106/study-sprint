@@ -8,15 +8,15 @@
 // folders like "My Drive (user@x.edu)") that .pathname leaves percent-
 // encoded — existsSync would otherwise miss the file silently.
 
-import { existsSync, readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
-const envPath = fileURLToPath(new URL("../../.env", import.meta.url));
+const envPath = fileURLToPath(new URL('../../.env', import.meta.url));
 if (existsSync(envPath)) {
-  for (const line of readFileSync(envPath, "utf8").split("\n")) {
+  for (const line of readFileSync(envPath, 'utf8').split('\n')) {
     const m = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/);
     if (m && process.env[m[1]] === undefined) {
-      process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+      process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
     }
   }
 }
