@@ -59,6 +59,7 @@ function, not a discrete threshold table, so the color shifts smoothly as
 `chargePct` changes.
 
 **Motion (via `motion/react`, matching `VirtualPlant`'s existing usage):**
+
 - The fill height always animates on `chargePct` change — a spring
   transition (reuse `VirtualPlant`'s spring parameters: stiffness 160,
   damping 13, mass 0.9), not a hard cut.

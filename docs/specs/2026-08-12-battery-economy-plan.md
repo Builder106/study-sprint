@@ -26,10 +26,12 @@
 ### Task 1: Rewrite `analytics_summary()` with the recursive-CTE battery formula
 
 **Files:**
+
 - Create: `supabase/migrations/20260812000000_battery_economy.sql`
 - Test (manual, no automated SQL test infra exists in this repo): a scratch verification query, run via `psql`/Supabase SQL editor against the linked project after `deno task supabase:db:push`
 
 **Interfaces:**
+
 - Consumes: `public.study_sessions`, `public.study_goals`, `public.goal_subjects`, `public.subjects` (all unchanged, existing tables)
 - Produces: `public.analytics_summary()` returning `json` with `totals.current_charge_pct`, `totals.days_since_empty`, `totals.longest_days_since_empty` (replacing `totals.current_streak_days`/`totals.longest_streak_days`). `daily`, `hourly`, `weekday`, `by_subject`, and `totals.minutes`/`totals.sessions_last_365` are unchanged in shape.
 
@@ -228,9 +230,11 @@ git commit -m "feat: replace streak analytics with gradual-drain battery charge"
 ### Task 2: Rewrite `gamification.ts` with the battery formula
 
 **Files:**
+
 - Modify: `frontend/lib/gamification.ts`
 
 **Interfaces:**
+
 - Consumes: nothing new (same `GamificationSession[]`, `Set<string>` subjectNames, `tz: string` inputs as today)
 - Produces: `GamificationProfile` with `current_charge_pct: number`, `days_since_empty: number`, `longest_days_since_empty: number` replacing `pet_stage: PetStage`, `current_streak_days: number`, `longest_streak_days: number`. The `PetStage` type export is deleted. `computeGamificationProfile` keeps its exact name and signature — `Task 5` and `Task 6` depend on the field names above.
 
@@ -434,9 +438,11 @@ git commit -m "feat: replace streak XP economy with gradual-drain battery charge
 ### Task 3: Rewrite `gamification.test.ts` with golden-value tests
 
 **Files:**
+
 - Modify: `frontend/lib/gamification.test.ts`
 
 **Interfaces:**
+
 - Consumes: `computeGamificationProfile`, `GamificationSession` from Task 2's `gamification.ts` (unchanged import path/names)
 - Produces: nothing consumed by later tasks — this is a leaf.
 
@@ -608,9 +614,11 @@ git commit -m "test: rewrite gamification tests for battery charge economy"
 ### Task 4: Update `api.ts`'s `AnalyticsResult` type
 
 **Files:**
+
 - Modify: `frontend/lib/api.ts:435-440`
 
 **Interfaces:**
+
 - Consumes: the `totals` shape Task 1's SQL now returns
 - Produces: `AnalyticsResult` type consumed by `Analytics.tsx` (Task 6)
 
@@ -656,9 +664,11 @@ git commit -m "feat: rename AnalyticsResult.totals fields for battery charge eco
 ### Task 5: Update `Garden.tsx` to compile against the new profile shape
 
 **Files:**
+
 - Modify: `frontend/app/components/Garden.tsx`
 
 **Interfaces:**
+
 - Consumes: `GamificationProfile` from Task 2 (`current_charge_pct`, `days_since_empty`)
 - Produces: nothing consumed by later tasks
 
@@ -756,9 +766,11 @@ git commit -m "fix: bridge Garden.tsx to the battery charge profile shape"
 ### Task 6: Update `Analytics.tsx` to read the new totals fields
 
 **Files:**
+
 - Modify: `frontend/app/components/Analytics.tsx:155-165`
 
 **Interfaces:**
+
 - Consumes: `AnalyticsResult.totals` from Task 4 (`current_charge_pct`, `days_since_empty`)
 - Produces: nothing consumed by later tasks
 
@@ -817,6 +829,7 @@ git commit -m "fix: bridge Analytics.tsx to the battery charge totals shape"
 **Files:** none created or modified — this is a verification-only task.
 
 **Interfaces:**
+
 - Consumes: everything from Tasks 1–6
 - Produces: nothing — this is the plan's final gate
 

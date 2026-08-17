@@ -27,10 +27,12 @@
 ### Task 1: `BatteryBolt` component and its pure helpers
 
 **Files:**
+
 - Create: `frontend/app/components/shared/BatteryBolt.tsx`
 - Create: `frontend/app/components/shared/BatteryBolt.test.ts`
 
 **Interfaces:**
+
 - Produces: `BatteryBolt({ chargePct: number, size?: number, className?: string }): JSX.Element` — default export is a named export `BatteryBolt`, matching `VirtualPlant`'s named-export style.
 - Produces (exported for the test file, and for reuse if a later sub-project needs the same color logic): `clampCharge(pct: number): number`, `chargeToFillColor(pct: number): string`, `batteryAriaLabel(pct: number): string`.
 
@@ -214,9 +216,11 @@ git commit -m "Add BatteryBolt component and its pure color/label helpers"
 ### Task 2: Migrate `Garden.tsx` to `BatteryBolt`
 
 **Files:**
+
 - Modify: `frontend/app/components/Garden.tsx`
 
 **Interfaces:**
+
 - Consumes: `BatteryBolt({ chargePct, size, className })` from Task 1 (`frontend/app/components/shared/BatteryBolt.tsx`).
 
 - [ ] **Step 1: Remove the `VirtualPlant`/`PlantStage` import and the temporary bridge**
@@ -272,9 +276,11 @@ git commit -m "Migrate Garden.tsx from VirtualPlant/PlantStage to BatteryBolt"
 ### Task 3: `FeatureIcon` component (replaces `FlowerPot`)
 
 **Files:**
+
 - Create: `frontend/app/components/shared/FeatureIcon.tsx`
 
 **Interfaces:**
+
 - Produces: `FeatureIcon({ variant: FeatureIconVariant, size?: number, className?: string }): JSX.Element` and the exported type `FeatureIconVariant = "timer" | "syllabus" | "rooms" | "analytics" | "leaderboard" | "achievements" | "opensource"`.
 
 This task creates the component only — nothing consumes it yet (`FlowerPot` still renders in `Landing.tsx` until Task 5). No unit test: like `VirtualPlant`/`FlowerPot`, this is presentational SVG with no branching logic worth a pure-function test: `deno task check` (Task 5) is the compile-correctness gate, and Task 6's browser check is the visual gate.
@@ -419,10 +425,12 @@ git commit -m "Add FeatureIcon component (replaces FlowerPot's role in the featu
 ### Task 4: `Landing.tsx` — hero and "How charging works" section
 
 **Files:**
+
 - Modify: `frontend/app/components/Landing.tsx`
 - Delete: `frontend/app/components/shared/VirtualPlant.tsx`
 
 **Interfaces:**
+
 - Consumes: `BatteryBolt({ chargePct, size, className })` from Task 1.
 
 This task covers the hero (headline, subhead, hero visual) and the stage-walkthrough section. It deliberately does not touch the feature grid, `FlowerPot`, or the closing CTA line — those are Task 5, so each task stays reviewable as one coherent piece of the page rather than one enormous diff.
@@ -510,13 +518,13 @@ with:
 
 Replace the subhead sentence:
 
-```
+```text
 Start a timer, tag it to a goal, and watch the total turn into a plant that will not grow unless you do the work.
 ```
 
 with:
 
-```
+```text
 Start a timer, tag it to a goal, and watch the total turn into a charge that will not build unless you do the work.
 ```
 
@@ -667,11 +675,13 @@ git commit -m "Pivot Landing.tsx hero and stage-walkthrough section to BatteryBo
 ### Task 5: `Landing.tsx` — feature grid, closing CTA, and `FlowerPot` removal
 
 **Files:**
+
 - Modify: `frontend/app/components/Landing.tsx`
 - Modify: `frontend/styles/landing.css`
 - Delete: `frontend/app/components/shared/FlowerPot.tsx`
 
 **Interfaces:**
+
 - Consumes: `FeatureIcon({ variant, size, className })` and `FeatureIconVariant` from Task 3.
 
 - [ ] **Step 1: Update imports**
@@ -843,6 +853,7 @@ with:
 ```
 
 Also update the two remaining stale comments (identified in Task exploration, not code — comments only, no behavior change):
+
 - Line 2's file-header comment: `enrichment: Tier B reused VirtualPlant` → `enrichment: Tier B reused BatteryBolt`.
 - The `.ss-hero-plant` rule's comment: `a soft radial ground behind the VirtualPlant` → `a soft radial ground behind the BatteryBolt`.
 
@@ -892,6 +903,7 @@ Expected: no output.
 - [ ] **Step 4: Visual smoke-check in the browser**
 
 Start the project's dev server (`deno task dev`) and open both:
+
 - `/garden` (signed in) — confirm `BatteryBolt` renders at the current charge level, animates on load, and the "% charged" label matches the number in the stat box beside it.
 - `/` (landing, signed out) — confirm the hero bolt renders at full charge with the glow/pulse active, the four charge-beat bolts render at their distinct fill levels (25/45/70/100), the feature grid shows seven distinct `FeatureIcon` glyphs with no leftover pot/soil imagery, and the closing CTA reads "Your battery is already charging."
 

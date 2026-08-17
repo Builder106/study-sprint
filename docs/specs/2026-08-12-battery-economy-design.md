@@ -33,7 +33,7 @@ stored. That's why this migration needs no backfill.
 Computed once per local calendar day, walking forward across the same
 365-day window both implementations already use:
 
-```
+```text
 gain[day]   = min(minutes_studied_that_day / 120, 1) × 20
 charge[day] = clamp(0, 100, charge[day-1] − 8 + gain[day])
 ```
@@ -63,7 +63,7 @@ costs 8 points, not the whole run) while still rewarding consistency.
 Replaces `1 + streakOnDay/30` (old, ramped 1.0×–2.0× over 30 streak days)
 with:
 
-```
+```text
 multiplier[day] = 1 + charge[day] / 100
 ```
 
@@ -75,7 +75,7 @@ already benefits from that day's partial charge-up).
 ### Achievements
 
 | Old (streak-based) | New (charge-based) | Threshold |
-|---|---|---|
+| --- | --- | --- |
 | Hot Streak — 7 days in a row | **Charged Up** | `days_since_empty >= 7` (current or longest) |
 | Dedicated — 30 days in a row | **Never Empty** | `days_since_empty >= 30` (current or longest) |
 | *(none)* | **Full Charge** *(new)* | `charge[day] >= 100` reached at least once in the window |
@@ -112,7 +112,7 @@ it identically — see parity testing below.
 `analytics_summary()` (SQL):
 
 | Removed | Added |
-|---|---|
+| --- | --- |
 | `pet_stage: PetStage` | `current_charge_pct: number` (0–100) |
 | `current_streak_days: number` | `days_since_empty: number` |
 | `longest_streak_days: number` | `longest_days_since_empty: number` |
