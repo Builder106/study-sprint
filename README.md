@@ -14,19 +14,15 @@
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
 [![Vercel](https://img.shields.io/badge/Vercel-000?logo=vercel&logoColor=white)](https://vercel.com)
 
-A study tracker that turns focus sessions into a growing garden. Set goals, run a focus timer, watch plants grow with time logged, and compare streaks on a public leaderboard.
+> **Gamified study tracker that transforms focus time into a thriving virtual garden.** Set goals, run Pomodoro timers, build study streaks, and study together in virtual rooms.
 
-**Live app:** <https://getstudysprint.vercel.app>
+## 💡 What is StudySprint?
 
-[![Watch the 63-second product tour](docs/ui-demo-poster.png)](ui-demo/public/ui-demo.mp4)
+Staying motivated while studying alone is tough. StudySprint turns daily study sessions into an interactive garden where every focused minute helps virtual plants grow from seedlings into mature trees. 
 
-*45 days of studying, one continuous take: the timer, the log, the heatmap, the plant growing from `young_tree` to `mature_tree`, the syllabus importer, and the community leaderboard. Music: "Undaunted," Kevin MacLeod (incompetech.com), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).*
+Students can import syllabi directly using AI to automatically schedule exam prep goals, log study sessions with built-in ambient sounds, visualize their productivity with heatmaps, and join virtual study rooms with friends.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/gifs/01-core-new-student-registers-and-logs-their-first-session-dark.gif">
-  <source media="(prefers-color-scheme: light)" srcset="docs/gifs/01-core-new-student-registers-and-logs-their-first-session-light.gif">
-  <img alt="StudySprint — register, set a goal, log a session, watch the garden grow" src="docs/gifs/01-core-new-student-registers-and-logs-their-first-session-dark.gif">
-</picture>
+**Live app:** [getstudysprint.vercel.app](https://getstudysprint.vercel.app)
 
 ## Core loop, end-to-end
 
