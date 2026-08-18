@@ -208,6 +208,41 @@ responded with a status of 404 (Not Found)` which the tool itself prefixes
 `[non-blocking]` — this is expected on the blank template (it has no favicon)
 and did not affect the render outcome.
 
+## `window.__timelines` is not required for a bare-declarative composition (Task 2)
+
+Confirmed empirically on 2026-08-18 while spiking a one-clip composition with
+no GSAP animation at all (just a `<video>` timed via `data-start`/
+`data-duration`/`data-track-index`, no `<script>` block). Running
+`hyperframes lint` against it without any `window.__timelines` registration
+produced, among other errors, both `missing_timeline_registry` and
+`missing_data_no_timeline`:
+
+```text
+✗ missing_timeline_registry: Missing `window.__timelines` registration.
+  Fix: Register each composition timeline on `window.__timelines[compositionId]`.
+⚠ missing_data_no_timeline: This composition has no `window.__timelines` registration but is missing `data-no-timeline`. The producer polls for timeline registration for up to 45 seconds before timing out, adding 45 s to every render.
+  Fix: Add `data-no-timeline` to the root element to skip the poll: `<div data-composition-id="..." data-no-timeline ...>`.
+```
+
+The fix is **not** to register an empty `gsap.timeline({ paused: true })` —
+it's to add the `data-no-timeline` boolean attribute to the composition root:
+
+```html
+<div id="stage" data-composition-id="FrameAccuracyProbe" data-width="1000"
+     data-height="200" data-duration="10" data-start="0" data-no-timeline>
+```
+
+With that attribute set (plus `data-width`/`data-height`/`data-start` on the
+root, `muted` and a unique `id` on the `<video>` — all separately required by
+lint, unrelated to the timeline question), lint reports `0 errors, 0
+warnings`. Without `data-no-timeline`, the render would still likely succeed
+but would burn an extra ~45s per render on the pointless timeline poll.
+
+**Practical rule for Task 3+:** a composition with zero GSAP-driven animation
+should skip `window.__timelines` entirely and set `data-no-timeline` on the
+root. Register `window.__timelines[<composition-id>]` only for compositions
+that actually drive GSAP (e.g. Task 7).
+
 ## What Tasks 3-8 should copy verbatim
 
 1. GSAP script tag: `<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>`
