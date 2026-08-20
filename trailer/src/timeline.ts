@@ -17,6 +17,6 @@ export const TOTAL_FRAMES = B6.from + B6.duration;
 export const REAL_STATS = {
   totalHours: 199,
   totalSessions: 97,
-  streakDays: 45,
+  chargePct: 100,
   subjects: 5,
 };

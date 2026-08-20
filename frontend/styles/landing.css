@@ -1,5 +1,5 @@
 /* Hallmark · genre: playful · macrostructure: Narrative Workflow · theme: DESIGN.md (locked)
- * enrichment: Tier B reused VirtualPlant · nav: N7 brutal slab · footer: Ft5 statement
+ * enrichment: Tier B hand-built battery SVG · nav: N7 brutal slab · footer: Ft5 statement
  * tone: playful · audience: students · anchor hue: electric lime (var(--brand-lime))
  * pre-emit critique: P5 H4 E4 S5 R5 V4
  *
@@ -44,11 +44,11 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
- * Hero plant plane — a soft radial ground behind the VirtualPlant so the
+ * Hero charge plane — a soft radial ground behind the battery so the
  * right column carries as much visual weight as the copy column on the left.
  * ------------------------------------------------------------------------- */
 
-.ss-hero-plant {
+.ss-hero-charge {
   background: radial-gradient(
     circle,
     color-mix(in oklab, var(--brand-lime) 10%, transparent),
@@ -57,7 +57,7 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
- * Growth spine — the vertical rule threading the six stages together.
+ * Charge spine — the vertical rule threading the charging beats together.
  *
  * The rule is drawn on the marker column rather than as a border on the list so
  * it can stop short at the final stage instead of running past the last plant.
@@ -127,31 +127,13 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
- * Planter sill — the pot in each tile rests on a soil-toned ledge, so the row
- * of tiles reads as pots lined up on a windowsill rather than icons floating
- * over text.
+ * Feature icons are hand-built line drawings, aligned on a compact baseline.
  * ------------------------------------------------------------------------- */
 
-.ss-planter {
+.ss-feature-icon {
   position: relative;
   display: flex;
   justify-content: center;
-  padding-bottom: 16px;
-}
-
-.ss-planter::after {
-  content: "";
-  position: absolute;
-  inset-inline: -1.75rem;
-  inset-block-end: 0;
-  height: 6px;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in oklab, #a5714c 45%, transparent),
-    color-mix(in oklab, #5a3a26 55%, transparent)
-  );
-  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
 }
 
 @media (min-width: 40rem) {

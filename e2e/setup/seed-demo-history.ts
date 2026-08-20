@@ -1,6 +1,6 @@
 // Seeds multi-week study history + social fixtures onto the demo account so
-// Tier 2/3 recordings show a grown garden, a live streak, a textured
-// heatmap, and a populated leaderboard — none of which `create_starter_data_for`
+// Tier 2/3 recordings show a full battery, a long charge run, a textured
+// heatmap, and a populated leaderboard. `create_starter_data_for`
 // provides (that RPC seeds 2 goals and zero sessions, by design, so the QA
 // suite's "first session" scenarios stay deterministic). Run this AFTER
 // `deno task test:setup`, which must have already created the demo account.
@@ -8,18 +8,14 @@
 // ── Coupled to the Tier 2 recording ──────────────────────────────────────
 // e2e/demo/features/10-tour.feature logs a 90-minute, quality-5 ("Mastered")
 // session during recording. This script seeds total XP to TARGET_XP_BEFORE_LOG
-// so that exact session pushes the account from young_tree (level 13) to
-// mature_tree (level 14) on camera — see frontend/lib/gamification.ts for the
-// XP/stage formulas this mirrors. If the recorded session's duration or
-// quality ever changes, update SESSION_LOG_MINUTES/SESSION_LOG_QUALITY below
-// to match, or the plant will silently render the same stage twice with no
-// error anywhere.
+// so the recording has a realistic XP total. The 45-day history reaches full
+// charge before recording and stays above empty throughout the tour.
 //
 // ── Timezone ──────────────────────────────────────────────────────────────
 // All date math here is UTC. The recording VM's system tz is Etc/UTC, and
-// playwright.tour.config.ts pins timezoneId: "UTC" to match — so the
-// browser-side streak calc (frontend/lib/gamification.ts, local-tz) and the
-// server-side streak calc (analytics_summary(), UTC) agree exactly. Don't
+// playwright.tour.config.ts pins timezoneId: "UTC" to match, so the
+// browser-side charge calculation and the server-side analytics calculation
+// agree. Do not
 // introduce a non-UTC tz on either side without re-deriving the generation
 // windows below.
 //
@@ -28,8 +24,8 @@
 // and the synthetic social fixtures, using a fixed-seed PRNG, so two runs on
 // the same calendar day (the dark + light recording passes) produce
 // byte-identical session data. A run on a later calendar day shifts the
-// whole 45-day streak window forward — that's expected, not a bug: "current
-// streak" always ends today.
+// whole 45-day charge window forward. That is expected because the current
+// charge run always ends today.
 //
 // ── Production data ───────────────────────────────────────────────────────
 // The social fixtures (~8 profiles + a study room) are real rows on the
@@ -73,10 +69,10 @@ if (!DRY_RUN && (!SUPABASE_URL || !SECRET_KEY)) {
 
 const SESSION_LOG_MINUTES = 90;
 const SESSION_LOG_QUALITY = 5;
-const TARGET_XP_BEFORE_LOG = 19_450; // young_tree; +session (280xp at maxed streak) crosses 19,600 → mature_tree
+const TARGET_XP_BEFORE_LOG = 19_450;
 const XP_TOLERANCE = 130;
 
-const STREAK_DAYS = 45; // days 44..0 ago inclusive of today — every day covered, no gaps
+const STREAK_DAYS = 45; // days 44..0 ago inclusive of today
 const MID_START = STREAK_DAYS; // 45
 const MID_END = 180;
 const OLD_START = 181;
@@ -223,29 +219,12 @@ function generateShape() {
 function levelFromXp(xp: number): number {
   return Math.max(0, Math.floor(Math.sqrt(xp / 100)));
 }
-const PET_STAGES = [
-  { level: 0, key: 'seed' },
-  { level: 1, key: 'sprout' },
-  { level: 4, key: 'sapling' },
-  { level: 8, key: 'young_tree' },
-  { level: 14, key: 'mature_tree' },
-  { level: 22, key: 'blooming' },
-] as const;
-function stageForLevel(level: number): string {
-  let current: (typeof PET_STAGES)[number] = PET_STAGES[0];
-  for (const stage of PET_STAGES) {
-    if (level >= stage.level) current = stage;
-    else break;
-  }
-  return current.key;
-}
-
 interface Profile {
   level: number;
   xp: number;
-  pet_stage: string;
-  current_streak_days: number;
-  longest_streak_days: number;
+  current_charge_pct: number;
+  days_since_empty: number;
+  longest_days_since_empty: number;
   total_sessions: number;
   total_minutes: number;
   total_hours: number;
@@ -265,15 +244,16 @@ function computeProfile(list: GenSession[]): Profile {
     const key = dateKeyUTC(daysAgo(i));
     daily.push({ date: key, minutes: dayMin.get(key) ?? 0 });
   }
-  const streakEndingOn = new Array<number>(daily.length).fill(0);
+  const chargeByDate = new Map<string, number>();
+  let charge = 0;
+  let currentRun = 0;
+  let longestRun = 0;
   for (let i = 0; i < daily.length; i++) {
-    if (daily[i].minutes > 0) streakEndingOn[i] = (i > 0 ? streakEndingOn[i - 1] : 0) + 1;
+    if (i > 0) charge = Math.min(100, Math.max(0, charge - 8 + Math.min(daily[i].minutes / 120, 1) * 20));
+    chargeByDate.set(daily[i].date, charge);
+    currentRun = charge > 0 ? currentRun + 1 : 0;
+    longestRun = Math.max(longestRun, currentRun);
   }
-  const currentStreak = streakEndingOn[streakEndingOn.length - 1];
-  let longestStreak = 0;
-  for (const v of streakEndingOn) if (v > longestStreak) longestStreak = v;
-  const streakByDate = new Map<string, number>();
-  for (let i = 0; i < daily.length; i++) streakByDate.set(daily[i].date, streakEndingOn[i]);
 
   let totalMinutes = 0;
   let masteredCount = 0;
@@ -284,8 +264,7 @@ function computeProfile(list: GenSession[]): Profile {
   let hasNight = false;
   for (const s of list) {
     const base = s.duration_minutes + (s.quality ?? 0) * 10;
-    const streakOnDay = streakByDate.get(s.dateKey) ?? 0;
-    const multiplier = 1 + Math.min(streakOnDay / 30, 1);
+    const multiplier = 1 + (chargeByDate.get(s.dateKey) ?? 0) / 100;
     totalMinutes += s.duration_minutes;
     if (s.quality === 5) masteredCount++;
     totalXp += Math.round(base * multiplier);
@@ -300,9 +279,9 @@ function computeProfile(list: GenSession[]): Profile {
   return {
     level,
     xp: totalXp,
-    pet_stage: stageForLevel(level),
-    current_streak_days: currentStreak,
-    longest_streak_days: longestStreak,
+    current_charge_pct: Math.round(charge),
+    days_since_empty: currentRun,
+    longest_days_since_empty: longestRun,
     total_sessions: list.length,
     total_minutes: totalMinutes,
     total_hours: totalMinutes / 60,
@@ -316,9 +295,8 @@ function computeProfile(list: GenSession[]): Profile {
 
 // ---- Filler pass -----------------------------------------------------------
 // Only ever places a filler on a day whose immediate neighbors (±1 day) are
-// both unused, so streakOnDay is guaranteed to be exactly 1 (multiplier
-// 31/30) for every filler — no chaining into a run, no multiplier drift, no
-// need to ever remove XP once added. Candidate order is deterministically
+// both unused, so filler sessions do not change the visible 45-day charge run.
+// Candidate order is deterministically
 // shuffled so fillers spread across the window instead of clumping at one
 // edge. Capped at a small iteration count: filler closes the last stretch of
 // the gap, it doesn't carry the shape.
@@ -345,7 +323,7 @@ function runFillerPass(target: number): Profile {
     if (Math.abs(delta) <= 15) break;
     if (delta < 0) break; // overshot — stop rather than dig deeper; shouldn't happen with isolated-only fillers
     if (!isIsolatedCandidate(i)) continue;
-    const multiplier = 31 / 30; // guaranteed by isolation
+    const multiplier = 1;
     const duration = Math.max(
       FILLER_MIN_DURATION,
       Math.min(FILLER_MAX_DURATION, Math.round(delta / multiplier)),
@@ -615,20 +593,15 @@ async function main() {
   console.log('seed-demo-history: demo weekly (7d) minutes:', demoWeeklyMinutes);
   console.log('seed-demo-history: post-recorded-session profile:', postLog);
   console.log(
-    `seed-demo-history: stage flip ${profile.pet_stage} -> ${postLog.pet_stage} ` +
-      `(${
-        postLog.pet_stage === 'mature_tree'
-          ? 'OK'
-          : 'MISMATCH — check SESSION_LOG_MINUTES/QUALITY vs 10-tour.feature'
-      })`,
+    `seed-demo-history: charge ${profile.current_charge_pct}% -> ${postLog.current_charge_pct}%`,
   );
 
   const checks: Record<string, boolean> = {
-    'current_streak_days >= 40': profile.current_streak_days >= 40,
+    'days_since_empty >= 40': profile.days_since_empty >= 40,
     [`xp within ${XP_TOLERANCE} of ${TARGET_XP_BEFORE_LOG}`]:
       Math.abs(profile.xp - TARGET_XP_BEFORE_LOG) <= XP_TOLERANCE,
-    'pet_stage === young_tree (pre-log)': profile.pet_stage === 'young_tree',
-    'pet_stage === mature_tree (post-log)': postLog.pet_stage === 'mature_tree',
+    'current_charge_pct === 100 (pre-log)': profile.current_charge_pct === 100,
+    'current_charge_pct === 100 (post-log)': postLog.current_charge_pct === 100,
     'total_sessions < 100 (century locked)': profile.total_sessions < 100,
     'max_session_day < 10 (sprint_day locked)': profile.max_session_day < 10,
     'total_hours >= 100 (marathon)': profile.total_hours >= 100,

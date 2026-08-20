@@ -4,6 +4,14 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-20 — Restored Deno as the VM workflow for StudySprint #maintenance
+
+Installed Deno 2.9.5 on ampere-dev and confirmed `deno task check` passes there. The root `package-lock.json` remains for Vercel's Node-only build environment, as documented in the existing toolchain decision. StudySprint's local tasks and dependency resolution on the VM now run through `deno.json` and Deno's `npm:` imports.
+
+## 2026-08-20 — Replaced the plant visual system with continuous study charge #decision #milestone
+
+The battery economy now has a matching interface. `BatteryBolt` fills a familiar lightning-bolt silhouette from red through amber to lime, pulses only at 80% charge or higher, and respects reduced-motion settings. Garden and landing views use it directly, while the old stage bridge, `VirtualPlant`, and `FlowerPot` are gone. The remaining `/garden` route stays stable for existing links, but its visible navigation and copy now say study charge. The Deno component tests need an ampere-dev image with Deno available to run, while TypeScript checking and the Vite production build passed on the VM.
+
 ## 2026-07-26 — Built Tier 2/3 demo videos, and hit a production RLS gap along the way #milestone #incident
 
 Shipped a synthetic-history seeder (`e2e/setup/seed-demo-history.ts`) that backdates 96 sessions across a 45-day streak to exactly 19,438 XP, close enough under the plant's level-14 threshold that logging one real 90-minute "Mastered" session during recording flips `young_tree` → `mature_tree` on camera, which is the money shot both videos are built around. Recorded a single continuous Playwright take (`e2e/demo/features/10-tour.feature`) and cut it into a ~63s `ui-demo/` Remotion piece (landscape master plus a vertical social cut) and a ~50s generative `trailer/` piece ("The Interval": an accreting contribution grid plus the app's own `VirtualPlant` SVGs, re-driven off `useCurrentFrame()` instead of their normal `motion/react` wall-clock animation). Along the way, unblocked a genuinely broken Playwright/npm toolchain: missing test deps in `package.json`, a `recharts`-pinned `playwright@1.59.1` conflict, a broken `1.62.0` registry release, and a transitive postinstall hook that silently ran `deno` against the npm-installed `node_modules` and corrupted it (fixed with `--ignore-scripts` plus exact version pins). Also found a live production bug: the `subjects_insert_authenticated` RLS policy from migration `20260505000100_goals_with_stats.sql` was never applied, so syllabus-import's subject-tagging 403s for every real user, not just the demo account. Worked around it for recording by tagging the stubbed syllabus goals with empty subject lists; the actual fix needs someone with database credentials to run the missing migration.

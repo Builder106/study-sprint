@@ -8,7 +8,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { Grid, LIT_ORDER } from "./Grid";
-import { Plant, type PlantStage } from "./Plant";
+import { Battery } from "./Plant";
 import { BeatText } from "./scenes/BeatText";
 import { LIME, NEAR_BLACK } from "./theme";
 import { B1, B2, B3, B4, B5, B6, TOTAL_FRAMES, REAL_STATS } from "./timeline";
@@ -29,9 +29,8 @@ function litCountForFrame(frame: number): number {
   );
 }
 
-// Streak counter: climbs through beat 1, drops to 0 partway through beat 2
-// (the gap), climbs again from beat 3 onward.
-function streakForFrame(frame: number): number {
+// Charge rises with early sessions, drains through the gap, then fills again.
+function chargeForFrame(frame: number): number {
   if (frame < B1.from + B1.duration) {
     return Math.round(interpolate(frame, [0, B1.from + B1.duration], [0, 1]));
   }
@@ -41,12 +40,12 @@ function streakForFrame(frame: number): number {
   }
   if (frame < B4.from + B4.duration) {
     return Math.round(
-      interpolate(frame, [gapMid, B4.from + B4.duration], [0, REAL_STATS.streakDays], {
+      interpolate(frame, [gapMid, B4.from + B4.duration], [0, REAL_STATS.chargePct], {
         extrapolateLeft: "clamp",
       }),
     );
   }
-  return REAL_STATS.streakDays;
+  return REAL_STATS.chargePct;
 }
 
 const GridLayer: React.FC = () => {
@@ -82,10 +81,10 @@ const GridLayer: React.FC = () => {
   );
 };
 
-const StreakReadout: React.FC = () => {
+const ChargeReadout: React.FC = () => {
   const frame = useCurrentFrame();
   if (frame >= B4.from) return null;
-  const streak = streakForFrame(frame);
+  const charge = chargeForFrame(frame);
   return (
     <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", paddingTop: 260 }}>
       <div
@@ -93,13 +92,13 @@ const StreakReadout: React.FC = () => {
           fontFamily: "Inter, sans-serif",
           fontWeight: 800,
           fontSize: 96,
-          color: streak === 0 ? "rgba(255,255,255,0.35)" : LIME,
+          color: charge === 0 ? "rgba(255,255,255,0.35)" : LIME,
         }}
       >
-        {streak}
+        {charge}%
         <span style={{ fontSize: 32, fontWeight: 500, color: "rgba(255,255,255,0.5)" }}>
           {" "}
-          day streak
+          charge
         </span>
       </div>
     </AbsoluteFill>
@@ -111,12 +110,8 @@ const PlantLayer: React.FC = () => {
   // Beats 5 and 6 render their own Plant (GardenBeat / InvitationBeat) —
   // stop here or the tree doubles up on screen.
   if (frame >= B5.from) return null;
-  let stage: PlantStage = "seed";
-  if (frame >= B4.from + B4.duration * 0.85) stage = "mature_tree";
-  else if (frame >= B4.from + B4.duration * 0.55) stage = "young_tree";
-  else if (frame >= B4.from + B4.duration * 0.15) stage = "sapling";
-  else if (frame >= B3.from + 40) stage = "sprout";
-  else if (frame >= B3.from) stage = "seed";
+  let charge = 0;
+  if (frame >= B3.from) charge = interpolate(frame, [B3.from, B4.from + B4.duration], [8, 100], { extrapolateRight: "clamp" });
   else return null;
 
   const inCompound = frame >= B4.from;
@@ -128,7 +123,7 @@ const PlantLayer: React.FC = () => {
         paddingBottom: inCompound ? 60 : 90,
       }}
     >
-      <Plant stage={stage} size={inCompound ? 220 : 200} />
+      <Battery charge={charge} size={inCompound ? 220 : 200} />
     </AbsoluteFill>
   );
 };
@@ -149,7 +144,7 @@ const CounterRow: React.FC = () => {
       <div style={{ display: "flex", gap: 72 }}>
         <Stat value={`${hours}h`} label="studied" />
         <Stat value={`${sessions}`} label="sessions" />
-        <Stat value={`${REAL_STATS.streakDays}d`} label="streak" />
+        <Stat value={`${REAL_STATS.chargePct}%`} label="charge" />
       </div>
     </AbsoluteFill>
   );
@@ -215,7 +210,7 @@ const SubjectDonut: React.FC = () => {
 const GardenBeat: React.FC = () => (
   <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
     <SubjectDonut />
-    <Plant stage="blooming" size={260} />
+    <Battery charge={100} size={260} />
     <div style={{ position: "absolute", bottom: 140 }}>
       <BeatText text="Every subject. Every hour you actually studied." size={38} />
     </div>
@@ -233,7 +228,7 @@ const InvitationBeat: React.FC = () => {
   return (
     <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
       <div style={{ opacity, transform: `scale(${breathe})`, textAlign: "center" }}>
-        <Plant stage="blooming" size={180} />
+        <Battery charge={100} size={180} />
         <div
           style={{
             marginTop: 24,
@@ -244,7 +239,7 @@ const InvitationBeat: React.FC = () => {
             letterSpacing: -1,
           }}
         >
-          Plant <span style={{ color: LIME }}>something.</span>
+          Charge <span style={{ color: LIME }}>something.</span>
         </div>
         <div
           style={{
@@ -278,7 +273,7 @@ export const TheInterval: React.FC = () => {
     <AbsoluteFill style={{ backgroundColor: NEAR_BLACK }}>
       <MusicBed />
       <GridLayer />
-      <StreakReadout />
+      <ChargeReadout />
       <PlantLayer />
       <Sequence from={B1.from} durationInFrames={B1.duration}>
         <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: 120 }}>

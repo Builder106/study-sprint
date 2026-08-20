@@ -16,7 +16,7 @@ export function Terms() {
       <h2>What StudySprint is</h2>
       <p>
         StudySprint is a personal project — a study tracker that lets you log focus sessions, set
-        goals, watch a virtual garden grow as you study, and (optionally) sync with Google Calendar.
+        goals, see a study charge build as you study, and (optionally) sync with Google Calendar.
         It's offered free of charge, with no warranties, and is not a commercial product.
       </p>
 
@@ -78,8 +78,8 @@ export function Terms() {
         The Service is provided <strong>"as is"</strong> and{' '}
         <strong>"as available"</strong>, with no warranties of any kind — express, implied, or
         statutory. We don't guarantee the Service will be uninterrupted, error-free, secure, or that
-        data will never be lost. We don't warrant that any analytics, streaks, gamification rewards,
-        or "garden growth" calculations are correct.
+        data will never be lost. We don't warrant that any analytics, charge calculations, or
+        gamification rewards are correct.
       </p>
 
       <h2>Limitation of liability</h2>

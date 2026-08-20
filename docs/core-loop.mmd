@@ -17,12 +17,11 @@ sequenceDiagram
 
     User->>App: Log session
     App->>DB: sessions.insert(goalId, duration, subject)
-    DB->>DB: update_streak() trigger
-    DB->>DB: upsert garden plant
-    DB-->>App: updated streak + plant stage
-    App-->>User: Garden grows, streak updated
+    App->>App: derive XP and battery charge from session history
+    DB-->>App: saved session
+    App-->>User: Charge and achievements update
 
     User->>App: View analytics
     App->>DB: analytics_summary(userId) RPC
-    DB-->>App: heatmap, subject breakdown, streaks
+    DB-->>App: heatmap, subject breakdown, charge runs
     App-->>User: Analytics dashboard

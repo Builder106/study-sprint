@@ -117,3 +117,24 @@ export const Plant: React.FC<{ stage: PlantStage; size?: number }> = ({ stage, s
     </svg>
   );
 };
+
+const BATTERY_PATH = 'M69 21L36 66H58.5L51 99L84 54H61.5L69 21Z';
+
+export const Battery: React.FC<{ charge: number; size?: number }> = ({ charge, size = 220 }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const pct = Math.max(0, Math.min(100, charge));
+  const fillHeight = (pct / 100) * 78;
+  const pulse = pct >= 80 ? 0.82 + Math.sin((frame / fps) * Math.PI) * 0.18 : 1;
+  const fill = pct < 50 ? '#f59e0b' : '#ccff00';
+
+  return (
+    <svg viewBox='0 0 120 120' width={size} height={size} role='img'>
+      <defs><clipPath id='trailer-battery'><path d={BATTERY_PATH} /></clipPath></defs>
+      <path d={BATTERY_PATH} fill='white' opacity='0.13' />
+      <g clipPath='url(#trailer-battery)' opacity={pulse}>
+        <rect x='36' y={99 - fillHeight} width='48' height={fillHeight} fill={fill} />
+      </g>
+    </svg>
+  );
+};

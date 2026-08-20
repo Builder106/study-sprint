@@ -14,7 +14,7 @@
         "accent": {
           "value": "#ccff00",
           "type": "color",
-          "description": "Electric lime signature accent used for streaks, XP, level badges, and active states"
+          "description": "Electric lime signature accent used for charge, XP, level badges, and active states"
         },
         "accentHover": {
           "value": "#b3e600",
@@ -60,14 +60,10 @@
           "ring": { "value": "oklch(0.439 0 0)", "type": "color" }
         }
       },
-      "plant": {
-        "soil": { "value": "#8b5a3c", "type": "color", "description": "Mound soil base color" },
-        "soilDark": { "value": "#5a3a26", "type": "color", "description": "Seed soil center shadow" },
-        "stem": { "value": "#87a635", "type": "color", "description": "Stem and branch stroke color" },
-        "leafMain": { "value": "#ccff00", "type": "color", "description": "Primary leaf fill" },
-        "leafSecondary": { "value": "#b3e600", "type": "color", "description": "Secondary leaf fill" },
-        "leafTop": { "value": "#e5ff4d", "type": "color", "description": "Canopy top highlight" },
-        "blossom": { "value": "#ffffff", "type": "color", "description": "Flower blossom dot color" }
+      "battery": {
+        "empty": { "value": "rgb(239, 68, 68)", "type": "color", "description": "Depleted battery fill" },
+        "mid": { "value": "rgb(245, 158, 11)", "type": "color", "description": "Mid-charge battery fill" },
+        "full": { "value": "#ccff00", "type": "color", "description": "Full-charge battery fill" }
       },
       "status": {
         "destructive": { "value": "#d4183d", "type": "color" },
@@ -145,13 +141,13 @@
       "full": { "value": "9999px", "type": "borderRadius" }
     },
     "animation": {
-      "plantSpring": {
+      "batterySpring": {
         "stiffness": 160,
         "damping": 13,
         "mass": 0.9
       },
-      "plantSway": {
-        "duration": "5s",
+      "batteryPulse": {
+        "duration": "2s",
         "repeat": "infinite",
         "easing": "ease-in-out"
       },
@@ -159,13 +155,11 @@
       "transitionNormal": { "value": "300ms", "type": "time" },
       "transitionSlow": { "value": "500ms", "type": "time" }
     },
-    "plantStages": {
-      "seed": { "requiredMinutes": 0, "label": "Seed", "swayDegrees": 0 },
-      "sprout": { "requiredMinutes": 30, "label": "Sprout", "swayDegrees": 1 },
-      "sapling": { "requiredMinutes": 120, "label": "Sapling", "swayDegrees": 1.8 },
-      "youngTree": { "requiredMinutes": 300, "label": "Young tree", "swayDegrees": 1.8 },
-      "matureTree": { "requiredMinutes": 600, "label": "Mature tree", "swayDegrees": 1.8 },
-      "blooming": { "requiredMinutes": 1200, "label": "Blooming", "swayDegrees": 1.8 }
+    "batteryEconomy": {
+      "dailyDecay": { "value": 8, "type": "number" },
+      "dailyGainCap": { "value": 20, "type": "number" },
+      "fullGainMinutes": { "value": 120, "type": "number" },
+      "glowThreshold": { "value": 80, "type": "number" }
     }
   }
 }

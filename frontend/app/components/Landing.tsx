@@ -4,62 +4,35 @@ import { useEffect } from 'react';
 import { useAuth } from '@/lib/auth';
 import { LogoMark } from './shared/Logo';
 import { ThemeMenu } from './shared/ThemeMenu';
-import { VirtualPlant } from './shared/VirtualPlant';
-import type { PlantStage } from './shared/VirtualPlant';
-import { FlowerPot } from './shared/FlowerPot';
-import type { PotVariant } from './shared/FlowerPot';
+import { BatteryBolt } from './shared/BatteryBolt';
+import { FeatureIcon } from './shared/FeatureIcon';
 
 const REPO_URL = 'https://github.com/Builder106/study-sprint';
 
-/**
- * The six growth stages, with the thresholds they actually unlock at.
- *
- * These are not marketing numbers — they are the real thresholds documented in
- * DESIGN.md § Virtual plant container, and each row renders the same
- * VirtualPlant component the dashboard renders. If the thresholds change, this
- * list has to change with them.
- */
-const STAGES: ReadonlyArray<{
-  stage: PlantStage;
+const CHARGE_BEATS: ReadonlyArray<{
+  chargePct: number;
   name: string;
-  threshold: string;
   note: string;
 }> = [
   {
-    stage: 'seed',
-    name: 'Seed',
-    threshold: '0 minutes',
-    note: 'Nothing logged yet — a mound of soil and a seed sitting in it.',
+    chargePct: 25,
+    name: 'Study adds charge',
+    note: 'Every focused minute logged today adds charge. Two hours reaches the daily +20 cap.',
   },
   {
-    stage: 'sprout',
-    name: 'Sprout',
-    threshold: '30 minutes',
-    note: 'One focus session in. A single stem, two small leaves.',
+    chargePct: 45,
+    name: 'Idle days draw it down',
+    note: 'Charge drains by 8 points each day, whether or not you open the app.',
   },
   {
-    stage: 'sapling',
-    name: 'Sapling',
-    threshold: '2 hours',
-    note: 'The stem thickens enough to carry a third leaf.',
+    chargePct: 70,
+    name: 'Stay above empty',
+    note: 'Each day above zero extends your run and unlocks charge-based achievements.',
   },
   {
-    stage: 'young_tree',
-    name: 'Young tree',
-    threshold: '5 hours',
-    note: 'A solid trunk now, under three rounds of foliage.',
-  },
-  {
-    stage: 'mature_tree',
-    name: 'Mature tree',
-    threshold: '10 hours',
-    note: 'It starts to branch. Four dense layers of canopy.',
-  },
-  {
-    stage: 'blooming',
-    name: 'Blooming',
-    threshold: '20 hours',
-    note: 'Full canopy, white blossom scattered across the top.',
+    chargePct: 100,
+    name: 'Reach full charge',
+    note: 'A full battery earns the Full Charge achievement. There are no shortcuts.',
   },
 ];
 
@@ -67,55 +40,55 @@ const FEATURES: ReadonlyArray<{
   title: string;
   body: string;
   span: 'wide' | 'unit';
-  pot: PotVariant;
+  icon: 'timer' | 'syllabus' | 'rooms' | 'analytics' | 'achievements' | 'source';
 }> = [
   {
     title: 'A timer that knows what you are working on',
     body:
-      'Stopwatch or Pomodoro, with phase labels and ambient focus sounds. Every session is tagged to a goal and a subject, validated on the server, and folded straight into your streak and your garden — so the time you log is the time that counts.',
+      'Stopwatch or Pomodoro, with phase labels and ambient focus sounds. Every session is tagged to a goal and a subject, then folded straight into your charge and XP.',
     span: 'wide',
-    pot: 'sapling',
+    icon: 'timer',
   },
   {
     title: 'Syllabus import',
     body:
       'Paste a syllabus and get goals and deadlines back, instead of typing the whole term in by hand.',
     span: 'unit',
-    pot: 'unfurl',
+    icon: 'syllabus',
   },
   {
     title: 'Study rooms',
     body: 'Sit in a room with other people working. Nobody talks. That is the point.',
     span: 'unit',
-    pot: 'twin',
+    icon: 'rooms',
   },
   {
     title: 'Analytics that answer a real question',
     body:
-      'Where the hours went, by subject. Which hours of the day you actually focus in. Your current streak against your longest one. It is one Postgres call — analytics_summary — rendered with Recharts.',
+      'Where the hours went, by subject. Which hours of the day you actually focus in. Your current charge and longest run above empty. It is one Postgres call, analytics_summary, rendered with Recharts.',
     span: 'wide',
-    pot: 'seedling',
+    icon: 'analytics',
   },
   {
     title: 'A leaderboard you can opt into',
     body:
-      'Streaks and hours, compared across everyone who chose to make their profile public. Your page lives at /u/your-username, or nowhere at all.',
+      'Charge runs and hours, compared across everyone who chose to make their profile public. Your page lives at /u/your-username, or nowhere at all.',
     span: 'wide',
-    pot: 'bloom',
+    icon: 'achievements',
   },
   {
-    title: 'The whole garden',
+    title: 'A reason to keep the circuit live',
     body:
-      'Every plant you have grown, kept — and longer streaks unlock species you have not seen yet.',
+      'Charged Up, Never Empty, and Full Charge turn steady study into something you can see.',
     span: 'wide',
-    pot: 'cluster',
+    icon: 'achievements',
   },
   {
     title: 'Open source, MIT',
     body:
       'Read the schema, the row-level security policies, the tests. Then run your own copy of it.',
     span: 'wide',
-    pot: 'roots',
+    icon: 'source',
   },
 ];
 
@@ -155,7 +128,7 @@ export function Landing() {
                 href='#stages'
                 className='text-sm font-semibold tracking-[0.08em] whitespace-nowrap uppercase text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
               >
-                How it grows
+                How charging works
               </a>
             </li>
             <li>
@@ -198,8 +171,8 @@ export function Landing() {
 
       <main className='flex-1'>
         {
-          /* Hero — H2 split diptych, 7fr / 5fr. The proof column is the real
-            VirtualPlant component at its final stage, not an illustration. */
+          /* Hero — H2 split diptych, 7fr / 5fr. The proof column renders the
+            same battery component the signed-in app uses. */
         }
         <section className='mx-auto grid w-full max-w-6xl items-center gap-12 px-[var(--page-gutter)] pt-[var(--section-gap-tight)] pb-[var(--section-gap)] lg:grid-cols-[7fr_5fr] lg:gap-20'>
           <div>
@@ -207,15 +180,14 @@ export function Landing() {
               className='ss-display ss-reveal text-5xl leading-[1.05] font-medium tracking-tighter sm:text-6xl lg:text-7xl'
               style={{ '--i': 0 } as React.CSSProperties}
             >
-              Twenty hours of studying looks like a tree.
+              Your study time holds a charge.
             </h1>
             <p
               className='ss-reveal mt-8 max-w-xl text-lg leading-relaxed font-light text-zinc-600 dark:text-zinc-400'
               style={{ '--i': 1 } as React.CSSProperties}
             >
-              StudySprint counts the minutes you were going to spend anyway and gives them somewhere
-              to go. Start a timer, tag it to a goal, and watch the total turn into a plant that
-              will not grow unless you do the work.
+              Start a timer, tag it to a goal, and build charge from the work you were going to do
+              anyway. It fades when you step away, so progress stays tied to a real habit.
             </p>
             <div
               className='ss-reveal mt-10 flex flex-wrap items-center gap-x-8 gap-y-4'
@@ -231,7 +203,7 @@ export function Landing() {
                 href='#stages'
                 className='flex min-h-11 items-center text-sm font-medium whitespace-nowrap text-zinc-600 underline decoration-zinc-300 underline-offset-[6px] transition-colors hover:text-zinc-900 hover:decoration-[var(--brand-lime)] dark:text-zinc-400 dark:decoration-white/20 dark:hover:text-zinc-50'
               >
-                See how it grows
+                See how it charges
               </a>
             </div>
           </div>
@@ -241,26 +213,21 @@ export function Landing() {
             style={{ '--i': 3 } as React.CSSProperties}
           >
             {
-              /* ss-hero-plant: a soft plane behind the plant gives the right
-                column the same visual mass as the copy block on the left,
-                instead of the plant reading as a small icon in open space. */
+              /* The charge plane gives the right column the same visual weight as the copy. */
             }
-            <div className='ss-hero-plant grid place-items-center rounded-full p-10 sm:p-14'>
+            <div className='ss-hero-charge grid place-items-center rounded-full p-10 sm:p-14'>
               {
-                /* aria-hidden: the plant repeats what the headline and the stage
-                  list already say in text, and VirtualPlant's own label is
-                  written for the signed-in dashboard ("Your study plant"). */
+                /* The bolt repeats the nearby copy, so it is decorative here. */
               }
               <div aria-hidden='true' className='text-zinc-900 dark:text-zinc-50'>
-                <VirtualPlant stage='blooming' size={340} />
+                <BatteryBolt chargePct={100} size={340} />
               </div>
             </div>
           </div>
         </section>
 
         {
-          /* Stages — F4 step sequence. Genuinely ordinal content, so the numeral
-            is part of the heading line rather than a label stacked above it. */
+          /* Charge mechanics shown as a concrete sequence. */
         }
         <section
           id='stages'
@@ -268,22 +235,21 @@ export function Landing() {
         >
           <div className='mx-auto w-full max-w-6xl px-[var(--page-gutter)]'>
             <h2 className='ss-display max-w-2xl text-3xl font-medium tracking-tighter sm:text-4xl'>
-              Six stages, and the hours each one costs.
+              Charge responds to what you do.
             </h2>
             <p className='mt-5 max-w-xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400'>
-              There is no way to skip ahead and no way to buy a bigger tree. The only input is
-              logged, validated focus time.
+              Log focused time to add charge. Keep it above empty to build a durable study rhythm.
             </p>
 
             <ol className='mt-16'>
-              {STAGES.map(({ stage, name, threshold, note }, i) => (
-                <li key={stage} className='ss-stage grid grid-cols-[auto_1fr] gap-x-5 sm:gap-x-8'>
+              {CHARGE_BEATS.map(({ chargePct, name, note }, i) => (
+                <li key={name} className='ss-stage grid grid-cols-[auto_1fr] gap-x-5 sm:gap-x-8'>
                   <div className='ss-stage-marker flex flex-col items-center text-zinc-900 dark:text-zinc-50'>
                     <div
                       aria-hidden='true'
                       className='ss-stage-dot bg-white py-2 dark:bg-[#0a0a0a]'
                     >
-                      <VirtualPlant stage={stage} size={88} />
+                      <BatteryBolt chargePct={chargePct} size={88} />
                     </div>
                   </div>
 
@@ -294,7 +260,7 @@ export function Landing() {
                       </span>
                       <span>{name}</span>
                       <span className='text-base font-normal tracking-normal tabular-nums text-[var(--brand-lime-ink)] dark:text-[var(--brand-lime)]'>
-                        {threshold}
+                        {chargePct}%
                       </span>
                     </h3>
                     <p className='mt-3 max-w-md text-base leading-relaxed text-zinc-600 dark:text-zinc-400'>
@@ -321,13 +287,13 @@ export function Landing() {
             </h2>
 
             <div className='ss-bento mt-14'>
-              {FEATURES.map(({ title, body, span, pot }) => (
+              {FEATURES.map(({ title, body, span, icon }) => (
                 <article
                   key={title}
                   className={`ss-tile flex flex-col p-7 ${SPAN_CLASS[span]}`}
                 >
-                  <div className='ss-planter'>
-                    <FlowerPot variant={pot} size={72} />
+                  <div className='ss-feature-icon text-[var(--brand-lime-ink)] dark:text-[var(--brand-lime)]'>
+                    <FeatureIcon name={icon} size={58} />
                   </div>
                   <h3 className='ss-display mt-5 text-xl font-medium tracking-tighter sm:text-2xl'>
                     {title}
@@ -348,7 +314,7 @@ export function Landing() {
         <section className='border-t border-zinc-200 py-[var(--section-gap-tight)] dark:border-white/10'>
           <div className='mx-auto flex w-full max-w-6xl flex-col items-start gap-8 px-[var(--page-gutter)]'>
             <p className='ss-display text-3xl font-medium tracking-tighter sm:text-4xl'>
-              Your seed is already in the pot.
+              Your next session can start the charge.
             </p>
             <Link
               to='/register'

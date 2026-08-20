@@ -1,4 +1,4 @@
-# StudySprint Tier 2 — "The compounding loop"
+# StudySprint Tier 2 — "The charging loop"
 
 ~60–65s landscape master (`StudySprintUiDemo`, 1920×1080 @30fps) plus a shorter
 vertical social cut (`StudySprintUiDemoSocial`, 1080×1920) built from the same
@@ -9,11 +9,11 @@ the recording runs against.
 
 | # | Beat | Visual | Caption | Social cut |
 | --- | --- | --- | --- | --- |
-| 1 | HOOK | `/garden`, plant at `young_tree`, streak card, XP bar | "45 days of studying looks like this." | yes |
+| 1 | HOOK | `/garden`, full battery, charge card, XP bar | "45 days of studying keeps this charged." | yes |
 | 2 | THE UNIT | Pomodoro → 25:00 Focus, switch to Stopwatch, Start | "It starts with one timer." | no |
 | 3 | THE LOG | Session modal, 90min / Mastered, save, lands in recent sessions | "Rate it — it schedules the review." | yes |
 | 4 | THE RECORD | `/analytics` heatmap | "Every session lands somewhere." | no |
-| 5 | THE PAYOFF | `/garden` again — plant flips to `mature_tree`, achievements grid | "…and the plant grows." | yes |
+| 5 | THE PAYOFF | `/garden` again, full battery and achievements grid | "…and the charge holds." | yes |
 | 6 | THE SHORTCUT | Syllabus import: paste → suggest → create goals | "Or paste a syllabus and skip the setup." | no |
 | 7 | THE ROOM | `/community` leaderboard + study room members/activity | "Nobody studies alone." | no |
 | 8 | ENDCARD | Wordmark, URL | — | yes |

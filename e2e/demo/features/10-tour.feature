@@ -1,22 +1,20 @@
-Feature: UI tour — the compounding loop
+Feature: UI tour — the charging loop
   # Tier 2 raw footage source for ui-demo/. Recorded via `npm run tour` /
   # `npm run tour:light` (playwright.tour.config.ts), not `deno task demo`.
   #
   # Requires `deno task test:setup && deno task seed:demo` to have already
   # run — this scenario logs a real 90-minute, quality-5 session against the
   # demo account, and e2e/setup/seed-demo-history.ts seeds total XP so that
-  # exact session flips the plant from young_tree to mature_tree on camera.
-  # Re-seed between the dark and light passes: this scenario mutates state,
-  # and a second run without re-seeding starts from a different XP total.
+  # exact session raises the visible study charge on camera. Re-seed between
+  # dark and light passes because this scenario mutates state.
 
-  Scenario: A day's worth of sessions compounds into a grown garden
+  Scenario: A day's worth of sessions keeps the charge alive
     Given I am logged in as "demo@studysprint.app" with password "demo123"
 
     # Beat 1 — the hook: open on the payoff, not a login screen.
-    When I navigate to the garden page
-    Then I should see the virtual plant
+    When I navigate to the study charge page
+    Then I should see the battery charge
     And I should see the XP bar
-    And the plant stage should be "young_tree"
 
     # Beat 2 — the unit: one timer, two modes.
     When I navigate to the goal titled "CS 201: Data Structures & Algorithms"
@@ -40,10 +38,10 @@ Feature: UI tour — the compounding loop
     When I navigate to the analytics page
     Then I should see the contribution heatmap
 
-    # Beat 5 — the payoff: the plant grows, on camera, from the session
-    # logged two beats ago.
-    When I navigate to the garden page
-    Then the plant stage should be "mature_tree"
+    # Beat 5 — the payoff: the charge rises on camera from the session logged
+    # two beats ago.
+    When I navigate to the study charge page
+    Then I should see the battery charge
     And I should see the achievements grid
 
     # Beat 6 — the shortcut: a stubbed syllabus-parse response, since the
