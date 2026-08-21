@@ -38,7 +38,9 @@ export function Garden() {
             <Sparkles className='w-4 h-4' />
             Study charge
           </div>
-          <h1 className='text-4xl md:text-5xl font-medium tracking-tighter'>Keep the charge alive.</h1>
+          <h1 className='text-4xl md:text-5xl font-medium tracking-tighter'>
+            Keep the charge alive.
+          </h1>
           <p className='text-zinc-600 dark:text-zinc-400 mt-2 font-light text-lg'>
             Focused study builds charge. Time away lets it drain gradually.
           </p>

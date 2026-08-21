@@ -249,7 +249,9 @@ function computeProfile(list: GenSession[]): Profile {
   let currentRun = 0;
   let longestRun = 0;
   for (let i = 0; i < daily.length; i++) {
-    if (i > 0) charge = Math.min(100, Math.max(0, charge - 8 + Math.min(daily[i].minutes / 120, 1) * 20));
+    if (i > 0) {
+      charge = Math.min(100, Math.max(0, charge - 8 + Math.min(daily[i].minutes / 120, 1) * 20));
+    }
     chargeByDate.set(daily[i].date, charge);
     currentRun = charge > 0 ? currentRun + 1 : 0;
     longestRun = Math.max(longestRun, currentRun);

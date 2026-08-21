@@ -27,7 +27,9 @@ export function chargeToFillColor(pct: number): string {
   const upper = COLOR_STOPS[upperIndex === -1 ? COLOR_STOPS.length - 1 : upperIndex];
   const lower = COLOR_STOPS[Math.max(0, upperIndex - 1)];
   const t = lower.pct === upper.pct ? 0 : (value - lower.pct) / (upper.pct - lower.pct);
-  const rgb = lower.rgb.map((channel, index) => Math.round(channel + (upper.rgb[index] - channel) * t));
+  const rgb = lower.rgb.map((channel, index) =>
+    Math.round(channel + (upper.rgb[index] - channel) * t)
+  );
   return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
 }
 
@@ -42,13 +44,26 @@ export function BatteryBolt({ chargePct, size = 120, className }: BatteryBoltPro
   const fillHeight = (pct / 100) * BOLT_HEIGHT;
 
   return (
-    <svg viewBox='0 0 120 120' width={size} height={size} className={className} role='img' aria-label={batteryAriaLabel(pct)}>
-      <defs><clipPath id={clipId}><path d={BOLT_PATH} /></clipPath></defs>
+    <svg
+      viewBox='0 0 120 120'
+      width={size}
+      height={size}
+      className={className}
+      role='img'
+      aria-label={batteryAriaLabel(pct)}
+    >
+      <defs>
+        <clipPath id={clipId}>
+          <path d={BOLT_PATH} />
+        </clipPath>
+      </defs>
       <path d={BOLT_PATH} fill='currentColor' opacity='0.13' />
       <motion.g
         clipPath={`url(#${clipId})`}
         animate={pct >= 80 && !reducedMotion ? { opacity: [0.72, 1, 0.72] } : { opacity: 1 }}
-        transition={pct >= 80 && !reducedMotion ? { duration: 2, repeat: Infinity, ease: 'easeInOut' } : { duration: 0 }}
+        transition={pct >= 80 && !reducedMotion
+          ? { duration: 2, repeat: Infinity, ease: 'easeInOut' }
+          : { duration: 0 }}
       >
         <motion.rect
           x={36}
@@ -56,7 +71,9 @@ export function BatteryBolt({ chargePct, size = 120, className }: BatteryBoltPro
           fill={chargeToFillColor(pct)}
           initial={false}
           animate={{ y: BOLT_BOTTOM - fillHeight, height: fillHeight }}
-          transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 160, damping: 13, mass: 0.9 }}
+          transition={reducedMotion
+            ? { duration: 0 }
+            : { type: 'spring', stiffness: 160, damping: 13, mass: 0.9 }}
         />
       </motion.g>
     </svg>

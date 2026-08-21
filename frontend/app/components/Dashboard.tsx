@@ -14,8 +14,8 @@ import {
   Sparkles,
   Trash2,
   Users,
-  Zap,
   X,
+  Zap,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { api, ApiError } from '@/lib/api';
