@@ -25,7 +25,7 @@ step later confirmed hyperframes auto-detects it: "Using system Chrome at
 `npx hyperframes init hyperframes-init` with no flags fails:
 `Non-interactive init requires --example, --video, or --audio. For an empty
 starter project, pass --example blank explicitly.` Later tasks scaffolding
-`trailer-hf/` for real must pass `--example <name>` (or `-e`). The `blank`
+`trailer/` for real must pass `--example <name>` (or `-e`). The `blank`
 example was used for this probe; `hyperframes init --help` also lists
 `warm-grain` and `swiss-grid` as bundled starter examples. `--non-interactive`
 additionally suppresses prompts once an example is chosen.
@@ -87,7 +87,7 @@ npm-resolved local file:
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
 ```
 
-This is the **exact tag to reuse verbatim** in `trailer-hf/index.html` for
+This is the **exact tag to reuse verbatim** in `trailer/index.html` for
 Task 3+ (same pinned version, `gsap@3.14.2`). Confirmed during `render` (Step
 4 log line): `[Compiler] Inlined CDN script:
 https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js` — the renderer
