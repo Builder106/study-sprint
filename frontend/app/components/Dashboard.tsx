@@ -8,7 +8,6 @@ import {
   ChevronRight,
   Copy,
   ExternalLink,
-  Leaf,
   Pause,
   Play,
   Plus,
@@ -16,6 +15,7 @@ import {
   Trash2,
   Users,
   X,
+  Zap,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { api, ApiError } from '@/lib/api';
@@ -253,11 +253,11 @@ export function Dashboard() {
             </Link>
             <Link
               to='/garden'
-              aria-label='Garden'
+              aria-label='Study charge'
               className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors'
             >
-              <Leaf className='w-4 h-4' />
-              <span className='hidden sm:inline'>Garden</span>
+              <Zap className='w-4 h-4' />
+              <span className='hidden sm:inline'>Charge</span>
             </Link>
             <Link
               to='/analytics'

@@ -14,15 +14,15 @@
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
 [![Vercel](https://img.shields.io/badge/Vercel-000?logo=vercel&logoColor=white)](https://vercel.com)
 
-A study tracker that turns focus sessions into a growing garden. Set goals, run a focus timer, watch plants grow with time logged, and compare streaks on a public leaderboard.
+> **Gamified study tracker that turns focused time into a battery charge.** Set goals, run Pomodoro timers, keep your charge above empty, and study together in virtual rooms.
 
-**Live app:** <https://getstudysprint.vercel.app>
+## 💡 What is StudySprint?
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/gifs/01-core-new-student-registers-and-logs-their-first-session-dark.gif">
-  <source media="(prefers-color-scheme: light)" srcset="docs/gifs/01-core-new-student-registers-and-logs-their-first-session-light.gif">
-  <img alt="StudySprint — register, set a goal, log a session, watch the garden grow" src="docs/gifs/01-core-new-student-registers-and-logs-their-first-session-dark.gif">
-</picture>
+Staying motivated while studying alone is tough. StudySprint turns daily study sessions into a battery that charges when you study and drains when you step away.
+
+Students can import syllabi directly using AI to automatically schedule exam prep goals, log study sessions with built-in ambient sounds, visualize their productivity with heatmaps, and join virtual study rooms with friends.
+
+**Live app:** [getstudysprint.vercel.app](https://getstudysprint.vercel.app)
 
 ## Core loop, end-to-end
 
@@ -40,20 +40,14 @@ A study tracker that turns focus sessions into a growing garden. Set goals, run 
   <img alt="Timer modes and focus tools" src="docs/gifs/02-timer-demonstrate-timer-modes-and-focus-tools-dark.gif">
 </picture>
 
-Stopwatch and Pomodoro modes with phase labels, ambient-sound focus tools, and a slide-out goal-detail panel. Sessions are tagged by goal and subject, validated server-side, and feed into the streak counter and garden.
+Stopwatch and Pomodoro modes with phase labels, ambient-sound focus tools, and a slide-out goal-detail panel. Sessions are tagged by goal and subject, validated server-side, and feed into XP and study charge.
 
 </details>
 
 <details>
-<summary><b>Gamified garden + analytics</b></summary>
+<summary><b>Study charge + analytics</b></summary>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/gifs/03-analytics-demonstrate-analytics-heatmap-and-garden-plant-dark.gif">
-  <source media="(prefers-color-scheme: light)" srcset="docs/gifs/03-analytics-demonstrate-analytics-heatmap-and-garden-plant-light.gif">
-  <img alt="Analytics dashboard and growing garden" src="docs/gifs/03-analytics-demonstrate-analytics-heatmap-and-garden-plant-dark.gif">
-</picture>
-
-Every focused minute grows a plant; streaks unlock new species. Analytics view shows per-subject time distribution, hour-of-day heatmap, day-of-week breakdown, and current/longest streak — all computed server-side via a single Postgres RPC (`analytics_summary`) and rendered with Recharts.
+Every focused minute adds charge, capped at +20 for two hours in a day. Charge drains by 8 points each day, and staying above empty unlocks achievements. Analytics shows per-subject time distribution, hour-of-day heatmap, day-of-week breakdown, and current and longest charge runs through `analytics_summary` and Recharts.
 
 </details>
 

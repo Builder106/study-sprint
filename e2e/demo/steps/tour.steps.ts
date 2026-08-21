@@ -32,11 +32,10 @@ Then('I should see the session in the recent sessions list', async ({ page }) =>
   await dwellForDemo(page);
 });
 
-// ── Garden / plant stage ──────────────────────────────────────────────────
+// ── Study charge ──────────────────────────────────────────────────────────
 
-Then('the plant stage should be {string}', async ({ page }, stage: string) => {
-  const label = stage.replace(/_/, ' ');
-  await expect(page.getByRole('img', { name: `Your study plant, ${label}` })).toBeVisible({
+Then('the battery charge should be {int} percent', async ({ page }, charge: number) => {
+  await expect(page.getByRole('img', { name: `Battery at ${charge}% charge` })).toBeVisible({
     timeout: 8_000,
   });
 });

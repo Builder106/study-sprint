@@ -3,32 +3,10 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft, Flame, Sparkles, Trophy, Zap } from 'lucide-react';
 import { api, ApiError } from '@/lib/api';
 import { TopNav } from './shared/TopNav';
-import { type PlantStage, VirtualPlant } from './shared/VirtualPlant';
+import { BatteryBolt } from './shared/BatteryBolt';
 import { Spinner } from './shared/Spinner';
 
 type Profile = Awaited<ReturnType<typeof api.gamificationProfile>>;
-
-const STAGE_LABEL: Record<PlantStage, string> = {
-  seed: 'Seed',
-  sprout: 'Sprout',
-  sapling: 'Sapling',
-  young_tree: 'Young tree',
-  mature_tree: 'Mature tree',
-  blooming: 'Blooming',
-};
-
-// TEMPORARY BRIDGE — remove when sub-project 2 replaces VirtualPlant with a
-// battery component. current_charge_pct (0-100) buckets evenly into the old
-// six-stage names purely so this page keeps compiling and rendering
-// something coherent in the meantime.
-function stageFromCharge(pct: number): PlantStage {
-  if (pct <= 0) return 'seed';
-  if (pct <= 20) return 'sprout';
-  if (pct <= 40) return 'sapling';
-  if (pct <= 60) return 'young_tree';
-  if (pct <= 80) return 'mature_tree';
-  return 'blooming';
-}
 
 export function Garden() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -58,11 +36,13 @@ export function Garden() {
         <div>
           <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4'>
             <Sparkles className='w-4 h-4' />
-            Garden
+            Study charge
           </div>
-          <h1 className='text-4xl md:text-5xl font-medium tracking-tighter'>Keep it growing.</h1>
+          <h1 className='text-4xl md:text-5xl font-medium tracking-tighter'>
+            Keep the charge alive.
+          </h1>
           <p className='text-zinc-600 dark:text-zinc-400 mt-2 font-light text-lg'>
-            Your plant grows as you log focused study sessions.
+            Focused study builds charge. Time away lets it drain gradually.
           </p>
         </div>
 
@@ -75,9 +55,9 @@ export function Garden() {
             <section className='grid grid-cols-1 md:grid-cols-3 gap-8 items-center'>
               <div className='md:col-span-1 flex justify-center'>
                 <div className='p-8 rounded-2xl border border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-zinc-50'>
-                  <VirtualPlant stage={stageFromCharge(profile.current_charge_pct)} size={160} />
+                  <BatteryBolt chargePct={profile.current_charge_pct} size={160} />
                   <div className='mt-4 text-center text-[10px] font-bold uppercase tracking-widest text-zinc-500'>
-                    {STAGE_LABEL[stageFromCharge(profile.current_charge_pct)]}
+                    {profile.current_charge_pct}% charged
                   </div>
                 </div>
               </div>

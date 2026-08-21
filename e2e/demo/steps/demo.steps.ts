@@ -4,7 +4,7 @@ import { dwellForDemo } from '../../steps/hooks';
 
 const { When, Then } = createBdd();
 
-// ── Analytics + Garden ────────────────────────────────────────────────────────
+// ── Analytics + study charge ──────────────────────────────────────────────────
 
 When('I navigate to the analytics page', async ({ page }) => {
   await page.goto('/analytics');
@@ -18,7 +18,7 @@ Then('I should see the contribution heatmap', async ({ page }) => {
   ).toBeVisible({ timeout: 8_000 });
 });
 
-When('I navigate to the garden page', async ({ page }) => {
+When('I navigate to the study charge page', async ({ page }) => {
   await page.goto('/garden');
   await page.waitForLoadState('networkidle');
   await dwellForDemo(page);
@@ -28,9 +28,8 @@ Then('I should see the XP bar', async ({ page }) => {
   await expect(page.getByText(/\d+ \/ \d+ XP/)).toBeVisible({ timeout: 8_000 });
 });
 
-Then('I should see the virtual plant', async ({ page }) => {
-  // Plant is a hand-rolled inline SVG; the Garden page heading is the most stable anchor.
-  await expect(page.getByRole('heading', { name: 'Keep it growing.' }))
+Then('I should see the battery charge', async ({ page }) => {
+  await expect(page.getByRole('img', { name: /Battery at \d+% charge/ }))
     .toBeVisible({ timeout: 8_000 });
 });
 

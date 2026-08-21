@@ -1,14 +1,14 @@
 # StudySprint design system
 
-StudySprint combines focused study timing with a growing virtual garden. The interface uses a clean monochromatic base paired with an electric lime accent (`#ccff00`) to highlight progress, active timers, and achievements.
+StudySprint combines focused study timing with a battery that charges from focused work and drains gradually when idle. The interface uses a clean monochromatic base paired with electric lime (`#ccff00`) for progress, active timers, and achievements.
 
 ## Design principles
 
 1. **Focus first layout**
    The interface minimizes visual noise so students can concentrate on their work. Primary interactions like timer controls and goal selection take central visual priority. Supporting elements stay muted until hovered or activated.
 
-2. **Organic progress feedback**
-   Time logged converts into plant growth and experience points (XP). Progression feels tangible through real-time SVG plant rendering, smooth spring transitions, and gentle ambient sway animations.
+2. **Visible charge feedback**
+   Time logged converts into battery charge and experience points (XP). The battery fill changes continuously with a spring transition and gains a quiet pulse at high charge.
 
 3. **High contrast theme balance**
    Light mode uses clean white cards over soft gray backgrounds. Dark mode uses deep dark backgrounds (`#0a0a0a` / `oklch(0.145 0 0)`) with subtle border outlines (`white/10`). Electric lime serves as the unified highlight color across both modes.
@@ -20,7 +20,7 @@ StudySprint combines focused study timing with a growing virtual garden. The int
 | Token | Hex / Value | Usage |
 | --- | --- | --- |
 | Primary dark | `#030213` | Main dark background in light mode text, brand elements |
-| Electric lime | `#ccff00` | Signature accent for XP, level counters, streaks, active tabs |
+| Electric lime | `#ccff00` | Signature accent for XP, level counters, charge, active tabs |
 | Lime hover | `#b3e600` | Interactive hover state for electric lime buttons and links |
 | Lime highlight | `#e5ff4d` | Foliage highlights and active glows |
 | Lime ink | `#526d00` | Lime as *text* on a light surface. The brand limes are background fills; as foreground text on white they measure 1.18:1 (`#ccff00`) and 1.48:1 (`#b3e600`), well under the 4.5:1 AA floor. This one measures 5.92:1. Dark mode keeps `#ccff00`, which measures 16.85:1 on `#0a0a0a`. |
@@ -39,19 +39,15 @@ The app supports dynamic theme switching using OKLCH and standard CSS variables 
 | `--border` | `rgba(0, 0, 0, 0.1)` | `oklch(0.269 0 0)` / `white/10` | Divider lines, card borders |
 | `--destructive` | `#d4183d` | `oklch(0.396 0.141 25.723)` | Danger actions, delete buttons |
 
-### Plant growth palette
+### Battery palette
 
-Virtual plants use custom SVG path fills to illustrate growth stages from seed to full bloom:
+The charge bolt fills from the bottom and interpolates across these stops:
 
-| Growth layer | Hex code | Visual element |
+| Charge | Color | Visual meaning |
 | --- | --- | --- |
-| Soil base | `#8b5a3c` | Dirt mound base |
-| Soil shadow | `#5a3a26` | Seed center shadow |
-| Stem stroke | `#87a635` | Trunk and branches |
-| Primary leaf | `#ccff00` | Main canopy foliage |
-| Secondary leaf | `#b3e600` | Lower branch foliage |
-| Canopy highlight | `#e5ff4d` | Top foliage highlight |
-| Flower blossom | `#ffffff` | Blooming stage dots |
+| 0% | `rgb(239, 68, 68)` | Depleted |
+| 50% | `rgb(245, 158, 11)` | Recovering |
+| 100% | `#ccff00` | Fully charged |
 
 ### Data visualization palette
 
@@ -109,19 +105,13 @@ The central timer card displays the current mode (Stopwatch or Pomodoro), elapse
 - Timer display: `text-6xl font-medium tracking-tighter tabular-nums`
 - Control actions: Primary action button styled with electric lime accent or solid fill, secondary controls using muted ghost icons
 
-### Virtual plant container
+### Battery bolt
 
-Renders the user's growing plant within a centered 120px to 160px viewport.
+Renders a continuous 0% to 100% study charge within a centered 120px to 160px viewport.
 
-- Stage transitions: Animate opacity and scale from 0.35 to 1 using spring physics (`stiffness: 160`, `damping: 13`)
-- Ambient animation: Continuous rotation loop between `-swayDegrees` and `+swayDegrees` over a 5-second ease-in-out duration
-- Plant stages:
-  1. `seed` (0 minutes logged): Soil mound with seed core (0 degree sway)
-  2. `sprout` (30 minutes logged): Single stem with two small leaves (1 degree sway)
-  3. `sapling` (2 hours logged): Thicker stem with three leaves (1.8 degree sway)
-  4. `young_tree` (5 hours logged): Solid trunk with three foliage circles (1.8 degree sway)
-  5. `mature_tree` (10 hours logged): Branching trunk with four dense foliage layers (1.8 degree sway)
-  6. `blooming` (20+ hours logged): Full canopy with white blossom overlay dots (1.8 degree sway)
+- Fill changes use spring physics (`stiffness: 160`, `damping: 13`, `mass: 0.9`).
+- At 80% or higher, the fill pulses gently. Reduced motion disables the pulse and uses instant changes.
+- The SVG has `role="img"` and a label such as `Battery at 72% charge`.
 
 ### Stat boxes and achievement cards
 
@@ -133,13 +123,13 @@ Renders the user's growing plant within a centered 120px to 160px viewport.
 
 StudySprint uses **Framer Motion** for React component animations:
 
-- **Spring transitions**: Used for modal reveals, tab switches, and plant growth stage changes (`type: "spring"`, `stiffness: 160`, `damping: 13`, `mass: 0.9`).
-- **Sway loops**: Used for plant foliage movement (`rotate: [-1.8, 1.8, -1.8]`, `duration: 5`, `ease: "easeInOut"`, `repeat: Infinity`).
+- **Spring transitions**: Used for modal reveals, tab switches, and battery-fill changes (`type: "spring"`, `stiffness: 160`, `damping: 13`, `mass: 0.9`).
+- **Battery pulse**: The battery fill uses a 2-second opacity loop at 80% charge or higher.
 - **Hover micro-interactions**: Navigation arrows translate horizontally (`group-hover:-translate-x-1`), buttons scale slightly, link colors shift to electric lime.
 
 ## Accessibility guidelines
 
 1. **Color contrast**: Text elements maintain high contrast against backgrounds in both light and dark modes. Electric lime (`#ccff00`) is paired with dark text when used as a background fill for legibility.
 2. **Focus management**: Interactive elements use `outline-ring/50` for clear keyboard focus rings.
-3. **Screen readers**: SVG plant visuals include `role="img"` and descriptive `aria-label` tags (e.g. `aria-label="Your study plant, young tree"`).
+3. **Screen readers**: Battery SVGs include `role="img"` and descriptive `aria-label` tags (for example, `aria-label="Battery at 72% charge"`).
 4. **Tabular numbers**: Numerical counters use `tabular-nums` so screen readers and layout engines process stat updates smoothly.
