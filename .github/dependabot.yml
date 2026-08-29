@@ -18,3 +18,13 @@ updates:
     ignore:
       - dependency-name: "typescript"
         versions: [">= 7.0.0"]
+
+  - package-ecosystem: "deno"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "deno"
+    directory: "/supabase/functions"
+    schedule:
+      interval: "weekly"
