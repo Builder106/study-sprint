@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-29: Git deployment branches restricted #decision
+
+Git-triggered Vercel deployments now run only for `main` and `staging`. The project keeps `main` as its Production Branch, so `staging` is the only Preview branch. Replaced the old `ignoreCommand`, which created canceled deployment records for blocked branches, with `git.deploymentEnabled`.
+
 ## 2026-08-21 — Ported StudySprint demo compositions to HyperFrames #milestone #decision
 
 Added canonical HyperFrames source projects for TheInterval (`trailer/`) and the 9:16 social cut (`ui-demo/`). The landscape UI demo remains local but is excluded from the canonical set. The UI footage uses preconformed 30 fps video with the original 0.85x playback rate baked into the file; this avoids HyperFrames' partial-source coverage failure without lowering the coverage gate. The three 30 fps renders completed successfully and passed lint, pilot unit tests, stream checks, and visual review. TheInterval retains a 0.88-second silence that is present in its supplied music bed rather than introduced by the renderer.
