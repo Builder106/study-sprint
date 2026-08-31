@@ -257,4 +257,3 @@ Deno.test('invalid timezone falls back to UTC gracefully', () => {
   assertEquals(p.total_sessions, 1);
   assertEquals(p.total_minutes, 60);
 });
-
