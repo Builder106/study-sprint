@@ -234,3 +234,27 @@ Deno.test('progress_to_next is between 0 and 1 while leveling', () => {
   assert(p.xp_into_level >= 0);
   assert(p.xp_for_next_level > 0);
 });
+
+Deno.test('marathon and century achievements unlock at thresholds', () => {
+  const sessions = Array.from({ length: 100 }, (_, i) => session(String(i), 0, 60)); // 100 sessions * 1 hr = 100 hrs
+  const p = computeGamificationProfile(sessions, new Set(), 'UTC');
+  assertEquals(p.achievements.find((x) => x.id === 'marathon')?.unlocked, true);
+  assertEquals(p.achievements.find((x) => x.id === 'century')?.unlocked, true);
+});
+
+Deno.test('charged_up and never_empty unlock on past longest streak even if current streak is broken', () => {
+  // 35 consecutive days, then 20 zero-minute days (draining current streak to 0: 20 * 8 > 100)
+  const sessions = Array.from({ length: 35 }, (_, i) => session(String(i), 20 + i, 120));
+  const p = computeGamificationProfile(sessions, new Set(), 'UTC');
+  assertEquals(p.days_since_empty, 0);
+  assert(p.longest_days_since_empty >= 30);
+  assertEquals(p.achievements.find((x) => x.id === 'charged_up')?.unlocked, true);
+  assertEquals(p.achievements.find((x) => x.id === 'never_empty')?.unlocked, true);
+});
+
+Deno.test('invalid timezone falls back to UTC gracefully', () => {
+  const p = computeGamificationProfile([session('a', 0, 60)], new Set(), 'Invalid/Timezone_Name');
+  assertEquals(p.total_sessions, 1);
+  assertEquals(p.total_minutes, 60);
+});
+

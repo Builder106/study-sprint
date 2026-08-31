@@ -1,5 +1,5 @@
 import { assertEquals } from 'jsr:@std/assert';
-import { batteryAriaLabel, chargeToFillColor, clampCharge } from './BatteryBolt.tsx';
+import { BatteryBolt, batteryAriaLabel, chargeToFillColor, clampCharge } from './BatteryBolt.tsx';
 
 Deno.test('BatteryBolt helpers clamp charge values', () => {
   assertEquals(clampCharge(-5), 0);
@@ -19,4 +19,14 @@ Deno.test('BatteryBolt helpers describe the clamped rounded charge', () => {
   assertEquals(batteryAriaLabel(72.4), 'Battery at 72% charge');
   assertEquals(batteryAriaLabel(72.6), 'Battery at 73% charge');
   assertEquals(batteryAriaLabel(120), 'Battery at 100% charge');
+});
+
+Deno.test('BatteryBolt component produces SVG element tree', () => {
+  const elem = BatteryBolt({ chargePct: 85, size: 100, className: 'custom-bolt' });
+  assertEquals(elem.props.width, 100);
+  assertEquals(elem.props.height, 100);
+  assertEquals(elem.props.className, 'custom-bolt');
+
+  const elemDefault = BatteryBolt({ chargePct: 40 });
+  assertEquals(elemDefault.props.width, 120);
 });

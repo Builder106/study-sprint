@@ -21,7 +21,11 @@ export function createAmbientNoise(): Controller {
 
   const ensureContext = () => {
     if (!ctx) {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      const g = globalThis as unknown as {
+        AudioContext?: typeof AudioContext;
+        webkitAudioContext?: typeof AudioContext;
+      };
+      const AudioContextClass = g.AudioContext || g.webkitAudioContext;
       if (!AudioContextClass) throw new Error('Web Audio API not supported');
       ctx = new AudioContextClass();
     }

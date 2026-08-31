@@ -10,7 +10,8 @@
     "lint": "deno lint supabase/functions/syllabus-parse supabase/functions/google-calendar",
 
     "test": "node ./node_modules/.bin/bddgen && node ./node_modules/.bin/playwright test",
-    "test:unit": "deno test frontend/lib/format.test.ts frontend/lib/gamification.test.ts frontend/lib/password.test.ts frontend/lib/avatar.test.ts",
+    "test:unit": "deno test frontend/lib/format.test.ts frontend/lib/gamification.test.ts frontend/lib/password.test.ts frontend/lib/avatar.test.ts frontend/lib/ambientNoise.test.ts",
+    "test:coverage": "deno test --coverage=cov_profile && deno coverage cov_profile",
     "test:e2e": "deno task test",
     "test:e2e:ui": "node ./node_modules/.bin/bddgen && node ./node_modules/.bin/playwright test --ui",
     "test:setup": "deno run -A e2e/setup/bootstrap-demo.ts",
@@ -156,6 +157,7 @@
     ".features-gen-demo",
     "test-results",
     "playwright-report",
-    "supabase/functions"
+    "supabase/functions",
+    "frontend/app"
   ]
 }
