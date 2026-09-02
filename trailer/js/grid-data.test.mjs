@@ -20,3 +20,9 @@ test("buildGridSvg renders the correct number of lit rects", () => {
   const litMatches = svg.match(/fill="#ccff00"/g) || [];
   assert.equal(litMatches.length, 10);
 });
+
+test("buildGridSvg supports dim option", () => {
+  const svg = buildGridSvg(5, { dim: true });
+  assert.equal(svg.includes('opacity="0.35"'), true);
+});
+

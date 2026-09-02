@@ -257,3 +257,16 @@ Deno.test('invalid timezone falls back to UTC gracefully', () => {
   assertEquals(p.total_sessions, 1);
   assertEquals(p.total_minutes, 60);
 });
+
+Deno.test('charge > 0 on day 1 handles streak accumulation correctly', () => {
+  // Session logged 363 days ago (index 1 of the 365-day window)
+  const p = computeGamificationProfile([session('a', 363, 120)], new Set(), 'UTC');
+  assertEquals(p.longest_days_since_empty >= 1, true);
+});
+
+Deno.test('session older than 365 days falls back to charge 0 default', () => {
+  // Session logged 400 days ago (outside 365-day window)
+  const p = computeGamificationProfile([session('old', 400, 60)], new Set(), 'UTC');
+  assertEquals(p.total_sessions, 1);
+  assertEquals(p.xp, 60); // multiplier 1.0
+});
