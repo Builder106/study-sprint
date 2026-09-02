@@ -91,14 +91,15 @@ jobs:
           fi
 
   unit:
-    name: Unit tests & Coverage
+    name: Unit tests & Coverage Gate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - run: deno task test:coverage
+      - name: Run unit tests with strict 100% coverage gate
+        run: deno task test:coverage
 
   # E2E only runs on push to main (not on every PR push). The suite hits the
   # real Supabase project — running it from PR CI would race against local dev
