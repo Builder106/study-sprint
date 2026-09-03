@@ -124,10 +124,11 @@ export function computeGamificationProfile(
   const reachedFullCharge = charge.some((c) => c >= 100);
 
   // days_since_empty: consecutive days (ending today) where charge > 0.
+  // Note: charge[0] is always 0, so charge[i] > 0 only occurs for i >= 1.
   const daysSinceEmptyEndingOn = new Array<number>(daily.length).fill(0);
-  for (let i = 0; i < daily.length; i++) {
+  for (let i = 1; i < daily.length; i++) {
     if (charge[i] > 0) {
-      daysSinceEmptyEndingOn[i] = (i > 0 ? daysSinceEmptyEndingOn[i - 1] : 0) + 1;
+      daysSinceEmptyEndingOn[i] = daysSinceEmptyEndingOn[i - 1] + 1;
     }
   }
   const daysSinceEmpty = daysSinceEmptyEndingOn[daysSinceEmptyEndingOn.length - 1];
@@ -161,7 +162,7 @@ export function computeGamificationProfile(
   const nextLevelXp = xpForLevel(level + 1);
   const xpIntoLevel = totalXp - currentLevelXp;
   const xpForNextLevel = nextLevelXp - currentLevelXp;
-  const progressToNext = xpForNextLevel > 0 ? Math.min(1, xpIntoLevel / xpForNextLevel) : 0;
+  const progressToNext = Math.min(1, xpIntoLevel / xpForNextLevel);
 
   // Achievement unlocks.
   const totalHours = totalMinutes / 60;
