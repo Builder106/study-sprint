@@ -4,6 +4,7 @@ on:
   push:
     branches: [main, staging]
   pull_request:
+    branches: [main]
 
 # Cancel in-flight runs when a new commit lands on the same branch — keeps the
 # E2E job from racing itself against the shared Supabase demo account.
