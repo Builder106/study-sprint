@@ -5,6 +5,7 @@ on:
     branches: [main, staging]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 # Cancel in-flight runs when a new commit lands on the same branch — keeps the
 # E2E job from racing itself against the shared Supabase demo account.
@@ -102,17 +103,45 @@ jobs:
       - name: Run unit tests with strict 100% coverage gate
         run: deno task test:coverage
 
-  # E2E only runs on push to main (not on every PR push). The suite hits the
-  # real Supabase project — running it from PR CI would race against local dev
-  # on the shared demo account and burn through Supabase's signup rate limit.
-  # continue-on-error: true — retained as a soft gate; the native Deno Playwright runner (deno run -A npm:@playwright/test/cli.js) avoids the old npx→Deno wrapper hang on ubuntu-latest.
+  # This gate uses a local fixture backend, so pull requests do not need
+  # Supabase credentials or a shared account.
+  e2e-smoke:
+    name: E2E smoke
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'))
+    needs: [fmt, lint, typecheck, build, unit]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Cache Playwright browsers
+        uses: actions/cache@v6
+        id: pw-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package.json') }}
+      - name: Install Playwright browsers
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: deno run -A npm:playwright install chromium
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+      - name: Install dependencies
+        run: deno install --allow-scripts=npm:@tailwindcss/oxide
+      - name: Run local E2E smoke suite
+        run: deno task test:e2e:smoke
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+
+  # The complete BDD suite remains a manual diagnostic workflow. It uses the
+  # shared Supabase project and is not a pull request or deployment dependency.
   e2e:
-    name: E2E & Accessibility
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')
+    name: Manual E2E & Accessibility
+    if: github.event_name == 'workflow_dispatch'
     needs: [fmt, lint, typecheck, build, unit]
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v7
       - uses: denoland/setup-deno@v2
@@ -166,7 +195,7 @@ jobs:
 
   deploy:
     name: Trigger Vercel Deployment
-    needs: [fmt, lint, typecheck, build, unit, e2e]
+    needs: [fmt, lint, typecheck, build, unit, e2e-smoke]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')
     runs-on: ubuntu-24.04
     steps:
@@ -179,4 +208,3 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           curl -sS -f -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_PROD }}"
-

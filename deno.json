@@ -13,6 +13,7 @@
     "test:unit": "deno test frontend/lib/format.test.ts frontend/lib/gamification.test.ts frontend/lib/password.test.ts frontend/lib/avatar.test.ts frontend/lib/ambientNoise.test.ts",
     "test:coverage": "deno run -A scripts/enforce-coverage.ts",
     "test:e2e": "deno task test",
+    "test:e2e:smoke": "node ./node_modules/.bin/playwright test --config=playwright.smoke.config.ts",
     "test:e2e:ui": "node ./node_modules/.bin/bddgen && node ./node_modules/.bin/playwright test --ui",
     "test:setup": "deno run -A e2e/setup/bootstrap-demo.ts",
     "seed:demo": "deno run -A e2e/setup/seed-demo-history.ts",
@@ -125,10 +126,12 @@
       "e2e/setup",
       "e2e/steps",
       "e2e/demo/steps",
+      "e2e/smoke.spec.ts",
       "scripts",
       "deno.json",
       "vite.config.ts",
       "playwright.config.ts",
+      "playwright.smoke.config.ts",
       "playwright.demo.config.ts"
     ],
     "exclude": [
