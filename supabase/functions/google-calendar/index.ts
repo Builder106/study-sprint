@@ -279,7 +279,6 @@ async function handleImportEvent(req: Request): Promise<Response> {
   const auth = await authedUser(req);
   if (!auth) return jsonResponse({ error: "Unauthorized" }, 401);
 
-  let body: { event_id?: unknown; goal_id?: unknown };
   let body: { event_id?: string; goal_id?: string };
   try { body = await req.json(); } catch { return jsonResponse({ error: "Invalid JSON body" }, 400); }
   const eventId = typeof body.event_id === "string" ? body.event_id : "";
