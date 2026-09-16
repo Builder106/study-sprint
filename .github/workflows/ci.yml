@@ -31,7 +31,7 @@ jobs:
 
   fmt:
     name: Format
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: denoland/setup-deno@v2
@@ -41,7 +41,7 @@ jobs:
 
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: denoland/setup-deno@v2
@@ -51,7 +51,7 @@ jobs:
 
   typecheck:
     name: Typecheck & Compliance
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: denoland/setup-deno@v2
@@ -66,7 +66,7 @@ jobs:
 
   build:
     name: Build & Bundle Budget
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: denoland/setup-deno@v2
@@ -94,7 +94,7 @@ jobs:
 
   unit:
     name: Unit tests & Coverage Gate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: denoland/setup-deno@v2
@@ -109,7 +109,7 @@ jobs:
     name: E2E smoke
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'))
     needs: [fmt, lint, typecheck, build, unit]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
@@ -140,7 +140,7 @@ jobs:
     name: Manual E2E & Accessibility
     if: github.event_name == 'workflow_dispatch'
     needs: [fmt, lint, typecheck, build, unit]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
