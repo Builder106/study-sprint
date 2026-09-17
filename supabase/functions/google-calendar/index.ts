@@ -25,7 +25,7 @@ const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Methods": "POST, GET, DELETE, OPTIONS",
 };
 
-function jsonResponse(body: unknown, status = 200): Response {
+function jsonResponse<T>(body: T, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "Content-Type": "application/json", ...CORS_HEADERS },
@@ -376,7 +376,7 @@ async function handleUpcomingEvents(req: Request): Promise<Response> {
       .eq("study_goals.user_id", auth.userId);
     importedByEventId = new Map(
       (imported ?? []).map((row) => {
-        const goal = row.study_goals as unknown as { id: string; title: string };
+        const goal = (Array.isArray(row.study_goals) ? row.study_goals[0] : row.study_goals) as { id: string; title: string };
         return [row.gcal_event_id as string, { session_id: row.id as string, goal_id: goal.id, goal_title: goal.title }];
       }),
     );
@@ -408,11 +408,12 @@ async function exportSessionToCalendar(
     .select("id, goal_id, duration_minutes, notes, logged_at, gcal_event_id, study_goals!inner(title, user_id)")
     .eq("id", sessionId)
     .single();
-  if (!row || (row.study_goals as unknown as { user_id: string }).user_id !== userId) {
+  const goalData = (Array.isArray(row?.study_goals) ? row.study_goals[0] : row?.study_goals) as { user_id: string; title: string } | undefined;
+  if (!row || !goalData || goalData.user_id !== userId) {
     return { error: "Session not found", status: 404 };
   }
 
-  const goal = row.study_goals as unknown as { title: string };
+  const goal = goalData;
   const accessToken = await getValidAccessToken(userId);
   if (!accessToken) return { error: "Google Calendar is not connected", status: 400 };
 

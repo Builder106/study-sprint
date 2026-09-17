@@ -85,7 +85,7 @@ export function Analytics() {
     api
       .analyticsSummary()
       .then(setData)
-      .catch((err: unknown) =>
+      .catch((err: Error | ApiError) =>
         setError(err instanceof ApiError ? err.message : 'Failed to load analytics')
       );
   }, []);

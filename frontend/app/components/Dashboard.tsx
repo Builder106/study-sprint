@@ -133,7 +133,7 @@ export function Dashboard() {
     return api
       .listGoals()
       .then((res) => setGoals(res.goals))
-      .catch((err: unknown) =>
+      .catch((err: Error | ApiError) =>
         setError(err instanceof ApiError ? err.message : 'Failed to load goals')
       );
   };

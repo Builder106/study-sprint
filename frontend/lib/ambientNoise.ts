@@ -21,8 +21,7 @@ export function createAmbientNoise(): Controller {
 
   const ensureContext = () => {
     if (!ctx) {
-      const g = globalThis as unknown as {
-        AudioContext?: typeof AudioContext;
+      const g = globalThis as typeof globalThis & {
         webkitAudioContext?: typeof AudioContext;
       };
       const AudioContextClass = g.AudioContext || g.webkitAudioContext;
