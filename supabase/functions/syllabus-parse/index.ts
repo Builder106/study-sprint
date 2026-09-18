@@ -17,7 +17,7 @@ const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Methods": "POST, GET, DELETE, OPTIONS",
 };
 
-function jsonResponse(body: unknown, status = 200): Response {
+function jsonResponse<T>(body: T, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "Content-Type": "application/json", ...CORS_HEADERS },
@@ -82,12 +82,14 @@ const GOALS_SCHEMA = {
   additionalProperties: false,
 };
 
+export type RawGoalFieldValue = string | number | boolean | null | undefined;
+
 interface RawGoal {
-  title?: unknown;
-  description?: unknown;
-  target_hours?: unknown;
-  target_date?: unknown;
-  subjects?: unknown;
+  title?: string | RawGoalFieldValue;
+  description?: string | RawGoalFieldValue;
+  target_hours?: number | RawGoalFieldValue;
+  target_date?: string | RawGoalFieldValue;
+  subjects?: Array<string | RawGoalFieldValue> | RawGoalFieldValue;
 }
 
 Deno.serve(async (req) => {
@@ -210,7 +212,7 @@ Deno.serve(async (req) => {
       target_hours: clampNumber(g.target_hours, 1, 200, 10),
       target_date: validateDate(g.target_date),
       subjects: Array.isArray(g.subjects)
-        ? (g.subjects as unknown[])
+        ? (g.subjects as Array<string | RawGoalFieldValue>)
             .filter((s): s is string => typeof s === "string" && s.trim().length > 0)
             .map((s) => s.trim().slice(0, 50))
             .slice(0, 5)
@@ -227,13 +229,13 @@ async function extractPdfText(file: File): Promise<string> {
   return Array.isArray(text) ? text.join("\n") : text;
 }
 
-function clampNumber(value: unknown, min: number, max: number, fallback: number): number {
+function clampNumber(value: string | number | boolean | null | undefined, min: number, max: number, fallback: number): number {
   const n = Number(value);
   if (!Number.isFinite(n)) return fallback;
   return Math.max(min, Math.min(max, Math.round(n * 10) / 10));
 }
 
-function extractJsonObject(content: string): { goals?: unknown } | null {
+function extractJsonObject(content: string): { goals?: RawGoal[] } | null {
   const tryParse = (s: string) => { try { return JSON.parse(s); } catch { return null; } };
   let parsed = tryParse(content);
   if (parsed) return parsed;
@@ -244,7 +246,7 @@ function extractJsonObject(content: string): { goals?: unknown } | null {
   return null;
 }
 
-function validateDate(value: unknown): string | null {
+function validateDate(value: string | number | boolean | null | undefined): string | null {
   if (typeof value !== "string") return null;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
   const d = new Date(value);

@@ -68,7 +68,7 @@ export function GoalDetailWithPanel() {
         setGoal(g.goal);
         setSessions(s.sessions);
       })
-      .catch((err: unknown) =>
+      .catch((err: Error | ApiError) =>
         setLoadError(err instanceof ApiError ? err.message : 'Failed to load goal')
       );
     api

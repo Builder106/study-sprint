@@ -16,8 +16,5 @@
       "@/*": ["./frontend/*"]
     }
   },
-  "include": ["frontend", "index.html"],
-  "exclude": [
-    "frontend/**/*.test.ts"
-  ]
+  "include": ["frontend", "index.html"]
 }

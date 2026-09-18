@@ -16,7 +16,7 @@ export function Garden() {
     api
       .gamificationProfile()
       .then(setProfile)
-      .catch((err: unknown) =>
+      .catch((err: Error | ApiError) =>
         setError(err instanceof ApiError ? err.message : 'Failed to load garden')
       );
   }, []);

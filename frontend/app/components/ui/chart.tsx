@@ -107,11 +107,14 @@ ${
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
+export type ChartScalarValue = string | number | boolean | null | undefined;
+export type ChartPayloadRecord = Record<string, ChartScalarValue | object>;
+
 export interface ChartTooltipPayloadItem {
   name?: string;
   value?: number | string;
   dataKey?: string | number;
-  payload?: Record<string, unknown>;
+  payload?: ChartPayloadRecord;
   color?: string;
 }
 
@@ -122,14 +125,14 @@ export interface ChartTooltipContentProps extends React.ComponentProps<'div'> {
   hideLabel?: boolean;
   hideIndicator?: boolean;
   label?: string | number;
-  labelFormatter?: (label: unknown, payload: ChartTooltipPayloadItem[]) => React.ReactNode;
+  labelFormatter?: (label: ChartScalarValue | React.ReactNode, payload: ChartTooltipPayloadItem[]) => React.ReactNode;
   labelClassName?: string;
   formatter?: (
-    value: unknown,
+    value: ChartScalarValue | React.ReactNode,
     name: string,
     item: ChartTooltipPayloadItem,
     index: number,
-    payload: unknown,
+    payload: ChartTooltipPayloadItem[] | ChartPayloadRecord,
   ) => React.ReactNode;
   color?: string;
   nameKey?: string;
@@ -218,7 +221,7 @@ function ChartTooltipContent({
             >
               {formatter && item?.value !== undefined && item.name
                 ? (
-                  formatter(item.value, item.name, item, index, item.payload)
+                  formatter(item.value, item.name, item, index, item.payload ?? [])
                 )
                 : (
                   <>
@@ -329,7 +332,7 @@ function ChartLegendContent({
 
 function getPayloadConfigFromPayload(
   config: ChartConfig,
-  payload: unknown,
+  payload: ChartPayloadRecord | ChartTooltipPayloadItem | null | undefined,
   key: string,
 ) {
   if (typeof payload !== 'object' || payload === null) {
@@ -339,24 +342,22 @@ function getPayloadConfigFromPayload(
   const payloadPayload = 'payload' in payload &&
       typeof payload.payload === 'object' &&
       payload.payload !== null
-    ? payload.payload
+    ? (payload.payload as ChartPayloadRecord)
     : undefined;
 
   let configLabelKey: string = key;
 
   if (
     key in payload &&
-    typeof payload[key as keyof typeof payload] === 'string'
+    typeof (payload as Record<string, ChartScalarValue>)[key] === 'string'
   ) {
-    configLabelKey = payload[key as keyof typeof payload] as string;
+    configLabelKey = (payload as Record<string, ChartScalarValue>)[key] as string;
   } else if (
     payloadPayload &&
     key in payloadPayload &&
-    typeof payloadPayload[key as keyof typeof payloadPayload] === 'string'
+    typeof payloadPayload[key] === 'string'
   ) {
-    configLabelKey = payloadPayload[
-      key as keyof typeof payloadPayload
-    ] as string;
+    configLabelKey = payloadPayload[key] as string;
   }
 
   return configLabelKey in config ? config[configLabelKey] : config[key as keyof typeof config];

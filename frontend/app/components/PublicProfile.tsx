@@ -17,7 +17,7 @@ export function PublicProfile() {
     api
       .getProfile(username)
       .then(setData)
-      .catch((err: unknown) =>
+      .catch((err: Error | ApiError) =>
         setError(err instanceof ApiError ? err.message : 'Failed to load profile')
       );
   }, [username]);

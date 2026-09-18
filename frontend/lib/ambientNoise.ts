@@ -1,5 +1,44 @@
 export type NoiseMode = 'off' | 'white' | 'pink' | 'brown';
 
+export interface AudioBufferLike {
+  getChannelData(channel: number): Float32Array;
+}
+
+export interface AudioNodeLike {
+  connect(destination: AudioNodeLike): void;
+  disconnect(): void;
+}
+
+export interface GainNodeLike {
+  gain: { value: number };
+  connect(destination: AudioNodeLike): void;
+  disconnect(): void;
+}
+
+export interface BufferSourceLike {
+  buffer: AudioBufferLike | null;
+  loop: boolean;
+  connect(destination: GainNodeLike): void;
+  start(): void;
+  stop(): void;
+  disconnect(): void;
+}
+
+export interface AudioContextLike {
+  state: 'running' | 'suspended' | 'closed' | 'interrupted';
+  sampleRate: number;
+  destination: AudioNodeLike;
+  createBuffer(channels: number, length: number, sampleRate: number): AudioBufferLike;
+  createGain(): GainNodeLike;
+  createBufferSource(): BufferSourceLike;
+  resume(): Promise<void>;
+  close(): Promise<void>;
+}
+
+interface AudioContextConstructor {
+  new (): AudioContextLike;
+}
+
 interface Controller {
   start: (mode: NoiseMode) => void;
   stop: () => void;
@@ -9,23 +48,24 @@ interface Controller {
 
 declare global {
   interface Window {
-    webkitAudioContext?: typeof AudioContext;
+    webkitAudioContext?: AudioContextConstructor;
   }
 }
 
 export function createAmbientNoise(): Controller {
-  let ctx: AudioContext | null = null;
-  let source: AudioBufferSourceNode | null = null;
-  let gain: GainNode | null = null;
+  let ctx: AudioContextLike | null = null;
+  let source: BufferSourceLike | null = null;
+  let gain: GainNodeLike | null = null;
   let volume = 0.2;
 
   const ensureContext = () => {
     if (!ctx) {
-      const g = globalThis as unknown as {
-        AudioContext?: typeof AudioContext;
+      const g = globalThis as typeof globalThis & {
         webkitAudioContext?: typeof AudioContext;
       };
-      const AudioContextClass = g.AudioContext || g.webkitAudioContext;
+      const AudioContextClass = (g.AudioContext || g.webkitAudioContext) as unknown as
+        | AudioContextConstructor
+        | undefined;
       if (!AudioContextClass) throw new Error('Web Audio API not supported');
       ctx = new AudioContextClass();
     }
@@ -33,7 +73,7 @@ export function createAmbientNoise(): Controller {
     return ctx;
   };
 
-  const buildBuffer = (audioCtx: AudioContext, mode: NoiseMode): AudioBuffer => {
+  const buildBuffer = (audioCtx: AudioContextLike, mode: NoiseMode): AudioBufferLike => {
     const sampleRate = audioCtx.sampleRate;
     const length = sampleRate * 4;
     const buffer = audioCtx.createBuffer(1, length, sampleRate);

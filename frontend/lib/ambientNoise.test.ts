@@ -1,28 +1,36 @@
 import { assertEquals, assertThrows } from 'jsr:@std/assert';
-import { createAmbientNoise, type NoiseMode } from './ambientNoise.ts';
+import {
+  type AudioBufferLike,
+  type AudioContextLike,
+  type AudioNodeLike,
+  type BufferSourceLike,
+  createAmbientNoise,
+  type GainNodeLike,
+  type NoiseMode,
+} from './ambientNoise.ts';
 
-class MockAudioBuffer {
+class MockAudioBuffer implements AudioBufferLike {
   channelData: Float32Array;
   constructor(length: number) {
     this.channelData = new Float32Array(length);
   }
-  getChannelData(_channel: number) {
+  getChannelData(_channel: number): Float32Array {
     return this.channelData;
   }
 }
 
-class MockGainNode {
+class MockGainNode implements GainNodeLike {
   gain = { value: 1 };
-  connect(_dest: unknown) {}
+  connect(_dest: AudioNodeLike): void {}
   disconnect() {}
 }
 
-class MockBufferSource {
-  buffer: MockAudioBuffer | null = null;
+class MockBufferSource implements BufferSourceLike {
+  buffer: AudioBufferLike | null = null;
   loop = false;
   started = false;
   stopped = false;
-  connect(_dest: unknown) {}
+  connect(_dest: GainNodeLike) {}
   start() {
     this.started = true;
   }
@@ -33,19 +41,22 @@ class MockBufferSource {
   disconnect() {}
 }
 
-class MockAudioContext {
+class MockAudioContext implements AudioContextLike {
   state: 'running' | 'suspended' | 'closed' = 'running';
   sampleRate = 44100;
-  destination = {};
+  destination: AudioNodeLike = {
+    connect: () => {},
+    disconnect: () => {},
+  };
 
-  createBuffer(_channels: number, length: number, _rate: number) {
-    return new MockAudioBuffer(length) as unknown as AudioBuffer;
+  createBuffer(_channels: number, length: number, _rate: number): AudioBufferLike {
+    return new MockAudioBuffer(length);
   }
-  createGain() {
-    return new MockGainNode() as unknown as GainNode;
+  createGain(): GainNodeLike {
+    return new MockGainNode();
   }
-  createBufferSource() {
-    return new MockBufferSource() as unknown as AudioBufferSourceNode;
+  createBufferSource(): BufferSourceLike {
+    return new MockBufferSource();
   }
   resume() {
     this.state = 'running';
@@ -57,50 +68,90 @@ class MockAudioContext {
   }
 }
 
+type AudioContextConstructor = new () => AudioContextLike;
+
+function installAudioContext(
+  key: 'AudioContext' | 'webkitAudioContext',
+  value: AudioContextConstructor | undefined,
+): void {
+  if (value) Object.defineProperty(globalThis, key, { configurable: true, value });
+  else delete (globalThis as Record<string, unknown>)[key];
+}
+
+function captureAudioContexts(): {
+  audio: unknown;
+  webkit: unknown;
+  restore: () => void;
+} {
+  const globals = globalThis as Record<string, unknown>;
+  const audio = globals.AudioContext;
+  const webkit = globals.webkitAudioContext;
+  const asConstructor = (value: unknown): AudioContextConstructor | undefined =>
+    typeof value === 'function' ? (value as AudioContextConstructor) : undefined;
+  return {
+    audio,
+    webkit,
+    restore: () => {
+      installAudioContext('AudioContext', asConstructor(audio));
+      installAudioContext('webkitAudioContext', asConstructor(webkit));
+    },
+  };
+}
+
 Deno.test('createAmbientNoise - unsupported Web Audio API throws', () => {
-  const origAudio = (globalThis as unknown as { AudioContext?: unknown }).AudioContext;
-  const origWebkit = (globalThis as unknown as { webkitAudioContext?: unknown }).webkitAudioContext;
+  const original = captureAudioContexts();
 
   try {
-    delete (globalThis as unknown as { AudioContext?: unknown }).AudioContext;
-    delete (globalThis as unknown as { webkitAudioContext?: unknown }).webkitAudioContext;
+    installAudioContext('AudioContext', undefined);
+    installAudioContext('webkitAudioContext', undefined);
 
     const noise = createAmbientNoise();
     assertThrows(() => noise.start('white'), Error, 'Web Audio API not supported');
   } finally {
-    (globalThis as unknown as { AudioContext?: unknown }).AudioContext = origAudio;
-    (globalThis as unknown as { webkitAudioContext?: unknown }).webkitAudioContext = origWebkit;
+    original.restore();
   }
 });
 
 Deno.test('createAmbientNoise - resumes suspended context and uses webkit fallback', () => {
-  const origAudio = (globalThis as unknown as { AudioContext?: unknown }).AudioContext;
-  const origWebkit = (globalThis as unknown as { webkitAudioContext?: unknown }).webkitAudioContext;
+  const original = captureAudioContexts();
 
   try {
-    delete (globalThis as unknown as { AudioContext?: unknown }).AudioContext;
+    installAudioContext('AudioContext', undefined);
     const mockCtx = new MockAudioContext();
     mockCtx.state = 'suspended';
-    (globalThis as unknown as { webkitAudioContext?: unknown }).webkitAudioContext = function () {
-      return mockCtx;
-    } as unknown as typeof AudioContext;
+    let createdCtx: MockAudioContext | undefined;
+    installAudioContext(
+      'webkitAudioContext',
+      class extends MockAudioContext {
+        constructor() {
+          super();
+          Object.assign(this, mockCtx);
+          createdCtx = this;
+        }
+      },
+    );
 
     const noise = createAmbientNoise();
     noise.start('white');
-    assertEquals(mockCtx.state, 'running');
+    assertEquals(createdCtx?.state, 'running');
     noise.dispose();
   } finally {
-    (globalThis as unknown as { AudioContext?: unknown }).AudioContext = origAudio;
-    (globalThis as unknown as { webkitAudioContext?: unknown }).webkitAudioContext = origWebkit;
+    original.restore();
   }
 });
 
 Deno.test('createAmbientNoise - plays white, pink, brown, off noise modes and stops', () => {
-  const origAudio = (globalThis as unknown as { AudioContext?: unknown }).AudioContext;
+  const original = captureAudioContexts();
   const mockCtx = new MockAudioContext();
-  (globalThis as unknown as { AudioContext?: unknown }).AudioContext = function () {
-    return mockCtx;
-  } as unknown as typeof AudioContext;
+  installAudioContext(
+    'AudioContext',
+    class extends MockAudioContext {
+      constructor() {
+        super();
+        Object.assign(this, mockCtx);
+      }
+    },
+  );
 
   try {
     const noise = createAmbientNoise();
@@ -113,16 +164,22 @@ Deno.test('createAmbientNoise - plays white, pink, brown, off noise modes and st
     noise.stop();
     noise.dispose();
   } finally {
-    (globalThis as unknown as { AudioContext?: unknown }).AudioContext = origAudio;
+    original.restore();
   }
 });
 
 Deno.test('createAmbientNoise - setVolume clamps between 0 and 1', () => {
-  const origAudio = (globalThis as unknown as { AudioContext?: unknown }).AudioContext;
+  const original = captureAudioContexts();
   const mockCtx = new MockAudioContext();
-  (globalThis as unknown as { AudioContext?: unknown }).AudioContext = function () {
-    return mockCtx;
-  } as unknown as typeof AudioContext;
+  installAudioContext(
+    'AudioContext',
+    class extends MockAudioContext {
+      constructor() {
+        super();
+        Object.assign(this, mockCtx);
+      }
+    },
+  );
 
   try {
     const noise = createAmbientNoise();
@@ -134,16 +191,22 @@ Deno.test('createAmbientNoise - setVolume clamps between 0 and 1', () => {
 
     noise.dispose();
   } finally {
-    (globalThis as unknown as { AudioContext?: unknown }).AudioContext = origAudio;
+    original.restore();
   }
 });
 
 Deno.test('createAmbientNoise - stop catches and ignores source.stop error', () => {
-  const origAudio = (globalThis as unknown as { AudioContext?: unknown }).AudioContext;
+  const original = captureAudioContexts();
   const mockCtx = new MockAudioContext();
-  (globalThis as unknown as { AudioContext?: unknown }).AudioContext = function () {
-    return mockCtx;
-  } as unknown as typeof AudioContext;
+  installAudioContext(
+    'AudioContext',
+    class extends MockAudioContext {
+      constructor() {
+        super();
+        Object.assign(this, mockCtx);
+      }
+    },
+  );
 
   try {
     const noise = createAmbientNoise();
@@ -151,16 +214,16 @@ Deno.test('createAmbientNoise - stop catches and ignores source.stop error', () 
     // Force stop to throw on subsequent stop
     const origCreateSource = mockCtx.createBufferSource;
     mockCtx.createBufferSource = function () {
-      const src = origCreateSource.call(mockCtx) as unknown as MockBufferSource;
+      const src = origCreateSource.call(mockCtx) as MockBufferSource;
       src.stop = () => {
         throw new Error('Already stopped error');
       };
-      return src as unknown as AudioBufferSourceNode;
+      return src;
     };
     noise.start('pink');
     noise.stop();
     noise.dispose();
   } finally {
-    (globalThis as unknown as { AudioContext?: unknown }).AudioContext = origAudio;
+    original.restore();
   }
 });

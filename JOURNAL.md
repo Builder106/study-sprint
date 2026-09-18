@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-17 — Separated frontend and Deno typechecking #maintenance
+
+The root `check` task now runs strict frontend TypeScript for application code, then Deno typechecking for all authored browser tests, followed by the existing Supabase Edge Function check under its native Deno configuration. No runtime or dependency changes were made. Subagent execution was unavailable in this session, so the configuration repair and verification were completed directly.
+
 ## 2026-08-29: Git deployment branches restricted #decision
 
 Git-triggered Vercel deployments now run only for `main` and `staging`. The project keeps `main` as its Production Branch, so `staging` is the only Preview branch. Replaced the old `ignoreCommand`, which created canceled deployment records for blocked branches, with `git.deploymentEnabled`.
