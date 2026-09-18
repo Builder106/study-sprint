@@ -198,6 +198,13 @@ Deno.test('createAmbientNoise - setVolume clamps between 0 and 1', () => {
 Deno.test('createAmbientNoise - stop catches and ignores source.stop error', () => {
   const original = captureAudioContexts();
   const mockCtx = new MockAudioContext();
+  mockCtx.createBufferSource = function () {
+    const src = new MockBufferSource();
+    src.stop = () => {
+      throw new Error('Already stopped error');
+    };
+    return src;
+  };
   installAudioContext(
     'AudioContext',
     class extends MockAudioContext {
@@ -227,3 +234,13 @@ Deno.test('createAmbientNoise - stop catches and ignores source.stop error', () 
     original.restore();
   }
 });
+
+Deno.test('createAmbientNoise - setVolume and dispose before start (no gain / no ctx)', () => {
+  const noise = createAmbientNoise();
+  // gain is null before start(), exercises false branch of `if (gain)` in setVolume
+  noise.setVolume(0.8);
+  // stop, gain disconnect, and ctx close branches when neither ctx nor gain exists
+  noise.stop();
+  noise.dispose();
+});
+
