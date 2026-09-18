@@ -21,8 +21,8 @@ class MockAudioBuffer implements AudioBufferLike {
 
 class MockGainNode implements GainNodeLike {
   gain = { value: 1 };
-  connect(_dest: AudioNodeLike): void { }
-  disconnect() { }
+  connect(_dest: AudioNodeLike): void {}
+  disconnect() {}
 }
 
 class MockBufferSource implements BufferSourceLike {
@@ -30,7 +30,7 @@ class MockBufferSource implements BufferSourceLike {
   loop = false;
   started = false;
   stopped = false;
-  connect(_dest: GainNodeLike) { }
+  connect(_dest: GainNodeLike) {}
   start() {
     this.started = true;
   }
@@ -38,15 +38,15 @@ class MockBufferSource implements BufferSourceLike {
     if (this.stopped) throw new Error('Already stopped');
     this.stopped = true;
   }
-  disconnect() { }
+  disconnect() {}
 }
 
 class MockAudioContext implements AudioContextLike {
   state: 'running' | 'suspended' | 'closed' = 'running';
   sampleRate = 44100;
   destination: AudioNodeLike = {
-    connect: () => { },
-    disconnect: () => { },
+    connect: () => {},
+    disconnect: () => {},
   };
 
   createBuffer(_channels: number, length: number, _rate: number): AudioBufferLike {
@@ -233,4 +233,3 @@ Deno.test('createAmbientNoise - setVolume and dispose before start (no gain / no
   noise.stop();
   noise.dispose();
 });
-
