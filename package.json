@@ -17,8 +17,7 @@
     "test:e2e": "node ./node_modules/playwright-bdd/dist/cli/index.js --config=playwright.config.ts && node ./node_modules/@playwright/test/cli.js test --config=playwright.config.ts",
     "tour": "DEMO=1 bddgen --config=playwright.tour.config.ts && DEMO=1 playwright test --config=playwright.tour.config.ts",
     "tour:light": "DEMO=1 DEMO_THEME=light bddgen --config=playwright.tour.config.ts && DEMO=1 DEMO_THEME=light playwright test --config=playwright.tour.config.ts",
-    "verify:a11y-matrix": "node --experimental-strip-types scripts/verify-a11y-matrix.ts",
-    "test:accessibility": "playwright test --config=playwright.accessibility.config.ts"
+    "verify:a11y-matrix": "node --experimental-strip-types scripts/verify-a11y-matrix.ts"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -61,6 +60,7 @@
     "embla-carousel-react": "8.6.0",
     "input-otp": "1.5.0",
     "lucide-react": "1.47.0",
+    "lottie-web": "5.13.0",
     "motion": "13.4.0",
     "next-themes": "0.4.6",
     "react": "19.3.0",
@@ -79,7 +79,8 @@
     "sonner": "2.0.8",
     "tailwind-merge": "3.7.0",
     "tw-animate-css": "1.4.0",
-    "vaul": "1.1.2"
+    "vaul": "1.1.2",
+    "three": "0.186.1"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",
@@ -95,6 +96,6 @@
     "tailwindcss": "4.3.3",
     "typescript": "~7.0.2",
     "vite": "8.3.0",
-    "@axe-core/playwright": "^4.13.0"
+    "@types/three": "0.186.0"
   }
 }

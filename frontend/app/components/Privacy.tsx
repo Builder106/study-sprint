@@ -7,7 +7,7 @@ import { LegalLayout } from './shared/LegalLayout';
 
 export function Privacy() {
   return (
-    <LegalLayout title='Privacy policy' lastUpdated='May 7, 2026'>
+    <LegalLayout title='Privacy policy' lastUpdated='September 26, 2026'>
       <p>
         StudySprint (the "Service") is a study tracker that lets you log focus sessions, set goals,
         and optionally connect Google Calendar to keep your sessions in sync. This page explains
@@ -123,10 +123,14 @@ export function Privacy() {
 
       <h2>Where your data lives</h2>
       <p>
-        StudySprint stores all account, activity, and integration data in a managed{' '}
+        Signed-in account, activity, and integration data is stored in a managed{' '}
         <a href='https://supabase.com'>Supabase</a> project (PostgreSQL, hosted in{' '}
         <code>us-west-1</code>). Supabase processes data according to its own{' '}
         <a href='https://supabase.com/privacy'>privacy policy</a>.
+      </p>
+      <p>
+        Guest goals and sessions are stored in this browser's <code>localStorage</code>.
+        They are not sent to the account database or transferred into an account when you sign in.
       </p>
       <p>
         The application frontend is hosted on Vercel; static asset requests are subject to{' '}
@@ -143,13 +147,19 @@ export function Privacy() {
       <h2>Cookies and local storage</h2>
       <p>
         We use <code>localStorage</code>{' '}
-        and a Supabase session cookie to keep you signed in across page loads. We do not use
-        third-party tracking cookies or analytics scripts.
+        and a Supabase session cookie to keep you signed in across page loads. Guest study data is
+        also kept in <code>localStorage</code> so it survives a refresh on this device. An active
+        focus timer is stored locally for both guests and signed-in users until it ends or is
+        cancelled. We do not use third-party tracking cookies or analytics scripts.
       </p>
 
       <h2>How to delete your data</h2>
       <p>You can:</p>
       <ul>
+        <li>
+          <strong>Clear guest data</strong>{' '}
+          from the guest study page. Clearing this browser's site data also removes it.
+        </li>
         <li>
           <strong>Reset your account</strong>{' '}
           from the in-app settings menu — this wipes your goals, sessions, and Google Calendar

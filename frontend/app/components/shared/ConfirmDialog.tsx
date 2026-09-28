@@ -65,7 +65,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
               <AD.Cancel asChild>
                 <button
                   onClick={() => settle(false)}
-                  className='px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors'
+                  className='cursor-pointer px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors'
                 >
                   {opts?.cancelLabel ?? 'Cancel'}
                 </button>
@@ -73,7 +73,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
               <AD.Action asChild>
                 <button
                   onClick={() => settle(true)}
-                  className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${confirmClass}`}
+                  className={`cursor-pointer px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${confirmClass}`}
                 >
                   {opts?.confirmLabel ?? 'Confirm'}
                 </button>

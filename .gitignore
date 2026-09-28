@@ -13,6 +13,7 @@ deno.lock.tmp
 .features-gen-demo/
 .features-gen-tour/
 playwright-report/
+.playwright-cli/
 test-results/
 coverage/
 cov_profile/
@@ -62,3 +63,10 @@ supabase/.temp/
 # Raw, untrimmed music downloads the beds were cut from. Big, and the
 # trimmed public/music-bed.mp3 is what the compositions actually read.
 *-raw.mp3
+
+# Local reference research and landing review evidence
+artifacts/design-inspiration/
+artifacts/landing-review/
+artifacts/charge-sculpture/
+artifacts/lottie/
+artifacts/bolt-review/

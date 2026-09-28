@@ -1,7 +1,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/banner-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="docs/banner-light.svg">
-  <img alt="StudySprint — Focus. Track. Grow." src="docs/banner-dark.svg" width="1200" height="300">
+  <img alt="StudySprint — Focus in. Charge up." src="docs/banner-dark.svg" width="1200" height="300">
 </picture>
 
 [![CI](https://github.com/Builder106/study-sprint/actions/workflows/ci.yml/badge.svg)](https://github.com/Builder106/study-sprint/actions/workflows/ci.yml)

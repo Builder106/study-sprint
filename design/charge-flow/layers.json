@@ -1,0 +1,92 @@
+[
+  {
+    "name": "charge-ring-0",
+    "result": {
+      "layer_id": "J8BblA9B-e",
+      "name": "charge-ring-0",
+      "type": "Layer",
+      "shape": "ellipse"
+    }
+  },
+  {
+    "name": "charge-ring-1",
+    "result": {
+      "layer_id": "dHwzHqvHER",
+      "name": "charge-ring-1",
+      "type": "Layer",
+      "shape": "ellipse"
+    }
+  },
+  {
+    "name": "charge-packet-0",
+    "result": {
+      "layer_id": "2uk3qs4U0Q",
+      "name": "charge-packet-0",
+      "type": "Layer",
+      "shape": "rectangle"
+    }
+  },
+  {
+    "name": "charge-packet-1",
+    "result": {
+      "layer_id": "iZr2WWcd-W",
+      "name": "charge-packet-1",
+      "type": "Layer",
+      "shape": "rectangle"
+    }
+  },
+  {
+    "name": "charge-packet-2",
+    "result": {
+      "layer_id": "Zsmrl7Snqf",
+      "name": "charge-packet-2",
+      "type": "Layer",
+      "shape": "rectangle"
+    }
+  },
+  {
+    "name": "charge-packet-3",
+    "result": {
+      "layer_id": "eGvreOvtuW",
+      "name": "charge-packet-3",
+      "type": "Layer",
+      "shape": "rectangle"
+    }
+  },
+  {
+    "name": "charge-packet-4",
+    "result": {
+      "layer_id": "ixqHD2kier",
+      "name": "charge-packet-4",
+      "type": "Layer",
+      "shape": "rectangle"
+    }
+  },
+  {
+    "name": "charge-packet-5",
+    "result": {
+      "layer_id": "bAy3Pl1t1H",
+      "name": "charge-packet-5",
+      "type": "Layer",
+      "shape": "rectangle"
+    }
+  },
+  {
+    "name": "charge-packet-6",
+    "result": {
+      "layer_id": "KZOh0ecAAT",
+      "name": "charge-packet-6",
+      "type": "Layer",
+      "shape": "rectangle"
+    }
+  },
+  {
+    "name": "charge-packet-7",
+    "result": {
+      "layer_id": "e3AqlsZrRC",
+      "name": "charge-packet-7",
+      "type": "Layer",
+      "shape": "rectangle"
+    }
+  }
+]

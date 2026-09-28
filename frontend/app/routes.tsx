@@ -1,18 +1,6 @@
+import type { ComponentType } from 'react';
 import { createBrowserRouter, Navigate, useParams } from 'react-router';
 import { Landing } from './components/Landing';
-import { Login } from './components/Login';
-import { Register } from './components/Register';
-import { Dashboard } from './components/Dashboard';
-import { GoalDetailWithPanel } from './components/GoalDetailWithPanel';
-import { NewGoal } from './components/NewGoal';
-import { Analytics } from './components/Analytics';
-import { Garden } from './components/Garden';
-import { Community } from './components/Community';
-import { StudyRoom } from './components/StudyRoom';
-import { PublicProfile } from './components/PublicProfile';
-import { Privacy } from './components/Privacy';
-import { Terms } from './components/Terms';
-import { Settings } from './components/Settings';
 import { ProtectedRoute } from './components/shared/ProtectedRoute';
 
 function RedirectToGoal() {
@@ -20,78 +8,107 @@ function RedirectToGoal() {
   return <Navigate to={`/goal/${id}`} replace />;
 }
 
+function authenticated(Component: ComponentType) {
+  return function AuthenticatedPage() {
+    return <ProtectedRoute><Component /></ProtectedRoute>;
+  };
+}
+
+function RouteLoading() {
+  return <div className='min-h-screen flex items-center justify-center' role='status'>Loading…</div>;
+}
+
 export const router = createBrowserRouter([
   { path: '/', Component: Landing },
-  { path: '/login', Component: Login },
-  // Retain /login as alias for direct sign-in routing.
+  {
+    path: '/guest',
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({ Component: (await import('./components/GuestStudy')).GuestStudy }),
+  },
+  {
+    path: '/login',
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({ Component: (await import('./components/Login')).Login }),
+  },
+  // Retain /signin as an alias for direct sign-in routing.
   { path: '/signin', element: <Navigate to='/login' replace /> },
-  { path: '/register', Component: Register },
+  {
+    path: '/register',
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({ Component: (await import('./components/Register')).Register }),
+  },
   {
     path: '/dashboard',
-    element: (
-      <ProtectedRoute>
-        <Dashboard />
-      </ProtectedRoute>
-    ),
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({
+      Component: authenticated((await import('./components/Dashboard')).Dashboard),
+    }),
   },
   {
     path: '/goals/new',
-    element: (
-      <ProtectedRoute>
-        <NewGoal />
-      </ProtectedRoute>
-    ),
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({
+      Component: authenticated((await import('./components/NewGoal')).NewGoal),
+    }),
   },
   {
     path: '/goal/:id',
-    element: (
-      <ProtectedRoute>
-        <GoalDetailWithPanel />
-      </ProtectedRoute>
-    ),
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({
+      Component: authenticated(
+        (await import('./components/GoalDetailWithPanel')).GoalDetailWithPanel,
+      ),
+    }),
   },
   { path: '/goal/:id/details', element: <RedirectToGoal /> },
   {
     path: '/analytics',
-    element: (
-      <ProtectedRoute>
-        <Analytics />
-      </ProtectedRoute>
-    ),
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({
+      Component: authenticated((await import('./components/Analytics')).Analytics),
+    }),
   },
   {
     path: '/garden',
-    element: (
-      <ProtectedRoute>
-        <Garden />
-      </ProtectedRoute>
-    ),
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({
+      Component: authenticated((await import('./components/Garden')).Garden),
+    }),
   },
   {
     path: '/community',
-    element: (
-      <ProtectedRoute>
-        <Community />
-      </ProtectedRoute>
-    ),
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({
+      Component: authenticated((await import('./components/Community')).Community),
+    }),
   },
   {
     path: '/rooms/:slug',
-    element: (
-      <ProtectedRoute>
-        <StudyRoom />
-      </ProtectedRoute>
-    ),
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({
+      Component: authenticated((await import('./components/StudyRoom')).StudyRoom),
+    }),
   },
-  { path: '/u/:username', Component: PublicProfile },
-  { path: '/privacy', Component: Privacy },
-  { path: '/terms', Component: Terms },
+  {
+    path: '/u/:username',
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({ Component: (await import('./components/PublicProfile')).PublicProfile }),
+  },
+  {
+    path: '/privacy',
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({ Component: (await import('./components/Privacy')).Privacy }),
+  },
+  {
+    path: '/terms',
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({ Component: (await import('./components/Terms')).Terms }),
+  },
   {
     path: '/settings',
-    element: (
-      <ProtectedRoute>
-        <Settings />
-      </ProtectedRoute>
-    ),
+    HydrateFallback: RouteLoading,
+    lazy: async () => ({
+      Component: authenticated((await import('./components/Settings')).Settings),
+    }),
   },
 ]);

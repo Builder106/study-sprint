@@ -4,6 +4,7 @@ const LOCAL_SUPABASE_URL = 'http://127.0.0.1:54321';
 const ACCESS_TOKEN = 'local-smoke-access-token';
 const USER_ID = '00000000-0000-4000-8000-000000000001';
 const FIXTURE_TIMESTAMP = '2026-01-01T00:00:00.000Z';
+const LANDING_RENDERER_READY_TIMEOUT = 12_000;
 
 type JsonObject = Record<string, unknown>;
 
@@ -40,12 +41,17 @@ function numberValue(body: JsonObject, key: string, fallback: number): number {
 class LocalSupabaseBackend {
   private readonly users = new Map<string, string>();
   private readonly goals = new Map<string, FixtureGoal>();
+  private readonly sessions: JsonObject[] = [];
   private nextGoalNumber = 1;
   private routeHandler: RouteHandler | null = null;
   private currentEmail = '';
 
   get goalCount(): number {
     return this.goals.size;
+  }
+
+  get sessionCount(): number {
+    return this.sessions.length;
   }
 
   async install(page: Page): Promise<void> {
@@ -68,6 +74,7 @@ class LocalSupabaseBackend {
     }
     this.users.clear();
     this.goals.clear();
+    this.sessions.length = 0;
   }
 
   private async handle(route: Route): Promise<void> {
@@ -186,7 +193,32 @@ class LocalSupabaseBackend {
     }
 
     if (url.pathname === '/rest/v1/study_sessions' && request.method() === 'GET') {
-      await this.json(route, 200, []);
+      await this.json(route, 200, this.sessions);
+      return;
+    }
+
+    if (url.pathname === '/rest/v1/study_sessions' && request.method() === 'POST') {
+      const body = asObject(request.postDataJSON());
+      const goalId = stringValue(body, 'goal_id');
+      const minutes = numberValue(body, 'duration_minutes', 0);
+      const goal = this.goals.get(goalId);
+      if (!goal || minutes < 1) {
+        await this.json(route, 400, { message: 'Invalid study session' });
+        return;
+      }
+      goal.logged_minutes += minutes;
+      const session = {
+        id: `smoke-session-${this.sessions.length + 1}`,
+        goal_id: goalId,
+        duration_minutes: minutes,
+        notes: null,
+        logged_at: FIXTURE_TIMESTAMP,
+        quality: null,
+        next_review_at: null,
+        gcal_event_id: null,
+      };
+      this.sessions.push(session);
+      await this.json(route, 201, session);
       return;
     }
 
@@ -274,14 +306,272 @@ const test = base.extend<{ localBackend: LocalSupabaseBackend }>({
 test.describe('PR smoke suite', () => {
   test('renders the public landing page', async ({ page }) => {
     await page.goto('/');
+    await expect(page.locator('.ss-experience')).toHaveCSS('--ss-entry-duration', '5000ms');
     await expect(
-      page.getByRole('heading', { name: 'StudySprint is getting a new look.' }),
+      page.getByRole('heading', { name: /Focus in\.\s*Charge up\./ }),
     ).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Create an account' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Create an account' }).first()).toBeVisible();
   });
 
+  test('starts, pauses and saves a guest session on the landing page', async ({ page }) => {
+    const writes: string[] = [];
+    page.on('request', (request) => {
+      if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) writes.push(request.url());
+    });
+    await page.clock.install();
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    await expect(page.locator('.ss-charge-number')).toHaveText('0%');
+    await page.getByRole('radio', { name: '30 min', exact: true }).focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByRole('radio', { name: '60 min', exact: true })).toBeChecked();
+    const bolt = page.getByRole('button', { name: 'Start a 60 minute focus timer' });
+    await bolt.focus();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('button', { name: 'Pause focus timer' })).toBeVisible();
+    await page.getByRole('button', { name: 'Pause focus timer' }).click();
+    await expect(page.getByRole('button', { name: 'Resume focus timer' })).toBeVisible();
+    await page.getByRole('button', { name: 'Resume focus timer' }).click();
+    await page.reload();
+    await expect(page.getByRole('button', { name: 'Pause focus timer' })).toBeVisible();
+    await page.clock.fastForward(6 * 60 * 1000);
+    await page.getByRole('button', { name: 'Finish and save' }).click();
+    await expect(page.getByRole('status').first()).toHaveText('6 minutes saved on this device.');
+    await expect(page.locator('.ss-charge-number')).toHaveText('1%');
+    await page.reload();
+    await expect(page.locator('.ss-charge-number')).toHaveText('1%');
+    await expect(page.getByText('Focus session — 6 min')).toBeVisible();
+    await page.getByRole('button', { name: 'Clear guest data' }).click();
+    await page.getByRole('alertdialog').getByRole('button', { name: 'Clear data' }).click();
+    await expect(page.locator('.ss-charge-number')).toHaveText('0%');
+    expect(writes).toEqual([]);
+  });
+
+  test('saves a focus session once when the selected duration ends', async ({ page }) => {
+    await page.clock.install();
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
+    await page.clock.fastForward(30 * 60 * 1000);
+    await expect(page.locator('.ss-result')).toHaveText('30 minutes saved on this device.');
+    await expect(page.locator('.ss-charge-number')).toHaveText('5%');
+    const saved = await page.evaluate(() => localStorage.getItem('studysprint:guest-study:v1'));
+    expect(JSON.parse(saved ?? '{}').sessions).toHaveLength(1);
+  });
+
+  test('does not credit an immediate tap as study time', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
+    await page.getByRole('button', { name: 'Finish and save' }).click();
+    await expect(page.locator('.ss-result')).toHaveText(
+      'Study for at least one minute before saving a session.',
+    );
+    await expect(page.locator('.ss-charge-number')).toHaveText('0%');
+    await page.getByRole('button', { name: 'Cancel session' }).click();
+    await expect(page.getByRole('button', { name: 'Start a 30 minute focus timer' })).toBeVisible();
+  });
+
+  test('renders the model and keeps the focus timer running when visual motion is paused', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/');
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready', {
+      timeout: LANDING_RENDERER_READY_TIMEOUT,
+    });
+    await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
+    await expect(page.getByRole('button', { name: 'Pause focus timer' })).toBeVisible();
+    await page.getByRole('button', { name: 'Pause animations' }).click();
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-phase', 'running');
+    await expect(page.getByRole('button', { name: 'Pause focus timer' })).toBeVisible();
+    await expect(page.locator('.ss-charge-number')).toHaveText('0%');
+    expect(
+      await page.evaluate(() =>
+        document.getAnimations().filter((animation) => animation.playState === 'running').length
+      ),
+    ).toBe(0);
+  });
+
+  test('retains usable controls when the model fails to load', async ({ page }) => {
+    await page.route('**/landing/charge-sculpture.glb', (route) => route.abort());
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'fallback');
+    const poster = page.locator('.ss-sculpture:visible');
+    await expect(poster).toBeVisible();
+    await expect(poster).toHaveAttribute(
+      'src',
+      /\/landing\/charge-sculpture-(light|dark)\.webp$/,
+    );
+    await expect(page.getByRole('button', { name: 'Pause focus timer' })).toBeVisible();
+  });
+
+  test('keeps the fallback functional without WebGL', async ({ page }) => {
+    await page.addInitScript(() => {
+      const original = HTMLCanvasElement.prototype.getContext;
+      Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+        value: function (this: HTMLCanvasElement, kind: string, ...args: unknown[]) {
+          if (kind.includes('webgl')) return null;
+          return Reflect.apply(original, this, [kind, ...args]);
+        },
+      });
+    });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
+    await expect(page.locator('.ss-sculpture:visible')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Pause focus timer' })).toBeVisible();
+  });
+
+  test('falls back after context loss and preserves the result', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready', {
+      timeout: LANDING_RENDERER_READY_TIMEOUT,
+    });
+    await page.locator('.ss-canvas canvas').evaluate((canvas) =>
+      canvas.dispatchEvent(new Event('webglcontextlost', { cancelable: true }))
+    );
+    await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'fallback');
+    await expect(page.getByRole('button', { name: 'Pause focus timer' })).toBeVisible();
+  });
+
+  test('selects a goal, restores focus and shows one annotation at a time', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.ss-goal-label')).toContainText('Focus session');
+    await expect(page.locator('.ss-goal-trigger')).toHaveCount(0);
+    await page.getByRole('textbox', { name: 'New goal' }).fill('Review vector spaces');
+    await page.getByRole('button', { name: 'Add', exact: true }).click();
+    await expect(page.locator('.ss-goal-label')).toContainText('Review vector spaces');
+    await expect(page.locator('.ss-goal-trigger')).toHaveCount(0);
+    await page.getByRole('textbox', { name: 'New goal' }).fill('Practice eigenvectors');
+    await page.getByRole('button', { name: 'Add', exact: true }).click();
+    const selected = page.getByRole('button', { name: 'Your next step Review vector spaces' });
+    await selected.click();
+    await page.locator('#study-goals').getByRole('button', {
+      name: 'Review vector spaces',
+      exact: true,
+    }).click();
+    await expect(selected).toBeFocused();
+    await selected.click();
+    await page.locator('#study-goals').getByRole('button', {
+      name: 'Review vector spaces',
+      exact: true,
+    }).focus();
+    await page.keyboard.press('Escape');
+    await expect(selected).toBeFocused();
+    await selected.click();
+    await page.getByRole('button', { name: 'Monday: 0 minutes' }).click();
+    await expect(page.locator('#study-goals')).toHaveCount(0);
+    await expect(page.locator('#sample-day')).toHaveText('Monday: 0 minutes');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#sample-day')).toHaveText('Select a day to see study minutes.');
+  });
+
+  test('dragging the bolt does not start a session', async ({ page }) => {
+    await page.goto('/');
+    const bolt = page.getByRole('button', { name: 'Start a 30 minute focus timer' });
+    const box = await bolt.boundingBox();
+    if (!box) throw new Error('Bolt hit target missing');
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width / 2 + 60, box.y + box.height / 2 + 15, { steps: 6 });
+    await page.mouse.up();
+    await expect(page.locator('.ss-charge-number')).toHaveText('0%');
+    await expect(page.getByRole('button', { name: 'Start a 30 minute focus timer' })).toBeVisible();
+    await bolt.focus();
+    await page.keyboard.press('Space');
+    await expect(page.getByRole('button', { name: 'Pause focus timer' })).toBeVisible();
+  });
+
+  test('cancelled touch gestures preserve charge and allow vertical scrolling', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 700 });
+    await page.goto('/');
+    const bolt = page.getByRole('button', { name: 'Start a 30 minute focus timer' });
+    expect(await bolt.evaluate((element) => getComputedStyle(element).touchAction)).toBe('pan-y');
+    const box = await bolt.boundingBox();
+    if (!box) throw new Error('Bolt hit target missing');
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await bolt.dispatchEvent('pointercancel', { pointerId: 1, pointerType: 'touch' });
+    await page.mouse.up();
+    await expect(page.locator('.ss-charge-number')).toHaveText('0%');
+    await page.getByRole('link', { name: 'Create an account' }).scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => scrollY)).toBeGreaterThan(0);
+  });
+
+  for (const width of [320, 390, 621, 768, 1440]) {
+    for (const theme of ['light', 'dark']) {
+      test(`bolt layout at ${width}px in ${theme}`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 900 });
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
+        await page.goto('/');
+        await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready');
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+          true,
+        );
+        for (
+          const selector of [
+            '.ss-goal-anchor',
+            '.ss-charge-anchor',
+            '.ss-history',
+            '.ss-durations',
+          ]
+        ) {
+          const box = await page.locator(selector).boundingBox();
+          expect(box).not.toBeNull();
+          expect(box!.x).toBeGreaterThanOrEqual(0);
+          expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+        }
+        const stemError = await page.evaluate(() => {
+          const svg = document.querySelector<SVGSVGElement>('.ss-orbit');
+          const ellipse = svg?.querySelector('ellipse');
+          const matrix = svg?.getScreenCTM();
+          if (!svg || !ellipse || !matrix) return Number.POSITIVE_INFINITY;
+          const cx = Number(ellipse.getAttribute('cx'));
+          const cy = Number(ellipse.getAttribute('cy'));
+          const rx = Number(ellipse.getAttribute('rx'));
+          const ry = Number(ellipse.getAttribute('ry'));
+          return Math.max(...Array.from(
+            document.querySelectorAll<HTMLLabelElement>('.ss-durations label'),
+            (label) => {
+              const stem = label.querySelector<HTMLElement>('.ss-duration-stem');
+              const angle = Number(label.dataset.orbitAngle) * Math.PI / 180;
+              if (!stem || !Number.isFinite(angle)) return Number.POSITIVE_INFINITY;
+              const point = svg.createSVGPoint();
+              point.x = cx + rx * Math.cos(angle);
+              point.y = cy + ry * Math.sin(angle);
+              const anchor = point.matrixTransform(matrix);
+              const line = stem.getBoundingClientRect();
+              const below = matchMedia('(max-width: 699px)').matches &&
+                label.dataset.duration === '60';
+              const endpointY = below ? line.top : line.bottom;
+              return Math.hypot(line.left + line.width / 2 - anchor.x, endpointY - anchor.y);
+            },
+          ));
+        });
+        expect(stemError).toBeLessThan(1);
+        const durationBubble = await page.locator('.ss-durations label[data-duration="90"]')
+          .boundingBox();
+        const chargeAnchor = await page.locator('.ss-charge-anchor').boundingBox();
+        expect(durationBubble).not.toBeNull();
+        expect(chargeAnchor).not.toBeNull();
+        expect(
+          durationBubble!.x + durationBubble!.width <= chargeAnchor!.x ||
+            chargeAnchor!.x + chargeAnchor!.width <= durationBubble!.x ||
+            durationBubble!.y + durationBubble!.height <= chargeAnchor!.y ||
+            chargeAnchor!.y + chargeAnchor!.height <= durationBubble!.y,
+        ).toBe(true);
+        await page.getByRole('radio', { name: '90 min', exact: true }).check();
+        await page.getByRole('button', { name: 'Start a 90 minute focus timer' }).click();
+        await expect(page.getByRole('button', { name: 'Pause focus timer' })).toBeVisible();
+        await expect(page.locator('.ss-object')).toHaveAttribute('data-phase', 'running');
+        await page.screenshot({ path: `test-results/bolt-${width}-${theme}.png`, fullPage: true });
+      });
+    }
+  }
+
   test('registers a student and creates a goal', async ({ page, localBackend }) => {
-    await page.goto('/register');
+    await page.goto('/');
+    await page.getByRole('link', { name: 'Create an account' }).first().click();
+    await expect(page).toHaveURL(/\/register$/);
     await page.getByPlaceholder('name@example.com').fill('smoke@example.com');
     await page.locator('input[type="password"]').fill('Sprint-42-go');
     await page.getByRole('button', { name: /Create account/ }).click();
@@ -300,6 +590,30 @@ test.describe('PR smoke suite', () => {
     await expect(page.getByRole('heading', { name: 'Linear algebra review' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Recent Sessions' })).toBeVisible();
     expect(localBackend.goalCount).toBe(1);
+    await page.clock.install();
+    await page.goto('/');
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.locator('.ss-goal-label')).toContainText('Linear algebra review');
+    await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
+    await page.clock.fastForward(60 * 1000);
+    await page.getByRole('button', { name: 'Finish and save' }).click();
+    await expect(page.locator('.ss-result')).toHaveText('1 minute saved to your account.');
+    expect(localBackend.sessionCount).toBe(1);
+  });
+
+  test('selects a theme by keyboard and restores trigger focus', async ({ page }) => {
+    await page.goto('/');
+    const trigger = page.getByRole('button', { name: 'Theme settings' });
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('menuitemradio', { name: 'System', exact: true })).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await expect(page.getByRole('menuitemradio', { name: 'Light', exact: true })).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('html')).toHaveClass('light');
+    await expect(trigger).toBeFocused();
+    await page.reload();
+    await expect(page.locator('html')).toHaveClass('light');
   });
 
   test('keeps password validation on the registration page', async ({ page }) => {

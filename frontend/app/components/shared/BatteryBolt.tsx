@@ -5,6 +5,7 @@ export interface BatteryBoltProps {
   chargePct: number;
   size?: number;
   className?: string;
+  pulse?: boolean;
 }
 
 const BOLT_PATH = 'M69 21L36 66H58.5L51 99L84 54H61.5L69 21Z';
@@ -37,9 +38,10 @@ export function batteryAriaLabel(pct: number): string {
   return `Battery at ${Math.round(clampCharge(pct))}% charge`;
 }
 
-export function BatteryBolt({ chargePct, size = 120, className }: BatteryBoltProps) {
+export function BatteryBolt({ chargePct, size = 120, className, pulse = true }: BatteryBoltProps) {
   const pct = clampCharge(chargePct);
   const reducedMotion = useReducedMotion();
+  const shouldPulse = pulse && pct >= 80 && !reducedMotion;
   const clipId = `battery-bolt-${useId()}`;
   const fillHeight = (pct / 100) * BOLT_HEIGHT;
 
@@ -60,8 +62,8 @@ export function BatteryBolt({ chargePct, size = 120, className }: BatteryBoltPro
       <path d={BOLT_PATH} fill='currentColor' opacity='0.13' />
       <motion.g
         clipPath={`url(#${clipId})`}
-        animate={pct >= 80 && !reducedMotion ? { opacity: [0.72, 1, 0.72] } : { opacity: 1 }}
-        transition={pct >= 80 && !reducedMotion
+        animate={shouldPulse ? { opacity: [0.72, 1, 0.72] } : { opacity: 1 }}
+        transition={shouldPulse
           ? { duration: 2, repeat: Infinity, ease: 'easeInOut' }
           : { duration: 0 }}
       >

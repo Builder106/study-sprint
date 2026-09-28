@@ -1,204 +1,1047 @@
-/* Hallmark · genre: playful · macrostructure: Narrative Workflow · theme: DESIGN.md (locked)
- * enrichment: Tier B hand-built battery SVG · nav: N7 brutal slab · footer: Ft5 statement
- * tone: playful · audience: students · anchor hue: electric lime (var(--brand-lime))
- * pre-emit critique: P5 H4 E4 S5 R5 V4
- *
- * Structural CSS for the landing page only. Everything that Tailwind utilities
- * express cleanly stays in the JSX, matching how the rest of this codebase is
- * written; this file carries the things utilities express badly — the growth
- * spine, the bento spans, and the one page-load reveal.
- *
- * Token discipline: no literal colour or font values below this line.
- */
-
-/* ---------------------------------------------------------------------------
- * Root overflow guard.
- *
- * `clip` rather than `hidden`: hidden turns the root into a scroll container,
- * which breaks position: sticky for any descendant. clip just prevents a stray
- * wide child from producing a horizontal scrollbar.
- * ------------------------------------------------------------------------- */
-
-html,
-body {
-  overflow-x: clip;
+html:has(.ss-landing) {
+  --ss-scroll-thumb: color-mix(in srgb, var(--brand-lime-ink) 85%, var(--background));
+  scrollbar-color: var(--ss-scroll-thumb) var(--background);
+  scrollbar-width: thin;
 }
-
-/* ---------------------------------------------------------------------------
- * Page-load reveal — the single orchestrated entrance.
- * Staggered by DOM index via --i, capped at ~480ms so the page settles fast.
- * ------------------------------------------------------------------------- */
-
-.ss-reveal {
-  opacity: 0;
-  transform: translateY(8px);
-  animation: ss-reveal var(--dur-long) var(--ease-out) forwards;
-  animation-delay: calc(var(--i, 0) * 60ms);
+.dark:has(.ss-landing) {
+  --ss-scroll-thumb: color-mix(in srgb, var(--brand-lime) 55%, var(--background));
 }
-
-@keyframes ss-reveal {
-  to {
-    opacity: 1;
-    transform: none;
+@media (forced-colors: active), (prefers-contrast: more) {
+  html:has(.ss-landing) {
+    scrollbar-color: auto;
+    scrollbar-width: auto;
   }
 }
 
-/* ---------------------------------------------------------------------------
- * Hero charge plane — a soft radial ground behind the battery so the
- * right column carries as much visual weight as the copy column on the left.
- * ------------------------------------------------------------------------- */
-
-.ss-hero-charge {
-  background: radial-gradient(
-    circle,
-    color-mix(in oklab, var(--brand-lime) 10%, transparent),
-    transparent 72%
-  );
+.ss-landing {
+  --ss-ink: var(--brand-lime-ink);
+  --ss-secondary: color-mix(in oklab, var(--foreground) 65%, var(--background));
+  --ss-line: color-mix(in oklab, var(--foreground) 22%, var(--background));
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100svh;
+  font-family: var(--font-sans);
 }
-
-/* ---------------------------------------------------------------------------
- * Charge spine — the vertical rule threading the charging beats together.
- *
- * The rule is drawn on the marker column rather than as a border on the list so
- * it can stop short at the final stage instead of running past the last plant.
- * ------------------------------------------------------------------------- */
-
-.ss-stage-marker {
-  position: relative;
+.dark .ss-landing {
+  --ss-ink: var(--brand-lime);
 }
-
-.ss-stage-marker::before {
-  content: "";
+.ss-landing :is(a, button, input):focus-visible {
+  outline: 2px solid var(--ss-ink);
+  outline-offset: 5px;
+}
+.ss-landing button {
+  cursor: pointer;
+}
+.ss-landing button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ss-skip {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 100;
+  padding: 1rem;
+  background: var(--foreground);
+  color: var(--background);
+  transform: translateY(-200%);
+}
+.ss-skip:focus {
+  transform: none;
+}
+.ss-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 4vw, 4rem);
+}
+.ss-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.06em;
+}
+.ss-utilities {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.ss-motion-control {
   position: absolute;
-  inset-block: 0;
-  inset-inline-start: 50%;
-  width: var(--rule-hair);
-  transform: translateX(-50%);
-  background: currentColor;
-  opacity: 0.18;
-}
-
-.dark .ss-stage-marker::before {
-  opacity: 0.3;
-}
-
-.ss-stage:first-child .ss-stage-marker::before {
-  inset-block-start: 50%;
-}
-
-.ss-stage:last-child .ss-stage-marker::before {
-  inset-block-end: 50%;
-}
-
-/* The final stage carries no trailing gap — the section's own padding closes
-   the list, so the extra space would read as an unfinished seventh row. */
-.ss-stage:last-child .ss-stage-body {
-  padding-bottom: 0;
-}
-
-/* The dot sits above the spine and masks it, so the rule reads as passing
-   behind each stage rather than colliding with it. */
-.ss-stage-dot {
-  position: relative;
-  z-index: 1;
-}
-
-/* ---------------------------------------------------------------------------
- * Feature bento — asymmetric spans, not a uniform 3-column feature grid.
- * ------------------------------------------------------------------------- */
-
-.ss-bento {
+  z-index: 6;
+  top: 0;
+  right: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--rule-hair);
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--ss-line);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--background) 88%, transparent);
+  color: var(--foreground);
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
 }
-
-.ss-bento > * {
-  min-width: 0;
+.ss-motion-control:hover {
+  border-color: var(--ss-ink);
+  background: color-mix(in srgb, var(--ss-ink) 9%, var(--background));
+  color: var(--ss-ink);
 }
-
-/* A filled seam behind uniform-width gaps draws a perfect grid over
-   asymmetric spans, which reads as a spreadsheet before it reads as a bento.
-   Each tile carries its own subtle fill instead — the varied spans do the
-   talking, not a border grid. A warm terracotta wash (the same #8b5a3c the
-   pots are drawn in) reads as a planter box rather than a neutral card. */
-.ss-tile {
-  background: color-mix(in oklab, #8b5a3c 5%, transparent);
-}
-
-/* ---------------------------------------------------------------------------
- * Feature icons are hand-built line drawings, aligned on a compact baseline.
- * ------------------------------------------------------------------------- */
-
-.ss-feature-icon {
+.ss-signin {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 44px;
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: color 180ms ease;
+}
+.ss-signin::after {
+  position: absolute;
+  right: 1.8rem;
+  bottom: 5px;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  content: '';
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.ss-signin:is(:hover, :focus-visible) {
+  color: var(--ss-ink);
+}
+.ss-signin:is(:hover, :focus-visible)::after {
+  transform: scaleX(1);
+}
+.ss-signin svg {
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.ss-signin:is(:hover, :focus-visible) svg {
+  transform: translateX(3px);
+}
+.ss-experience {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 1rem 2.5rem;
+}
+.ss-introduction {
+  text-align: center;
+  padding-top: 1rem;
+}
+.ss-introduction h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: -0.065em;
+}
+.ss-introduction h1 .ss-charge-word {
+  position: relative;
+  display: inline-block;
+  color: var(--ss-secondary);
+}
+.ss-charge-word::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: var(--brand-lime);
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none;
+}
+.ss-charge-word::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: -0.08em;
+  right: -0.12em;
+  width: 0.22em;
+  aspect-ratio: 1;
+  background: var(--brand-lime);
+  clip-path: polygon(50% 0, 61% 37%, 100% 50%, 61% 63%, 50% 100%, 39% 63%, 0 50%, 39% 37%);
+  opacity: 0;
+  transform: scale(0.3) rotate(-35deg);
+  pointer-events: none;
+}
+.ss-introduction[data-bolt-entered='true']:not([data-still='true']) .ss-focus-word {
+  animation: ss-focus-settle calc(var(--ss-entry-duration) - 200ms)
+    cubic-bezier(0.2, 0.8, 0.25, 1) 200ms both;
+}
+.ss-introduction[data-bolt-entered='true']:not([data-still='true']) .ss-charge-word::after {
+  animation: ss-charge-reveal calc(var(--ss-entry-duration) - 500ms)
+    cubic-bezier(0.18, 0.74, 0.25, 1) 500ms both;
+}
+.ss-introduction[data-bolt-entered='true']:not([data-still='true']) .ss-charge-word::before {
+  animation: ss-charge-spark 220ms ease-out calc(var(--ss-entry-duration) - 220ms) both;
+}
+.ss-introduction[data-still='true'] .ss-focus-word {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.ss-introduction[data-still='true'] .ss-charge-word::after {
+  clip-path: none;
+}
+.ss-introduction[data-still='true'] .ss-charge-word::before {
+  display: none;
+}
+.ss-introduction p {
+  margin-top: 0.6rem;
+  color: var(--ss-secondary);
+  font-size: 0.85rem;
+}
+.ss-object {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: clamp(520px, 66vh, 720px);
+  max-width: 1000px;
+  margin: 0 auto 48px;
+}
+.ss-visual,
+.ss-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ss-visual {
+  z-index: 1;
+  transition: transform 480ms cubic-bezier(0.22, 1.3, 0.36, 1);
+}
+.ss-object[data-renderer='entering'] .ss-visual {
+  animation: ss-bolt-arrive var(--ss-entry-duration) ease-out both;
+}
+.ss-object[data-renderer='entering'] .ss-canvas {
+  animation: ss-bolt-energize var(--ss-entry-duration) ease-out both;
+}
+.ss-object:is([data-renderer='ready'], [data-renderer='fallback'])[data-phase='idle'] .ss-visual {
+  animation: ss-bolt-idle 5.6s ease-in-out infinite;
+  animation-play-state: paused;
+}
+.ss-object[data-awake='true']:is([data-renderer='ready'], [data-renderer='fallback'])[data-phase='idle'] .ss-visual {
+  animation-play-state: running;
+}
+.ss-sculpture {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 1;
+}
+.ss-sculpture-dark,
+.dark .ss-sculpture-light {
+  display: none;
+}
+.dark .ss-sculpture-dark {
+  display: block;
+}
+.ss-canvas {
+  z-index: 2;
+  opacity: 0;
+}
+.ss-ignition {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  pointer-events: none;
+  opacity: 0;
+  stroke: var(--brand-lime);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: opacity 180ms ease-out;
+}
+.ss-ignition path {
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--brand-lime) 80%, transparent));
+}
+.ss-object[data-renderer='loading'][data-poster-ready='true'] .ss-ignition {
+  opacity: 1;
+}
+.ss-object[data-renderer='loading'][data-poster-ready='true'] .ss-ignition-bevel {
+  stroke-dasharray: 8 92;
+  animation: ss-ignition-run 1.35s cubic-bezier(0.35, 0.03, 0.28, 1) 2 both;
+}
+.ss-object[data-renderer='entering'] .ss-sculpture,
+.ss-object[data-renderer='ready'] .ss-sculpture {
+  opacity: 0;
+}
+.ss-object[data-renderer='entering'] .ss-canvas,
+.ss-object[data-renderer='ready'] .ss-canvas {
+  opacity: 1;
+}
+.ss-object[data-renderer='entering'] .ss-ignition {
+  opacity: 1;
+}
+.ss-object[data-renderer='entering'] .ss-ignition-bevel {
+  stroke-dasharray: 18 82;
+  animation: ss-ignition-run calc(var(--ss-entry-duration) - 600ms)
+    cubic-bezier(0.2, 0.6, 0.3, 1) 600ms both;
+}
+.ss-electric-arcs {
+  opacity: 0;
+  stroke-width: 1.2;
+  filter: drop-shadow(0 0 3px var(--brand-lime));
+}
+.ss-object[data-renderer='entering'] .ss-electric-arcs {
+  opacity: 1;
+}
+.ss-object[data-renderer='ready'] .ss-ignition,
+.ss-object[data-renderer='fallback'] .ss-ignition {
+  opacity: 0;
+}
+.ss-object[data-discharging='true'] .ss-ignition {
+  opacity: 1;
+}
+.ss-object:is([data-renderer='ready'], [data-renderer='fallback']) .ss-ignition-bevel {
+  opacity: 0;
+}
+.ss-idle-arcs {
+  opacity: 1;
+  stroke-width: 0.9;
+}
+.ss-click-arcs {
+  opacity: 1;
+  stroke-width: 1.5;
+}
+.ss-landing[data-still='true'] .ss-ignition {
+  opacity: 0;
+}
+.ss-object:has(.ss-bolt-target:is(:hover, :focus-visible)) .ss-visual {
+  filter:
+    drop-shadow(0 0 3px var(--brand-lime))
+    drop-shadow(0 0 8px color-mix(in srgb, var(--brand-lime) 55%, transparent))
+    drop-shadow(0 0 16px color-mix(in srgb, var(--brand-lime) 25%, transparent));
+  transform: translateY(-5px) rotate(-1.4deg) scale(1.018);
+}
+.ss-object:has(.ss-bolt-target:active) .ss-visual {
+  transform: translateY(-1px) rotate(0deg) scale(0.994);
+  transition-duration: 100ms;
+}
+.ss-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ss-orbit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--ss-line);
+  stroke-width: 0.7;
+  pointer-events: none;
+}
+.ss-orbit-guide {
+  stroke-dasharray: 100;
+}
+.ss-orbit-back {
+  z-index: 0;
+}
+.ss-orbit-front {
+  z-index: 2;
+}
+.ss-object[data-renderer='entering'] .ss-orbit-guide {
+  animation: ss-orbit-arrive var(--ss-entry-duration) cubic-bezier(0.2, 0.82, 0.3, 1) both;
+}
+.ss-duration-arc {
+  stroke: var(--ss-ink);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 280ms cubic-bezier(0.22, 1, 0.36, 1), opacity 160ms ease-out;
+}
+.ss-session-arc {
+  stroke: var(--ss-ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: stroke-dasharray 850ms linear, opacity 160ms ease-out;
+}
+.ss-object:not([data-phase='idle']) .ss-duration-arc {
+  opacity: 0;
+}
+.ss-object[data-phase='running'] .ss-session-arc,
+.ss-object[data-phase='paused'] .ss-session-arc,
+.ss-object[data-phase='saving'] .ss-session-arc {
+  opacity: 0.8;
+}
+.ss-object[data-phase='paused'] .ss-session-arc {
+  stroke: var(--ss-secondary);
+  opacity: 0.65;
+  transition: opacity 160ms ease-out;
+}
+.ss-goal-anchor {
+  position: absolute;
+  z-index: 4;
+  left: var(--anchor-x, 58%);
+  top: var(--anchor-y, 12%);
+  width: 225px;
+  padding-left: 28px;
+}
+.ss-goal-anchor::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 30px;
+  width: 24px;
+  height: 1px;
+  background: var(--ss-line);
+}
+.ss-goal-trigger,
+.ss-goal-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 54px;
+  text-align: left;
+  font-size: 0.82rem;
+}
+.ss-goal-trigger small,
+.ss-goal-label small {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--ss-secondary);
+  margin-bottom: 0.3rem;
+}
+.ss-goal-copy,
+.ss-goal-value {
+  display: block;
+}
+.ss-goal-value {
+  animation: ss-caption-in 160ms ease-out both;
+}
+.ss-goal-options {
+  display: grid;
+  background: var(--background);
+  padding: 0.25rem 0;
+  animation: ss-options-in 160ms ease-out both;
+}
+.ss-goal-options button {
+  min-height: 44px;
+  text-align: left;
+  font-size: 0.8rem;
+  padding: 0.4rem;
+}
+.ss-goal-options button[aria-pressed='true'] {
+  color: var(--ss-ink);
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.ss-durations {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  pointer-events: none;
+}
+.ss-durations label {
+  --ss-duration-gap: 16px;
+  --ss-duration-offset: translate(-50%, calc(-100% - var(--ss-duration-gap)));
+  position: absolute;
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  min-width: 82px;
+  min-height: 44px;
+  cursor: pointer;
+  color: var(--ss-secondary);
+  background: var(--background);
+  border: 1px solid var(--ss-line);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  transform: var(--ss-duration-offset);
+  transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease,
+    transform 180ms ease;
+}
+.ss-object[data-renderer='entering'] .ss-durations label {
+  animation: ss-duration-dock var(--ss-entry-duration) cubic-bezier(0.2, 0.82, 0.3, 1) both;
+}
+.ss-object[data-renderer='entering'] .ss-durations label:nth-of-type(1) {
+  animation-delay: 400ms;
+  animation-duration: calc(var(--ss-entry-duration) - 400ms);
+}
+.ss-object[data-renderer='entering'] .ss-durations label:nth-of-type(2) {
+  animation-delay: 650ms;
+  animation-duration: calc(var(--ss-entry-duration) - 650ms);
+}
+.ss-object[data-renderer='entering'] .ss-durations label:nth-of-type(3) {
+  animation-delay: 900ms;
+  animation-duration: calc(var(--ss-entry-duration) - 900ms);
+}
+.ss-durations label:focus-within {
+  animation: none;
+  scale: 1;
+}
+.ss-duration-copy {
+  display: inline-block;
+  pointer-events: none;
+}
+.ss-durations label:is(:hover, :focus-within) {
+  border-color: var(--ss-ink);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--ss-ink) 14%, transparent);
+  color: var(--foreground);
+}
+.ss-durations input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.ss-durations small {
+  font-size: 0.65rem;
+}
+.ss-durations label:has(input:checked) {
+  color: var(--ss-ink);
+  border-color: var(--ss-ink);
+  background: color-mix(in srgb, var(--ss-ink) 10%, var(--background));
+}
+.ss-duration-stem {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 1px);
+  width: 1px;
+  height: var(--ss-duration-gap);
+  background: currentColor;
+  opacity: 0.5;
+  transform: translateX(-50%);
+}
+.ss-durations label:has(input:checked) .ss-duration-stem {
+  opacity: 1;
+}
+.ss-durations label:has(input:focus-visible) {
+  outline: 2px solid var(--ss-ink);
+  outline-offset: 3px;
+}
+.ss-bolt-target {
+  position: absolute;
+  z-index: 2;
+  left: 33%;
+  top: 13%;
+  width: 32%;
+  height: 68%;
+  touch-action: pan-y;
+  background: transparent;
+  border: 0;
+  border-radius: 40%;
+}
+.ss-bolt-target:hover {
+  cursor: pointer;
+}
+.ss-bolt-target:active {
+  cursor: pointer;
+}
+.ss-bolt-target[aria-disabled='true'] {
+  cursor: default;
+}
+.ss-charge-anchor {
+  position: absolute;
+  z-index: 3;
+  left: calc(var(--anchor-x, 63%) + 34px);
+  top: var(--anchor-y, 38%);
+  display: flex;
+  flex-direction: column;
+  font-size: 0.875rem;
+  color: var(--ss-secondary);
+  pointer-events: none;
+}
+.ss-charge-anchor::before {
+  content: '';
+  position: absolute;
+  width: 42px;
+  height: 1px;
+  background: var(--ss-line);
+  left: -52px;
+  top: 20px;
+}
+.ss-charge-number {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  letter-spacing: -0.06em;
+  line-height: 1.1;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+.ss-charge-number small {
+  font-size: 0.8rem;
+  margin-left: 0.2rem;
+}
+.ss-bolt-countdown {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
+  white-space: nowrap;
+}
+.ss-timer-reading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+.ss-timer-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--ss-secondary);
+  white-space: nowrap;
+}
+.ss-history {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 308px;
+  text-align: center;
+}
+.ss-history-marks {
   display: flex;
   justify-content: center;
 }
-
-@media (min-width: 40rem) {
-  .ss-bento {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+.ss-history-marks button {
+  width: 44px;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  gap: 0.4rem;
+  color: var(--ss-secondary);
+  font-size: 0.875rem;
+  transition: color 160ms ease-out;
+}
+.ss-history-marks i {
+  position: relative;
+  display: block;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--ss-line);
+  transition: height 160ms ease-out, background-color 160ms ease-out;
+}
+.ss-history-marks button[data-studied='true'] i {
+  background: linear-gradient(to top, var(--ss-ink) 0 65%, var(--ss-line) 65%);
+}
+.ss-history-marks i::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 5px;
+  height: 3px;
+  border-radius: 1px;
+  background: var(--ss-ink);
+  box-shadow: 0 0 4px var(--ss-ink), 0 0 9px var(--ss-ink);
+  opacity: 0;
+}
+.ss-history-marks button:is(:hover, :focus-visible, [aria-expanded='true']) i::after {
+  opacity: 1;
+}
+.ss-history-marks button[aria-expanded='true'] {
+  color: var(--ss-ink);
+}
+.ss-history-marks button[aria-expanded='true'] i {
+  background: var(--ss-ink);
+  animation: ss-terminal-flicker 320ms ease-out;
+}
+.ss-history-marks .ss-terminal-pulse {
+  animation: ss-terminal-flicker 480ms ease-out;
+}
+@keyframes ss-terminal-flicker {
+  0%, 35%, 65% {
+    box-shadow: 0 0 5px var(--ss-ink), 0 0 12px var(--ss-ink);
   }
-
-  .ss-bento__wide {
-    grid-column: span 2;
+  20%, 50%, 100% {
+    box-shadow: 0 0 0 transparent;
   }
 }
-
-@media (min-width: 64rem) {
-  .ss-bento {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+.ss-history p {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  color: var(--ss-secondary);
+  animation: ss-caption-in 140ms ease-out both;
+}
+.ss-reset {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  font-size: 0.65rem;
+  color: var(--ss-secondary);
+}
+.ss-invitation {
+  text-align: center;
+  padding-top: 1rem;
+}
+.ss-invitation > p:first-child {
+  font-size: clamp(1.125rem, 1.5vw, 1.25rem);
+}
+.ss-timer-display {
+  margin-top: 0.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-variant-numeric: tabular-nums;
+}
+.ss-timer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.ss-timer-actions button {
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--ss-line);
+  font-size: 0.8rem;
+}
+.ss-timer-actions button:hover {
+  border-color: var(--foreground);
+}
+.ss-result {
+  min-height: 1.7rem;
+  padding-top: 0.4rem;
+  font-size: 1rem;
+  color: var(--ss-ink);
+}
+.ss-demo-note {
+  color: var(--ss-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0.3rem 0 1.1rem;
+}
+.ss-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: 46px;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--ss-line);
+  font-size: 0.8rem;
+}
+.ss-cta:hover {
+  border-color: var(--foreground);
+  background: color-mix(in oklab, var(--foreground) 4%, var(--background));
+}
+.ss-guest-link {
+  display: block;
+  width: fit-content;
+  margin: 1rem auto 0;
+  padding: 0.7rem;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+.ss-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 4vw, 4rem);
+  border-top: 1px solid var(--border);
+  font-size: 0.7rem;
+  color: var(--ss-secondary);
+}
+.ss-footer nav {
+  display: flex;
+  gap: 1.3rem;
+}
+.ss-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+@keyframes ss-caption-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
   }
-
-  .ss-bento__wide {
-    grid-column: span 2;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
-
-/* Hover-lift — one signal, transform only, and only where a pointer can hover. */
-@media (hover: hover) and (pointer: fine) {
-  .ss-tile {
-    transition: transform var(--dur-short) var(--ease-out);
+@keyframes ss-focus-settle {
+  0% {
+    opacity: 0.45;
+    filter: blur(4px);
+    transform: translateY(7px);
   }
-
-  .ss-tile:hover {
+  62% {
+    opacity: 1;
+    filter: blur(0);
     transform: translateY(-2px);
   }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
 }
-
-/* ---------------------------------------------------------------------------
- * Display headings — long words wrap rather than forcing a horizontal scroll.
- * ------------------------------------------------------------------------- */
-
-.ss-display {
-  overflow-wrap: anywhere;
-  min-width: 0;
-  text-wrap: balance;
+@keyframes ss-charge-reveal {
+  0% {
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  }
+  72% {
+    clip-path: polygon(0 0, 104% 0, 98% 100%, 0 100%);
+  }
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
 }
-
-/* ---------------------------------------------------------------------------
- * Reduced motion — spatial motion collapses to an opacity crossfade.
- * ------------------------------------------------------------------------- */
-
+@keyframes ss-charge-spark {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-35deg);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.15) rotate(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(25deg);
+  }
+}
+@keyframes ss-options-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes ss-ignition-run {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: -100;
+  }
+}
+@keyframes ss-orbit-arrive {
+  from {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes ss-bolt-arrive {
+  0%,
+  25% {
+    transform: translateY(0) scale(1);
+  }
+  33% {
+    transform: translateY(-8px) scale(1.025);
+  }
+  46% {
+    transform: translateY(3px) scale(0.995);
+  }
+  70%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes ss-bolt-idle {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -5px;
+  }
+}
+@keyframes ss-bolt-energize {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  31% {
+    filter:
+      drop-shadow(0 0 3px color-mix(in srgb, var(--brand-lime) 90%, transparent))
+      drop-shadow(0 0 12px color-mix(in srgb, var(--brand-lime) 55%, transparent))
+      drop-shadow(0 0 26px color-mix(in srgb, var(--brand-lime) 22%, transparent));
+  }
+}
+@keyframes ss-duration-dock {
+  from {
+    scale: 0.86;
+  }
+  to {
+    scale: 1;
+  }
+}
+.ss-landing[data-still='true'] *,
+.ss-landing[data-still='true'] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+.ss-landing[data-still='true'] .ss-visual {
+  transform: none;
+}
+@media (max-width: 699px) {
+  .ss-header {
+    gap: 0.25rem;
+    padding: 0.75rem;
+  }
+  .ss-wordmark {
+    font-size: 1rem;
+    gap: 0.35rem;
+  }
+  .ss-wordmark img {
+    width: 24px;
+    height: 24px;
+  }
+  .ss-utilities {
+    gap: 0;
+  }
+  .ss-signin {
+    font-size: 0.75rem;
+    margin-left: 0.15rem;
+  }
+  .ss-signin svg {
+    display: none;
+  }
+  .ss-signin::after {
+    right: 0;
+  }
+  .ss-experience {
+    padding-inline: 0.5rem;
+  }
+  .ss-introduction {
+    padding: 1rem 0.5rem 0;
+  }
+  .ss-introduction p {
+    font-size: 0.75rem;
+  }
+  .ss-object {
+    height: 580px;
+    margin-bottom: 0;
+  }
+  .ss-motion-control {
+    top: 0;
+    right: -4px;
+    width: 40px;
+    height: 40px;
+  }
+  .ss-visual {
+    inset: 50px 0 85px;
+  }
+  .ss-goal-anchor {
+    left: 50%;
+    top: 10px;
+    transform: translateX(-50%);
+    padding: 0;
+    width: 225px;
+  }
+  .ss-goal-anchor::before {
+    left: 50%;
+    top: 54px;
+    width: 1px;
+    height: 25px;
+  }
+  .ss-goal-trigger,
+  .ss-goal-label {
+    margin: auto;
+  }
+  .ss-orbit {
+    top: 75px;
+    height: 375px;
+  }
+  .ss-durations label[data-duration='60'] {
+    --ss-duration-offset: translate(-50%, var(--ss-duration-gap));
+  }
+  .ss-durations label[data-duration='60'] .ss-duration-stem {
+    top: auto;
+    bottom: calc(100% + 1px);
+  }
+  .ss-bolt-target {
+    left: 24%;
+    width: 48%;
+    top: 22%;
+    height: 48%;
+  }
+  .ss-charge-anchor {
+    left: auto;
+    right: 3%;
+    top: 27%;
+    max-width: 90px;
+  }
+  .ss-charge-anchor::before {
+    width: 20px;
+    left: -24px;
+  }
+  .ss-charge-number {
+    font-size: 1.7rem;
+  }
+  .ss-bolt-countdown {
+    font-size: 0.7rem;
+  }
+  .ss-timer-reading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+  .ss-history {
+    width: min(308px, 100%);
+    bottom: 0;
+  }
+  .ss-history-marks button {
+    flex: 1;
+    min-width: 44px;
+  }
+  .ss-footer {
+    flex-wrap: wrap;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
-  .ss-reveal {
-    animation: ss-reveal-reduced 150ms linear forwards;
-    animation-delay: 0ms;
-  }
-
-  @keyframes ss-reveal-reduced {
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  .ss-tile {
-    transition-duration: 150ms;
-  }
-
-  .ss-tile:hover {
+  .ss-object[data-renderer='loading'] .ss-visual {
     transform: none;
+  }
+  .ss-landing *,
+  .ss-landing *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (forced-colors: active) {
+  .ss-history-marks i {
+    background: CanvasText;
+  }
+  .ss-durations label:has(input:checked) {
+    outline: 1px solid Highlight;
   }
 }
