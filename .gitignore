@@ -64,9 +64,5 @@ supabase/.temp/
 # trimmed public/music-bed.mp3 is what the compositions actually read.
 *-raw.mp3
 
-# Local reference research and landing review evidence
-artifacts/design-inspiration/
-artifacts/landing-review/
-artifacts/charge-sculpture/
-artifacts/lottie/
-artifacts/bolt-review/
+# Local evidence
+artifacts
