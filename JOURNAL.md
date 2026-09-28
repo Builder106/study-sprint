@@ -3,6 +3,23 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-28: Stabilize milestone smoke test startup #test
+
+The combined milestone test waits for auth to finish on both page loads, then installs its fake
+clock after the seeded 99% charge appears. This keeps clock control out of app startup.
+
+## 2026-09-28: Make Vite warnings fail builds #decision
+
+The landing page imported GuestStudy statically while the /guest route loaded it lazily. Both
+paths now use dynamic imports. Vite warnings fail production builds, and the chunk-size limit
+stays at 500 kB while Three.js is split by size.
+
+## 2026-09-28: Move license scan to maintained checker #decision
+
+CI installs the app dependencies, then runs the pinned @lizenz/checker from a temporary
+directory. This keeps the scanner's own packages out of the app inventory; 461 of 462 reported
+package rows matched the Deno lockfile in a clean comparison.
+
 ## 2026-09-28: Corrected accessibility audit follow-up #fix
 
 CI showed that Axe stores canvas references on individual contrast checks,
