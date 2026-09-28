@@ -1,0 +1,173 @@
+.ss-easter-egg {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: var(--ss-ink);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.ss-easter-egg__ring-spark,
+.ss-easter-egg__bolt-strike,
+.ss-easter-egg__branches path {
+  filter: drop-shadow(0 0 3px var(--ss-ink)) drop-shadow(0 0 8px color-mix(in srgb, var(--ss-ink) 78%, transparent));
+}
+
+.ss-easter-egg__ring-spark {
+  stroke-width: 3;
+  stroke-dasharray: 17 83;
+  stroke-dashoffset: 100;
+}
+
+.ss-easter-egg__bolt-strike {
+  stroke-width: 4;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+.ss-easter-egg__branches {
+  stroke-width: 2.5;
+}
+
+.ss-easter-egg__branches path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+.ss-easter-egg[data-easter-egg='week-circuit'] .ss-easter-egg__ring-spark {
+  animation: ss-easter-circuit 1.35s cubic-bezier(0.18, 0.72, 0.2, 1) both;
+}
+
+.ss-easter-egg[data-easter-egg='full-charge'] .ss-easter-egg__ring-spark,
+.ss-easter-egg[data-easter-egg='week-and-charge'] .ss-easter-egg__ring-spark {
+  animation: ss-easter-charge-lap 850ms ease-out both;
+}
+
+.ss-easter-egg[data-easter-egg='full-charge'] .ss-easter-egg__bolt-strike,
+.ss-easter-egg[data-easter-egg='week-and-charge'] .ss-easter-egg__bolt-strike {
+  animation: ss-easter-strike 520ms ease-out 760ms both;
+}
+
+.ss-easter-egg[data-easter-egg='duration-sequence'] .ss-easter-egg__ring-spark {
+  stroke-width: 4;
+  stroke-dasharray: 28 72;
+  animation: ss-easter-sequence 1.05s cubic-bezier(0.25, 0.75, 0.25, 1) both;
+}
+
+.ss-easter-egg[data-easter-egg='overcharge'] .ss-easter-egg__branches path {
+  animation: ss-easter-branch 650ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+.ss-easter-egg[data-easter-egg='overcharge'] .ss-easter-egg__branches path:nth-child(2n) {
+  animation-delay: 70ms;
+}
+
+.ss-easter-egg[data-easter-egg='overcharge'] .ss-easter-egg__branches path:nth-child(3n) {
+  animation-delay: 130ms;
+}
+
+.ss-landing[data-still='true'] .ss-easter-egg {
+  display: none;
+}
+
+.ss-egg-preview {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 20;
+  width: min(18rem, calc(100vw - 2rem));
+  color: var(--foreground);
+  border: 1px solid var(--ss-line);
+  background: var(--background);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.ss-egg-preview summary {
+  min-height: 2.75rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.ss-egg-preview__content {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0 0.75rem 0.75rem;
+}
+
+.ss-egg-preview__content p {
+  margin: 0 0 0.25rem;
+  color: var(--ss-secondary);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.ss-egg-preview__content button {
+  min-height: 2.25rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--ss-line);
+  background: var(--background);
+  color: var(--foreground);
+  text-align: left;
+  font-size: 0.8rem;
+}
+
+.ss-egg-preview__content button:hover:not(:disabled) {
+  border-color: var(--ss-ink);
+}
+
+.ss-egg-preview__content .ss-egg-preview__play-all {
+  margin-top: 0.2rem;
+  background: var(--ss-ink);
+  color: var(--background);
+  font-weight: 600;
+}
+
+.ss-egg-preview__motion-note {
+  padding-top: 0.35rem;
+}
+
+@keyframes ss-easter-circuit {
+  0% { opacity: 0; stroke-dashoffset: 100; }
+  12% { opacity: 1; }
+  78% { opacity: 1; stroke-dashoffset: 0; }
+  100% { opacity: 0; stroke-dashoffset: -17; }
+}
+
+@keyframes ss-easter-charge-lap {
+  0% { opacity: 0; stroke-dashoffset: 100; }
+  14% { opacity: 1; }
+  78% { opacity: 1; stroke-dashoffset: 0; }
+  100% { opacity: 0; stroke-dashoffset: -17; }
+}
+
+@keyframes ss-easter-strike {
+  0% { opacity: 0; stroke-dashoffset: 100; }
+  14% { opacity: 1; }
+  74% { opacity: 1; stroke-dashoffset: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes ss-easter-sequence {
+  0% { opacity: 0; stroke-dashoffset: 100; }
+  12% { opacity: 1; }
+  82% { opacity: 1; stroke-dashoffset: 0; }
+  100% { opacity: 0; stroke-dashoffset: -28; }
+}
+
+@keyframes ss-easter-branch {
+  0% { opacity: 0; stroke-dashoffset: 100; }
+  18% { opacity: 1; }
+  60% { opacity: 1; stroke-dashoffset: 0; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-easter-egg { display: none; }
+}

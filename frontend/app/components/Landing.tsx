@@ -8,6 +8,10 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { formatClock } from '@/lib/format';
 import { GUEST_STUDY_KEY, readGuestStudy } from '@/lib/guestStudy';
+import { LandingEasterEggTriggers } from '@/lib/landingEasterEggs';
+import type { LandingEasterEggEffect, LandingEasterEggSnapshot } from '@/lib/landingEasterEggs';
+import { LandingEasterEggs } from './LandingEasterEggs';
+import { LandingEasterEggPreview } from './LandingEasterEggPreview';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { LandingStudy } from './LandingStudy';
 import { ThemeMenu } from './shared/ThemeMenu';
@@ -79,7 +83,7 @@ function weekDates(): string[] {
   });
 }
 
-function guestProgressSnapshot(sessions: ReturnType<typeof readGuestStudy>['sessions']) {
+function guestProgressSnapshot(sessions: ReturnType<typeof readGuestStudy>['sessions']): LandingEasterEggSnapshot {
   const dates = weekDates();
   const weekMinutes = dates.map((date) =>
     sessions
@@ -121,6 +125,9 @@ export function Landing() {
   const [clickArcs, setClickArcs] = useState<string[]>([]);
   const [clickPulse, setClickPulse] = useState(0);
   const lastClickPulse = useRef(0);
+  const [eggQueue, setEggQueue] = useState<LandingEasterEggEffect[]>([]);
+  const [activeEgg, setActiveEgg] = useState<LandingEasterEggEffect | null>(null);
+  const eggTriggers = useRef(new LandingEasterEggTriggers());
   const [awake, setAwake] = useState(false);
   const posterReady = resolvedTheme === 'dark' ? darkPosterReady : lightPosterReady;
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -192,7 +199,16 @@ export function Landing() {
 
   const selectedGoal = goals.find((item) => item.id === goalId);
 
-  function refreshGuest(): void {
+  function queueEggEffects(effects: LandingEasterEggEffect[]) {
+    if (still || effects.length === 0) return;
+    setEggQueue((queue) => [...queue, ...effects]);
+  }
+
+  function updateEggProgress(snapshot: LandingEasterEggSnapshot, baseline: boolean) {
+    if (baseline) eggTriggers.current.initialize(snapshot);
+  }
+
+  function refreshGuest(baseline = true): LandingEasterEggSnapshot | null {
     try {
       const data = readGuestStudy();
       const total = data.sessions.reduce((sum, session) => sum + session.minutes, 0);
@@ -206,18 +222,21 @@ export function Landing() {
       setMinutes(total);
       setCharge(snapshot.charge);
       setWeek([...snapshot.weekMinutes]);
+      updateEggProgress(snapshot, baseline);
+      return snapshot;
     } catch {
       setResult(
         'Saved guest data could not be read. Open your guest study area below to clear it.',
       );
+      return null;
     }
   }
 
-  async function refreshAccount(): Promise<void> {
+  async function refreshAccount(baseline = true): Promise<LandingEasterEggSnapshot | null> {
     const requestedUserId = user?.id ?? null;
     try {
       const { goals: allGoals } = await api.listGoals();
-      if (currentUserId.current !== requestedUserId) return;
+      if (currentUserId.current !== requestedUserId) return null;
       const active = allGoals.filter((goal) => goal.status === 'Active');
       setGoals(active.map(({ id, title }) => ({ id, title })));
       setGoalId((current) =>
@@ -228,16 +247,22 @@ export function Landing() {
     }
     try {
       const summary = await api.analyticsSummary();
-      if (currentUserId.current !== requestedUserId) return;
+      if (currentUserId.current !== requestedUserId) return null;
       setCharge(summary.totals.current_charge_pct);
       setMinutes(summary.totals.minutes);
       const dates = weekDates();
-      const weekMinutes = dates.map((date) =>
-        summary.daily.find((day) => day.date === date)?.minutes ?? 0
-      );
-      setWeek(weekMinutes);
+      const snapshot = {
+        charge: summary.totals.current_charge_pct,
+        weekMinutes: dates.map((date) =>
+          summary.daily.find((day) => day.date === date)?.minutes ?? 0
+        ),
+      } satisfies LandingEasterEggSnapshot;
+      setWeek([...snapshot.weekMinutes]);
+      updateEggProgress(snapshot, baseline);
+      return snapshot;
     } catch {
       setResult('Could not load account charge and history. Check your connection and try again.');
+      return null;
     }
   }
 
@@ -266,6 +291,7 @@ export function Landing() {
       setTerminalPulse({ day: -1, sequence: 0 });
       setTimerPhase('idle');
       elapsedMs.current = 0;
+      updateEggProgress({ weekMinutes: Array(7).fill(0), charge: 0 }, true);
       setResult('Guest study data cleared.');
     };
     window.addEventListener('studysprint:guest-study', onChange);
@@ -431,6 +457,25 @@ export function Landing() {
   }, []);
 
   useEffect(() => {
+    if (still) {
+      if (eggQueue.length > 0) setEggQueue([]);
+      if (activeEgg) setActiveEgg(null);
+      return;
+    }
+    if (!awake && activeEgg) {
+      if (eggQueue.length > 0) setEggQueue([]);
+      setActiveEgg(null);
+      return;
+    }
+    if (
+      !awake || activeEgg || eggQueue.length === 0 ||
+      !['ready', 'fallback'].includes(rendererState)
+    ) return;
+    setActiveEgg(eggQueue[0]);
+    setEggQueue((queue) => queue.slice(1));
+  }, [activeEgg, awake, eggQueue, rendererState, still]);
+
+  useEffect(() => {
     if (rendererState !== 'entering' || still) {
       setArcs([]);
       return;
@@ -530,7 +575,8 @@ export function Landing() {
           sessionGoalId.current = goal.id;
         }
         await api.createSession(saveGoalId, { duration_minutes: studied });
-        await refreshAccount();
+        const snapshot = await refreshAccount(false);
+        if (snapshot) queueEggEffects(eggTriggers.current.successfulSave(snapshot));
       } else {
         const data = readGuestStudy();
         let saveGoalId = sessionGoalId.current;
@@ -552,7 +598,8 @@ export function Landing() {
             }, ...data.sessions],
           }),
         );
-        refreshGuest();
+        const snapshot = refreshGuest(false);
+        if (snapshot) queueEggEffects(eggTriggers.current.successfulSave(snapshot));
         window.dispatchEvent(new Event('studysprint:guest-study'));
       }
       setResult(
@@ -586,6 +633,7 @@ export function Landing() {
 
   function activate() {
     if (authLoading || timerPhase === 'saving') return;
+    queueEggEffects(eggTriggers.current.activate());
     setClickPulse((pulse) => pulse + 1);
     setResult('');
     if (timerPhase === 'running') {
@@ -671,6 +719,12 @@ export function Landing() {
           data-poster-ready={posterReady}
           data-discharging={idleArcs.length > 0 || clickArcs.length > 0}
         >
+          {activeEgg && !still && (
+            <LandingEasterEggs
+              effect={activeEgg}
+              onComplete={() => setActiveEgg(null)}
+            />
+          )}
           <div className='ss-visual' aria-hidden='true'>
             <img
               className='ss-sculpture ss-sculpture-light'
@@ -857,6 +911,13 @@ export function Landing() {
                     onChange={(event) => {
                       setDuration(value);
                       setResult('');
+                      queueEggEffects(
+                        eggTriggers.current.selectDuration(
+                          value,
+                          event.nativeEvent.timeStamp,
+                          `${value}:${event.nativeEvent.timeStamp}`,
+                        ),
+                      );
                     }}
                   />
                   <span className='ss-duration-copy'>
@@ -1002,6 +1063,7 @@ export function Landing() {
         </div>
         <LandingStudy />
       </main>
+      <LandingEasterEggPreview still={still} onPlay={queueEggEffects} />
       <footer className='ss-footer'>
         <p>Go solo, or find company in a study room.</p>
         <nav aria-label='Legal'>

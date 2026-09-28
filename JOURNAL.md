@@ -3,6 +3,14 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-28: Added four landing-page Easter eggs #decision
+
+The landing now rewards a completed study week, full charge, choosing 30, then 60, then 90 minutes, and the tenth bolt activation. Effects are decorative, procedural, serialized, and consumed when motion is paused or reduced. Timer behavior and saved progress stay unchanged.
+
+## 2026-09-28: Added a safe Easter egg preview #decision
+
+A collapsed Egg preview panel is available on local development and staging when the URL includes `?easter-eggs=1`. Its buttons enqueue visuals directly, without changing timer state, browser storage, or Supabase data. Playback is disabled when motion is paused or reduced. Vercel's preview flag is scoped to the staging branch and unset in production.
+
 ## 2026-09-27: Synchronized the landing entrance #decision
 
 The bolt, headline, orbit, duration markers, bevel trace, and procedural arcs now share a two-second

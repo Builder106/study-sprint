@@ -23,6 +23,50 @@ interface FixtureGoal {
 
 type RouteHandler = (route: Route) => Promise<void>;
 
+type EasterEgg = 'week-circuit' | 'full-charge' | 'duration-sequence' | 'overcharge' |
+  'week-and-charge';
+
+function easterEgg(page: Page, name: EasterEgg) {
+  return page.locator(`.ss-easter-egg[data-easter-egg="${name}"]`);
+}
+
+async function seedGuestStudy(
+  page: Page,
+  options: { totalMinutes: number; currentWeekDays?: number[] },
+): Promise<void> {
+  await page.evaluate(({ totalMinutes, currentWeekDays }) => {
+    const goalId = 'easter-egg-focus-goal';
+    const now = new Date();
+    const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
+    monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+    const sessions = (currentWeekDays ?? []).map((day, index) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + day);
+      return {
+        id: `easter-week-${index}`,
+        goalId,
+        minutes: 1,
+        endedAt: date.toISOString(),
+      };
+    });
+    const remainingMinutes = totalMinutes - sessions.reduce((sum, item) => sum + item.minutes, 0);
+    if (remainingMinutes > 0) {
+      const oldDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 8, 12);
+      sessions.push({
+        id: 'easter-charge-history',
+        goalId,
+        minutes: remainingMinutes,
+        endedAt: oldDate.toISOString(),
+      });
+    }
+    localStorage.setItem('studysprint:guest-study:v1', JSON.stringify({
+      goals: [{ id: goalId, title: 'Focus session' }],
+      activeGoalId: goalId,
+      sessions,
+    }));
+  }, options);
+}
+
 function asObject(value: unknown): JsonObject {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return {};
   return value as JsonObject;
@@ -356,6 +400,293 @@ test.describe('PR smoke suite', () => {
     await expect(page.locator('.ss-charge-number')).toHaveText('5%');
     const saved = await page.evaluate(() => localStorage.getItem('studysprint:guest-study:v1'));
     expect(JSON.parse(saved ?? '{}').sessions).toHaveLength(1);
+  });
+
+  test('runs the duration sequence egg for 30, 60, then 90 minutes', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready', {
+      timeout: LANDING_RENDERER_READY_TIMEOUT,
+    });
+
+    await page.getByRole('radio', { name: '60 min', exact: true }).check();
+    await page.getByRole('radio', { name: '30 min', exact: true }).check();
+    await page.getByRole('radio', { name: '60 min', exact: true }).check();
+    await page.getByRole('radio', { name: '90 min', exact: true }).check();
+
+    await expect(easterEgg(page, 'duration-sequence')).toBeVisible();
+    await expect(page.getByRole('radio', { name: '90 min', exact: true })).toBeChecked();
+    await expect(page.getByRole('button', { name: 'Start a 90 minute focus timer' })).toBeVisible();
+  });
+
+  test('shows the egg preview only after local opt-in', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByTestId('egg-preview-panel')).toHaveCount(0);
+
+    await page.goto('/?easter-eggs=1');
+    const panel = page.getByTestId('egg-preview-panel');
+    await expect(panel).toBeVisible();
+    await expect(panel.getByRole('button', { name: 'Play all' })).toBeHidden();
+    await panel.locator('summary').click();
+    await expect(panel.getByRole('button', { name: 'Play all' })).toBeVisible();
+  });
+
+  test('preview buttons play their matching effects without changing guest state', async ({ page }) => {
+    const writes: string[] = [];
+    page.on('request', (request) => {
+      if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) writes.push(request.url());
+    });
+    await page.goto('/?easter-eggs=1');
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready', {
+      timeout: LANDING_RENDERER_READY_TIMEOUT,
+    });
+    const panel = page.getByTestId('egg-preview-panel');
+    await panel.locator('summary').click();
+    const before = await page.evaluate(() =>
+      JSON.stringify(Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)))
+    );
+
+    for (const name of [
+      'week-circuit',
+      'full-charge',
+      'duration-sequence',
+      'overcharge',
+      'week-and-charge',
+    ] as const) {
+      await panel.getByTestId(`preview-${name}`).click();
+      await expect(easterEgg(page, name)).toBeVisible();
+      await expect(easterEgg(page, name)).toHaveCount(0, { timeout: 2_000 });
+    }
+
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-phase', 'idle');
+    expect(await page.evaluate(() =>
+      JSON.stringify(Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)))
+    )).toBe(before);
+    expect(writes).toEqual([]);
+  });
+
+  test('Play all serializes the four eggs and combined flourish without saving data', async ({ page }) => {
+    const writes: string[] = [];
+    page.on('request', (request) => {
+      if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) writes.push(request.url());
+    });
+    await page.goto('/?easter-eggs=1');
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready', {
+      timeout: LANDING_RENDERER_READY_TIMEOUT,
+    });
+    const panel = page.getByTestId('egg-preview-panel');
+    await panel.locator('summary').click();
+    const before = await page.evaluate(() =>
+      JSON.stringify(Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)))
+    );
+    await panel.getByTestId('preview-play-all').click();
+
+    for (const name of [
+      'week-circuit',
+      'full-charge',
+      'duration-sequence',
+      'overcharge',
+      'week-and-charge',
+    ] as const) {
+      await expect(easterEgg(page, name)).toHaveAttribute('data-easter-egg', name, {
+        timeout: 3_000,
+      });
+    }
+    await expect(page.locator('.ss-easter-egg')).toHaveCount(0, { timeout: 2_000 });
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-phase', 'idle');
+    expect(await page.evaluate(() =>
+      JSON.stringify(Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)))
+    )).toBe(before);
+    expect(writes).toEqual([]);
+  });
+
+  test('preview playback leaves signed-in timer and Supabase data unchanged', async ({ page, localBackend }) => {
+    await page.goto('/register');
+    await page.getByPlaceholder('name@example.com').fill('egg-preview@example.com');
+    await page.locator('input[type="password"]').fill('Sprint-42-go');
+    await page.getByRole('button', { name: /Create account/ }).click();
+    await expect(page).toHaveURL(/\/dashboard$/);
+
+    const writes: string[] = [];
+    page.on('request', (request) => {
+      if (
+        ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method()) &&
+        new URL(request.url()).pathname.startsWith('/rest/v1/') &&
+        new URL(request.url()).pathname !== '/rest/v1/rpc/analytics_summary'
+      ) writes.push(request.url());
+    });
+    await page.goto('/?easter-eggs=1');
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready', {
+      timeout: LANDING_RENDERER_READY_TIMEOUT,
+    });
+    const panel = page.getByTestId('egg-preview-panel');
+    await panel.locator('summary').click();
+    const before = await page.evaluate(() =>
+      JSON.stringify(Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)))
+    );
+    await panel.getByTestId('preview-play-all').click();
+
+    for (const name of [
+      'week-circuit',
+      'full-charge',
+      'duration-sequence',
+      'overcharge',
+      'week-and-charge',
+    ] as const) {
+      await expect(easterEgg(page, name)).toHaveAttribute('data-easter-egg', name, {
+        timeout: 3_000,
+      });
+    }
+    await expect(page.locator('.ss-easter-egg')).toHaveCount(0, { timeout: 2_000 });
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-phase', 'idle');
+    expect(await page.evaluate(() =>
+      JSON.stringify(Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)))
+    )).toBe(before);
+    expect(writes).toEqual([]);
+    expect(localBackend.goalCount).toBe(0);
+    expect(localBackend.sessionCount).toBe(0);
+  });
+
+  test('does not play previews while motion is paused or reduced', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/?easter-eggs=1');
+    const panel = page.getByTestId('egg-preview-panel');
+    await panel.locator('summary').click();
+    await page.getByRole('button', { name: 'Pause animations' }).click();
+    await expect(panel.getByTestId('preview-play-all')).toBeDisabled();
+    await expect(panel.getByRole('status')).toContainText('Resume animations');
+    await expect(page.locator('.ss-easter-egg')).toHaveCount(0);
+
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.reload();
+    const reducedPanel = page.getByTestId('egg-preview-panel');
+    await reducedPanel.locator('summary').click();
+    await expect(reducedPanel.getByTestId('preview-play-all')).toBeDisabled();
+    await expect(reducedPanel.getByRole('status')).toContainText('reduced motion');
+    await expect(page.locator('.ss-easter-egg')).toHaveCount(0);
+  });
+
+  test('consumes an egg trigger without replay when reduced motion is enabled', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+
+    await page.getByRole('radio', { name: '60 min', exact: true }).check();
+    await page.getByRole('radio', { name: '30 min', exact: true }).check();
+    await page.getByRole('radio', { name: '60 min', exact: true }).check();
+    await page.getByRole('radio', { name: '90 min', exact: true }).check();
+    await expect(easterEgg(page, 'duration-sequence')).toHaveCount(0);
+
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await expect(easterEgg(page, 'duration-sequence')).toHaveCount(0);
+  });
+
+  test('consumes an egg trigger without replay when visual motion is paused', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Pause animations' }).click();
+
+    await page.getByRole('radio', { name: '60 min', exact: true }).check();
+    await page.getByRole('radio', { name: '30 min', exact: true }).check();
+    await page.getByRole('radio', { name: '60 min', exact: true }).check();
+    await page.getByRole('radio', { name: '90 min', exact: true }).check();
+    await expect(easterEgg(page, 'duration-sequence')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Resume animations' }).click();
+    await expect(easterEgg(page, 'duration-sequence')).toHaveCount(0);
+  });
+
+  test('plays overcharge on the tenth bolt activation without changing timer actions', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready', {
+      timeout: LANDING_RENDERER_READY_TIMEOUT,
+    });
+
+    for (let activation = 1; activation <= 10; activation++) {
+      await page.getByRole('button', {
+        name: activation === 1
+          ? 'Start a 30 minute focus timer'
+          : activation % 2 === 0 ? 'Pause focus timer' : 'Resume focus timer',
+      }).click();
+    }
+
+    await expect(easterEgg(page, 'overcharge')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Resume focus timer' })).toBeVisible();
+    await expect(page.locator('.ss-charge-number')).toHaveText('0%');
+  });
+
+  test('plays queued effects one at a time in trigger order', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready', {
+      timeout: LANDING_RENDERER_READY_TIMEOUT,
+    });
+
+    await page.getByRole('radio', { name: '60 min', exact: true }).check();
+    await page.getByRole('radio', { name: '30 min', exact: true }).check();
+    await page.getByRole('radio', { name: '60 min', exact: true }).check();
+    await page.getByRole('radio', { name: '90 min', exact: true }).check();
+    const sequenceEffect = easterEgg(page, 'duration-sequence');
+    const overchargeEffect = easterEgg(page, 'overcharge');
+    await expect(sequenceEffect).toBeVisible();
+    await page.locator('[data-testid="landing-bolt"]').evaluate((button: HTMLButtonElement) => {
+      for (let activation = 0; activation < 10; activation++) button.click();
+    });
+    await expect(overchargeEffect).toHaveCount(0);
+    await expect(overchargeEffect).toBeVisible({ timeout: 5000 });
+    await expect(sequenceEffect).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Pause focus timer' })).toBeVisible();
+  });
+
+  test('plays the week circuit only after a guest save fills the last day', async ({ page }) => {
+    await page.clock.install();
+    await page.goto('/');
+    const today = await page.evaluate(() => (new Date().getDay() + 6) % 7);
+    const otherDays = Array.from({ length: 7 }, (_, index) => index).filter((day) => day !== today);
+    await seedGuestStudy(page, { totalMinutes: 6, currentWeekDays: otherDays });
+    await page.reload();
+    await expect(page.locator('.ss-charge-number')).toHaveText('1%');
+    await expect(easterEgg(page, 'week-circuit')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
+    await page.clock.fastForward(60_000);
+    await page.getByRole('button', { name: 'Finish and save' }).click();
+    await expect(page.locator('.ss-result')).toHaveText('1 minute saved on this device.');
+    await expect(easterEgg(page, 'week-circuit')).toBeVisible();
+    await expect(page.locator('.ss-charge-number')).toHaveText('1%');
+  });
+
+  test('plays full charge on a successful guest save and not on preloaded progress', async ({ page }) => {
+    await page.clock.install();
+    await page.goto('/');
+    await seedGuestStudy(page, { totalMinutes: 594, currentWeekDays: [0, 1, 2, 3, 4, 5, 6] });
+    await page.reload();
+    await expect(page.locator('.ss-charge-number')).toHaveText('99%');
+    await expect(easterEgg(page, 'full-charge')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
+    await page.clock.fastForward(6 * 60_000);
+    await page.getByRole('button', { name: 'Finish and save' }).click();
+    await expect(page.locator('.ss-result')).toHaveText('6 minutes saved on this device.');
+    await expect(page.locator('.ss-charge-number')).toHaveText('100%');
+    await expect(easterEgg(page, 'full-charge')).toBeVisible();
+  });
+
+  test('combines the final day and full-charge milestones from one guest save', async ({ page }) => {
+    await page.clock.install();
+    await page.goto('/');
+    const today = await page.evaluate(() => (new Date().getDay() + 6) % 7);
+    const otherDays = Array.from({ length: 7 }, (_, index) => index).filter((day) => day !== today);
+    await seedGuestStudy(page, { totalMinutes: 594, currentWeekDays: otherDays });
+    await page.reload();
+    await expect(page.locator('.ss-charge-number')).toHaveText('99%');
+    await expect(easterEgg(page, 'week-and-charge')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
+    await page.clock.fastForward(6 * 60_000);
+    await page.getByRole('button', { name: 'Finish and save' }).click();
+    await expect(page.locator('.ss-result')).toHaveText('6 minutes saved on this device.');
+    await expect(page.locator('.ss-charge-number')).toHaveText('100%');
+    await expect(easterEgg(page, 'week-and-charge')).toBeVisible();
+    await expect(easterEgg(page, 'week-circuit')).toHaveCount(0);
+    await expect(easterEgg(page, 'full-charge')).toHaveCount(0);
   });
 
   test('does not credit an immediate tap as study time', async ({ page }) => {
