@@ -7,7 +7,12 @@ type Theme = 'light' | 'dark';
 type AxeResultKind = 'violations' | 'incomplete';
 type AuditTarget = { name: string; path: string; state?: string; smoke?: boolean };
 type AxeCheck = { data?: { bgColor?: unknown; fgColor?: unknown; messageKey?: unknown } | null };
-type AxeNode = { target: unknown; any?: AxeCheck[]; all?: AxeCheck[] };
+type AxeNode = {
+  target: unknown;
+  any?: AxeCheck[];
+  all?: AxeCheck[];
+  relatedNodes?: { target?: string[]; html?: string }[];
+};
 type AxeResult = { id: string; help: string; nodes: AxeNode[] };
 
 const VIEWPORTS = [
@@ -52,6 +57,19 @@ async function applyDocumentedExceptions(
       const targetSelector = String(node.target);
       // Exception: Three.js / WebGL charge sculpture on landing page
       if (target.name === 'landing' && (targetSelector.includes('canvas') || targetSelector.includes('.charge-sculpture'))) {
+        continue;
+      }
+      // Axe cannot determine contrast for the DOM charge readout layered over its canvas.
+      const canvasRelated = node.relatedNodes?.some((related) =>
+        related.target?.includes('canvas') || related.html?.includes('<canvas')
+      );
+      const unresolvedCanvasContrast = node.any?.some(({ data }) =>
+        data?.messageKey === 'imgNode' || data?.messageKey === 'shortTextContent'
+      );
+      if (
+        target.name === 'landing' && kind === 'incomplete' && canvasRelated &&
+        unresolvedCanvasContrast
+      ) {
         continue;
       }
       // Exception: Ambient noise audio player pill
