@@ -3,6 +3,12 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-28: Corrected accessibility audit follow-up #fix
+
+CI showed that Axe stores canvas references on individual contrast checks,
+not their parent nodes. The audit reads those references there, and legal
+pages use explicit dark text colors Axe can parse.
+
 ## 2026-09-28: Stabilized transient landing egg smoke checks #test
 
 Milestone smoke checks wait for the renderer after reloading seeded browser data,
