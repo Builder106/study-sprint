@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { GuestStudy } from './GuestStudy';
 import { Spinner } from './shared/Spinner';
+
+const GuestStudy = lazy(() =>
+  import('./GuestStudy').then(({ GuestStudy }) => ({ default: GuestStudy }))
+);
 
 function AccountGoals() {
   const [title, setTitle] = useState('');
@@ -76,5 +79,11 @@ function AccountGoals() {
 export function LandingStudy() {
   const { user, loading } = useAuth();
   if (loading) return <Spinner label='Loading study options' size={20} />;
-  return user ? <AccountGoals /> : <GuestStudy embedded />;
+  return user
+    ? <AccountGoals />
+    : (
+      <Suspense fallback={<Spinner label='Loading study options' size={20} />}>
+        <GuestStudy embedded />
+      </Suspense>
+    );
 }

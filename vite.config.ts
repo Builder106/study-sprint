@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { createLogger, defineConfig } from 'vite';
 import path from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
@@ -6,7 +6,19 @@ import react from '@vitejs/plugin-react';
 // import.meta.dirname is ES2024 and works in both Deno and Node 20+.
 const root = import.meta.dirname ?? new URL('.', import.meta.url).pathname;
 
-export default defineConfig({
+function createBuildLogger() {
+  const logger = createLogger();
+  const warn = logger.warn.bind(logger);
+  logger.warn = (message, options) => {
+    warn(message, options);
+    throw new Error(`Build warning treated as an error: ${message}`);
+  };
+  logger.warnOnce = logger.warn;
+  return logger;
+}
+
+export default defineConfig(({ command }) => ({
+  customLogger: command === 'build' ? createBuildLogger() : undefined,
   plugins: [
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them
@@ -26,4 +38,20 @@ export default defineConfig({
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
-});
+  build: {
+    chunkSizeWarningLimit: 500,
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [{
+            name: 'three',
+            test: /(?:^|[\\/])three(?:@[^\\/]+)?[\\/]/,
+            minSize: 100 * 1024,
+            maxSize: 400 * 1024,
+            priority: 10,
+          }],
+        },
+      },
+    },
+  },
+}));

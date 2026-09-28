@@ -65,14 +65,14 @@ jobs:
         run: deno task check
 
   build:
-    name: Build & Bundle Budget
+    name: Build & Zero-warning Bundle Budget
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - name: Build
+      - name: Build with warnings treated as errors
         # Vite inlines VITE_* values at build time. CI builds with placeholders
         # so we can verify "is this buildable?" without exposing real keys to
         # PR forks. The deployed bundle is built locally with real .env values
