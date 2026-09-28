@@ -32,7 +32,8 @@
     "supabase:link": "deno run -A npm:supabase link",
     "supabase:db:push": "deno run -A npm:supabase db push",
     "supabase:functions:deploy": "deno run -A npm:supabase functions deploy syllabus-parse google-calendar",
-    "supabase:functions:serve": "deno run -A npm:supabase functions serve"
+    "supabase:functions:serve": "deno run -A npm:supabase functions serve",
+    "test:accessibility": "node ./node_modules/.bin/playwright test --config=playwright.accessibility.config.ts"
   },
   "imports": {
     "three": "npm:three@0.186.1",
@@ -111,7 +112,8 @@
     "tailwindcss": "npm:tailwindcss@4.3.3",
     "typescript": "npm:typescript@~7.0.2",
     "vite": "npm:vite@8.3.0",
-    "supabase": "npm:supabase@^2.117.0"
+    "supabase": "npm:supabase@^2.117.0",
+    "@axe-core/playwright": "npm:@axe-core/playwright@^4.13.0"
   },
   "compilerOptions": {
     "jsx": "react-jsx",
