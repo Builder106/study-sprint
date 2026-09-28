@@ -63,7 +63,7 @@ export function Register() {
         <div className='w-full max-w-sm'>
           <Link
             to='/'
-            className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] mb-12 transition-colors group'
+            className='inline-flex items-center gap-2 text-xs font-bold text-zinc-700 uppercase tracking-widest hover:text-[var(--brand-lime-ink)] dark:text-zinc-300 dark:hover:text-[#ccff00] mb-12 transition-colors group'
           >
             <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
             Back
@@ -77,7 +77,7 @@ export function Register() {
             <GoogleSignInButton label='Sign up with Google' onError={setError} />
             <div className='flex items-center gap-4 mt-8'>
               <div className='flex-1 h-px bg-zinc-200 dark:bg-white/10' />
-              <span className='text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600'>
+              <span className='text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300'>
                 or with email
               </span>
               <div className='flex-1 h-px bg-zinc-200 dark:bg-white/10' />
@@ -86,7 +86,7 @@ export function Register() {
 
           <form className='flex flex-col gap-8' onSubmit={onSubmit} noValidate>
             <div className='space-y-3'>
-              <label className='text-xs uppercase tracking-widest text-zinc-500 font-medium'>
+              <label className='text-xs uppercase tracking-widest text-zinc-700 dark:text-zinc-300 font-medium'>
                 Email address
               </label>
               <input
@@ -101,9 +101,9 @@ export function Register() {
             </div>
 
             <div className='space-y-3'>
-              <label className='text-xs uppercase tracking-widest text-zinc-500 font-medium'>
+              <label className='text-xs uppercase tracking-widest text-zinc-700 dark:text-zinc-300 font-medium'>
                 Password{' '}
-                <span className='text-zinc-400 dark:text-zinc-700'>
+                <span className='text-zinc-700 dark:text-zinc-300'>
                   (min. {PASSWORD_MIN_LENGTH} characters)
                 </span>
               </label>
@@ -140,7 +140,7 @@ export function Register() {
             <div className='text-center'>
               <Link
                 to='/'
-                className='text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors'
+                className='text-sm text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100 transition-colors'
               >
                 Already have an account? Sign in
               </Link>

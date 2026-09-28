@@ -59,7 +59,7 @@ export function Login() {
           <GoogleSignInButton label='Sign in with Google' onError={setError} />
           <div className='mt-8 flex items-center gap-4'>
             <div className='h-px flex-1 bg-zinc-200 dark:bg-white/10' />
-            <span className='text-[10px] font-bold tracking-widest text-zinc-400 uppercase dark:text-zinc-600'>
+            <span className='text-[10px] font-bold tracking-widest text-zinc-700 uppercase dark:text-zinc-300'>
               or with email
             </span>
             <div className='h-px flex-1 bg-zinc-200 dark:bg-white/10' />
@@ -70,7 +70,7 @@ export function Login() {
           <div className='space-y-3'>
             <label
               htmlFor='login-email'
-              className='block text-xs font-medium tracking-widest text-zinc-500 uppercase'
+              className='block text-xs font-medium tracking-widest text-zinc-700 uppercase dark:text-zinc-300'
             >
               Email address
             </label>
@@ -89,7 +89,7 @@ export function Login() {
           <div className='space-y-3'>
             <label
               htmlFor='login-password'
-              className='block text-xs font-medium tracking-widest text-zinc-500 uppercase'
+              className='block text-xs font-medium tracking-widest text-zinc-700 uppercase dark:text-zinc-300'
             >
               Password
             </label>
@@ -132,7 +132,7 @@ export function Login() {
           <div className='text-center'>
             <Link
               to='/register'
-              className='text-sm text-zinc-500 transition-colors hover:text-zinc-700 dark:hover:text-zinc-300'
+              className='text-sm text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100'
             >
               Create an account
             </Link>

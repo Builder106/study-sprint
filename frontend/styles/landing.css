@@ -150,7 +150,7 @@ html:has(.ss-landing) {
   content: attr(data-text);
   position: absolute;
   inset: 0;
-  color: var(--brand-lime);
+  color: var(--ss-ink);
   clip-path: inset(0 100% 0 0);
   pointer-events: none;
 }
@@ -786,8 +786,8 @@ html:has(.ss-landing) {
 }
 @keyframes ss-focus-settle {
   0% {
-    opacity: 0.45;
-    filter: blur(4px);
+    opacity: 1;
+    filter: none;
     transform: translateY(7px);
   }
   62% {
