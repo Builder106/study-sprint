@@ -6,12 +6,14 @@ import * as path from 'node:path';
 type Theme = 'light' | 'dark';
 type AxeResultKind = 'violations' | 'incomplete';
 type AuditTarget = { name: string; path: string; state?: string; smoke?: boolean };
-type AxeCheck = { data?: { bgColor?: unknown; fgColor?: unknown; messageKey?: unknown } | null };
+type AxeCheck = {
+  data?: { bgColor?: unknown; fgColor?: unknown; messageKey?: unknown } | null;
+  relatedNodes?: { target?: string[]; html?: string }[];
+};
 type AxeNode = {
   target: unknown;
   any?: AxeCheck[];
   all?: AxeCheck[];
-  relatedNodes?: { target?: string[]; html?: string }[];
 };
 type AxeResult = { id: string; help: string; nodes: AxeNode[] };
 
@@ -60,15 +62,14 @@ async function applyDocumentedExceptions(
         continue;
       }
       // Axe cannot determine contrast for the DOM charge readout layered over its canvas.
-      const canvasRelated = node.relatedNodes?.some((related) =>
-        related.target?.includes('canvas') || related.html?.includes('<canvas')
-      );
-      const unresolvedCanvasContrast = node.any?.some(({ data }) =>
-        data?.messageKey === 'imgNode' || data?.messageKey === 'shortTextContent'
+      const unresolvedCanvasContrast = node.any?.some(({ data, relatedNodes }) =>
+        (data?.messageKey === 'imgNode' || data?.messageKey === 'shortTextContent') &&
+        relatedNodes?.some((related) =>
+          related.target?.includes('canvas') || related.html?.includes('<canvas')
+        )
       );
       if (
-        target.name === 'landing' && kind === 'incomplete' && canvasRelated &&
-        unresolvedCanvasContrast
+        target.name === 'landing' && kind === 'incomplete' && unresolvedCanvasContrast
       ) {
         continue;
       }
