@@ -715,18 +715,21 @@ test.describe('PR smoke suite', () => {
   });
 
   test('combines the final day and full-charge milestones from one guest save', async ({ page }) => {
-    await page.clock.install();
     await page.goto('/');
+    const startButton = page.getByRole('button', { name: 'Start a 30 minute focus timer' });
+    await expect(startButton).toHaveAttribute('aria-disabled', 'false');
     const today = await page.evaluate(() => (new Date().getDay() + 6) % 7);
     const otherDays = Array.from({ length: 7 }, (_, index) => index).filter((day) => day !== today);
     await seedGuestStudy(page, { totalMinutes: 594, currentWeekDays: otherDays });
     await page.reload();
+    await expect(startButton).toHaveAttribute('aria-disabled', 'false');
     await expect(page.locator('.ss-charge-number')).toHaveText('99%');
     await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready', {
       timeout: LANDING_RENDERER_READY_TIMEOUT,
     });
     await expect(easterEgg(page, 'week-and-charge')).toHaveCount(0);
 
+    await page.clock.install();
     await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
     await page.clock.fastForward(6 * 60_000);
     const effectVisible = expect(easterEgg(page, 'week-and-charge')).toBeVisible();
