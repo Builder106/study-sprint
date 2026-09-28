@@ -676,14 +676,20 @@ test.describe('PR smoke suite', () => {
     await seedGuestStudy(page, { totalMinutes: 6, currentWeekDays: otherDays });
     await page.reload();
     await expect(page.locator('.ss-charge-number')).toHaveText('1%');
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready', {
+      timeout: LANDING_RENDERER_READY_TIMEOUT,
+    });
     await expect(easterEgg(page, 'week-circuit')).toHaveCount(0);
 
     await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
     await page.clock.fastForward(60_000);
+    const effectVisible = expect(easterEgg(page, 'week-circuit')).toBeVisible();
     await page.getByRole('button', { name: 'Finish and save' }).click();
-    await expect(page.locator('.ss-result')).toHaveText('1 minute saved on this device.');
-    await expect(easterEgg(page, 'week-circuit')).toBeVisible();
-    await expect(page.locator('.ss-charge-number')).toHaveText('1%');
+    await Promise.all([
+      effectVisible,
+      expect(page.locator('.ss-result')).toHaveText('1 minute saved on this device.'),
+      expect(page.locator('.ss-charge-number')).toHaveText('1%'),
+    ]);
   });
 
   test('plays full charge on a successful guest save and not on preloaded progress', async ({ page }) => {
@@ -692,14 +698,20 @@ test.describe('PR smoke suite', () => {
     await seedGuestStudy(page, { totalMinutes: 594, currentWeekDays: [0, 1, 2, 3, 4, 5, 6] });
     await page.reload();
     await expect(page.locator('.ss-charge-number')).toHaveText('99%');
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready', {
+      timeout: LANDING_RENDERER_READY_TIMEOUT,
+    });
     await expect(easterEgg(page, 'full-charge')).toHaveCount(0);
 
     await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
     await page.clock.fastForward(6 * 60_000);
+    const effectVisible = expect(easterEgg(page, 'full-charge')).toBeVisible();
     await page.getByRole('button', { name: 'Finish and save' }).click();
-    await expect(page.locator('.ss-result')).toHaveText('6 minutes saved on this device.');
-    await expect(page.locator('.ss-charge-number')).toHaveText('100%');
-    await expect(easterEgg(page, 'full-charge')).toBeVisible();
+    await Promise.all([
+      effectVisible,
+      expect(page.locator('.ss-result')).toHaveText('6 minutes saved on this device.'),
+      expect(page.locator('.ss-charge-number')).toHaveText('100%'),
+    ]);
   });
 
   test('combines the final day and full-charge milestones from one guest save', async ({ page }) => {
@@ -710,14 +722,20 @@ test.describe('PR smoke suite', () => {
     await seedGuestStudy(page, { totalMinutes: 594, currentWeekDays: otherDays });
     await page.reload();
     await expect(page.locator('.ss-charge-number')).toHaveText('99%');
+    await expect(page.locator('.ss-object')).toHaveAttribute('data-renderer', 'ready', {
+      timeout: LANDING_RENDERER_READY_TIMEOUT,
+    });
     await expect(easterEgg(page, 'week-and-charge')).toHaveCount(0);
 
     await page.getByRole('button', { name: 'Start a 30 minute focus timer' }).click();
     await page.clock.fastForward(6 * 60_000);
+    const effectVisible = expect(easterEgg(page, 'week-and-charge')).toBeVisible();
     await page.getByRole('button', { name: 'Finish and save' }).click();
-    await expect(page.locator('.ss-result')).toHaveText('6 minutes saved on this device.');
-    await expect(page.locator('.ss-charge-number')).toHaveText('100%');
-    await expect(easterEgg(page, 'week-and-charge')).toBeVisible();
+    await Promise.all([
+      effectVisible,
+      expect(page.locator('.ss-result')).toHaveText('6 minutes saved on this device.'),
+      expect(page.locator('.ss-charge-number')).toHaveText('100%'),
+    ]);
     await expect(easterEgg(page, 'week-circuit')).toHaveCount(0);
     await expect(easterEgg(page, 'full-charge')).toHaveCount(0);
   });
