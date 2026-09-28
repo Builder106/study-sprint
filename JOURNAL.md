@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-28: Tightened public-page accessibility checks #fix
+
+Dark auth-page colors now use explicit values the audit can parse, legal update labels meet 7:1 contrast in both themes, and the landing utility controls form a named group. The landing audit filters only unresolved contrast checks that explicitly reference its decorative WebGL canvas.
+
 ## 2026-09-28: Added four landing-page Easter eggs #decision
 
 The landing now rewards a completed study week, full charge, choosing 30, then 60, then 90 minutes, and the tenth bolt activation. Effects are decorative, procedural, serialized, and consumed when motion is paused or reduced. Timer behavior and saved progress stay unchanged.
