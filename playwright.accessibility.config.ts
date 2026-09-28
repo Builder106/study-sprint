@@ -30,6 +30,10 @@ export default defineConfig({
         url: baseURL,
         reuseExistingServer: true,
         timeout: 30_000,
+        env: {
+          VITE_SUPABASE_URL: 'http://127.0.0.1:54321',
+          VITE_SUPABASE_PUBLISHABLE_KEY: 'local-a11y-publishable-key',
+        },
       },
   projects: [
     {
