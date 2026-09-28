@@ -19,6 +19,7 @@ export default defineConfig({
   use: {
     baseURL,
     headless: true,
+    reducedMotion: 'reduce',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
