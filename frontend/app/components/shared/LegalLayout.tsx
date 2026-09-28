@@ -14,7 +14,7 @@ export function LegalLayout({ title, lastUpdated, children }: Props) {
   const { resolvedTheme, setTheme } = useTheme();
 
   return (
-    <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black flex flex-col'>
+    <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-[#fafafa] font-sans selection:bg-[#ccff00] selection:text-black flex flex-col'>
       <header className='px-8 py-6 flex justify-between items-center border-b border-zinc-200 dark:border-white/10'>
         <Link
           to='/'
@@ -46,7 +46,7 @@ export function LegalLayout({ title, lastUpdated, children }: Props) {
           Last updated: {lastUpdated}
         </p>
 
-        <div className='prose prose-zinc dark:prose-invert max-w-none prose-headings:font-medium prose-headings:tracking-tight prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-2 prose-p:text-zinc-700 dark:prose-p:text-zinc-300 prose-p:leading-relaxed prose-ul:text-zinc-700 dark:prose-ul:text-zinc-300 prose-li:my-1 prose-a:text-[var(--brand-lime-ink)] dark:prose-a:text-[#ccff00] prose-a:no-underline hover:prose-a:underline prose-strong:text-zinc-900 dark:prose-strong:text-zinc-50'>
+        <div className='prose prose-zinc dark:prose-invert max-w-none prose-headings:font-medium prose-headings:tracking-tight prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-2 prose-p:text-zinc-700 dark:prose-p:text-zinc-300 prose-p:leading-relaxed prose-ul:text-zinc-700 dark:prose-ul:text-zinc-300 prose-li:my-1 prose-a:text-[var(--brand-lime-ink)] dark:prose-a:text-[#ccff00] prose-a:no-underline hover:prose-a:underline prose-strong:text-zinc-900 dark:prose-strong:text-[#fafafa]'>
           {children}
         </div>
       </main>
