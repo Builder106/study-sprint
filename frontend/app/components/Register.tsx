@@ -41,7 +41,7 @@ export function Register() {
   };
 
   return (
-    <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans flex flex-col'>
+    <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-[#fafafa] font-sans flex flex-col'>
       <header className='px-8 py-6 flex justify-between items-center border-b border-zinc-200 dark:border-white/10'>
         <Link
           to='/'
@@ -53,7 +53,7 @@ export function Register() {
         <button
           onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
           aria-label='Toggle theme'
-          className='p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors'
+          className='p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-[#fafafa] transition-colors'
         >
           {resolvedTheme === 'dark' ? <Sun className='w-4 h-4' /> : <Moon className='w-4 h-4' />}
         </button>
@@ -63,7 +63,7 @@ export function Register() {
         <div className='w-full max-w-sm'>
           <Link
             to='/'
-            className='inline-flex items-center gap-2 text-xs font-bold text-zinc-700 uppercase tracking-widest hover:text-[var(--brand-lime-ink)] dark:text-zinc-300 dark:hover:text-[#ccff00] mb-12 transition-colors group'
+            className='inline-flex items-center gap-2 text-xs font-bold text-zinc-700 uppercase tracking-widest hover:text-[var(--brand-lime-ink)] dark:text-[#d4d4d8] dark:hover:text-[#ccff00] mb-12 transition-colors group'
           >
             <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
             Back
@@ -77,7 +77,7 @@ export function Register() {
             <GoogleSignInButton label='Sign up with Google' onError={setError} />
             <div className='flex items-center gap-4 mt-8'>
               <div className='flex-1 h-px bg-zinc-200 dark:bg-white/10' />
-              <span className='text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300'>
+              <span className='text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-[#d4d4d8]'>
                 or with email
               </span>
               <div className='flex-1 h-px bg-zinc-200 dark:bg-white/10' />
@@ -86,7 +86,7 @@ export function Register() {
 
           <form className='flex flex-col gap-8' onSubmit={onSubmit} noValidate>
             <div className='space-y-3'>
-              <label className='text-xs uppercase tracking-widest text-zinc-700 dark:text-zinc-300 font-medium'>
+              <label className='text-xs uppercase tracking-widest text-zinc-700 dark:text-[#d4d4d8] font-medium'>
                 Email address
               </label>
               <input
@@ -96,14 +96,14 @@ export function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder='name@example.com'
-                className='w-full bg-transparent border-b border-zinc-300 dark:border-white/20 px-0 py-3 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:outline-none focus:border-[#ccff00] transition-colors rounded-none'
+                className='w-full bg-transparent border-b border-zinc-300 dark:border-white/20 px-0 py-3 text-zinc-900 dark:text-[#fafafa] placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:outline-none focus:border-[#ccff00] transition-colors rounded-none'
               />
             </div>
 
             <div className='space-y-3'>
-              <label className='text-xs uppercase tracking-widest text-zinc-700 dark:text-zinc-300 font-medium'>
+              <label className='text-xs uppercase tracking-widest text-zinc-700 dark:text-[#d4d4d8] font-medium'>
                 Password{' '}
-                <span className='text-zinc-700 dark:text-zinc-300'>
+                <span className='text-zinc-700 dark:text-[#d4d4d8]'>
                   (min. {PASSWORD_MIN_LENGTH} characters)
                 </span>
               </label>
@@ -115,7 +115,7 @@ export function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder='••••••••'
-                className='w-full bg-transparent border-b border-zinc-300 dark:border-white/20 px-0 py-3 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:outline-none focus:border-[#ccff00] transition-colors rounded-none'
+                className='w-full bg-transparent border-b border-zinc-300 dark:border-white/20 px-0 py-3 text-zinc-900 dark:text-[#fafafa] placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:outline-none focus:border-[#ccff00] transition-colors rounded-none'
               />
             </div>
 
@@ -140,7 +140,7 @@ export function Register() {
             <div className='text-center'>
               <Link
                 to='/'
-                className='text-sm text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100 transition-colors'
+                className='text-sm text-zinc-700 hover:text-zinc-900 dark:text-[#d4d4d8] dark:hover:text-[#f4f4f5] transition-colors'
               >
                 Already have an account? Sign in
               </Link>

@@ -43,7 +43,7 @@ export function Login() {
   };
 
   return (
-    <div className='flex min-h-screen flex-col bg-white font-sans text-zinc-900 selection:bg-[var(--brand-lime)] selection:text-black dark:bg-[#0a0a0a] dark:text-zinc-50'>
+    <div className='flex min-h-screen flex-col bg-white font-sans text-zinc-900 selection:bg-[var(--brand-lime)] selection:text-black dark:bg-[#0a0a0a] dark:text-[#fafafa]'>
       <header className='flex items-center justify-between border-b border-zinc-200 px-6 py-6 sm:px-8 dark:border-white/10'>
         <Link to='/' className='flex items-center gap-2 text-lg font-medium tracking-tight'>
           <LogoMark size={28} />
@@ -59,7 +59,7 @@ export function Login() {
           <GoogleSignInButton label='Sign in with Google' onError={setError} />
           <div className='mt-8 flex items-center gap-4'>
             <div className='h-px flex-1 bg-zinc-200 dark:bg-white/10' />
-            <span className='text-[10px] font-bold tracking-widest text-zinc-700 uppercase dark:text-zinc-300'>
+            <span className='text-[10px] font-bold tracking-widest text-zinc-700 uppercase dark:text-[#d4d4d8]'>
               or with email
             </span>
             <div className='h-px flex-1 bg-zinc-200 dark:bg-white/10' />
@@ -70,7 +70,7 @@ export function Login() {
           <div className='space-y-3'>
             <label
               htmlFor='login-email'
-              className='block text-xs font-medium tracking-widest text-zinc-700 uppercase dark:text-zinc-300'
+              className='block text-xs font-medium tracking-widest text-zinc-700 uppercase dark:text-[#d4d4d8]'
             >
               Email address
             </label>
@@ -82,14 +82,14 @@ export function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder='name@example.com'
-              className='w-full rounded-none border-b border-zinc-300 bg-transparent px-0 py-3 text-zinc-900 transition-colors placeholder:text-zinc-400 focus:border-[var(--brand-lime)] focus:outline-none dark:border-white/20 dark:text-zinc-50 dark:placeholder:text-zinc-700'
+              className='w-full rounded-none border-b border-zinc-300 bg-transparent px-0 py-3 text-zinc-900 transition-colors placeholder:text-zinc-400 focus:border-[var(--brand-lime)] focus:outline-none dark:border-white/20 dark:text-[#fafafa] dark:placeholder:text-zinc-700'
             />
           </div>
 
           <div className='space-y-3'>
             <label
               htmlFor='login-password'
-              className='block text-xs font-medium tracking-widest text-zinc-700 uppercase dark:text-zinc-300'
+              className='block text-xs font-medium tracking-widest text-zinc-700 uppercase dark:text-[#d4d4d8]'
             >
               Password
             </label>
@@ -101,7 +101,7 @@ export function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder='••••••••'
-              className='w-full rounded-none border-b border-zinc-300 bg-transparent px-0 py-3 text-zinc-900 transition-colors placeholder:text-zinc-400 focus:border-[var(--brand-lime)] focus:outline-none dark:border-white/20 dark:text-zinc-50 dark:placeholder:text-zinc-700'
+              className='w-full rounded-none border-b border-zinc-300 bg-transparent px-0 py-3 text-zinc-900 transition-colors placeholder:text-zinc-400 focus:border-[var(--brand-lime)] focus:outline-none dark:border-white/20 dark:text-[#fafafa] dark:placeholder:text-zinc-700'
             />
           </div>
 
@@ -132,7 +132,7 @@ export function Login() {
           <div className='text-center'>
             <Link
               to='/register'
-              className='text-sm text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100'
+              className='text-sm text-zinc-700 transition-colors hover:text-zinc-900 dark:text-[#d4d4d8] dark:hover:text-[#f4f4f5]'
             >
               Create an account
             </Link>

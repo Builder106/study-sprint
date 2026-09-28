@@ -27,7 +27,7 @@ export function GoogleSignInButton({ label = 'Continue with Google', onError }: 
       type='button'
       onClick={onClick}
       disabled={busy}
-      className='w-full h-14 rounded-full text-sm font-medium flex items-center justify-center gap-3 border border-zinc-300 dark:border-white/20 bg-white dark:bg-transparent text-zinc-900 dark:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-white/5 transition-colors disabled:opacity-50'
+      className='w-full h-14 rounded-full text-sm font-medium flex items-center justify-center gap-3 border border-zinc-300 dark:border-white/20 bg-white dark:bg-transparent text-zinc-900 dark:text-[#fafafa] hover:bg-zinc-50 dark:hover:bg-white/5 transition-colors disabled:opacity-50'
     >
       <GoogleMark />
       {busy ? 'Redirecting…' : label}

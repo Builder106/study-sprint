@@ -685,7 +685,7 @@ export function Landing() {
         <Link to='/' className='ss-wordmark' aria-label='StudySprint home'>
           <img src='/logo.svg' width='28' height='28' alt='' />StudySprint
         </Link>
-        <div className='ss-utilities' aria-label='Account and display controls'>
+        <div className='ss-utilities' role='group' aria-label='Account and display controls'>
           <ThemeMenu />
           <Link to={user ? '/dashboard' : '/login'} className='ss-signin'>
             {user ? 'Dashboard' : 'Sign in'} <ArrowRight size={16} aria-hidden='true' />

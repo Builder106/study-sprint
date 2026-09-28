@@ -42,7 +42,7 @@ export function LegalLayout({ title, lastUpdated, children }: Props) {
         </Link>
 
         <h1 className='text-4xl md:text-5xl font-medium tracking-tighter mb-4'>{title}</h1>
-        <p className='text-xs uppercase tracking-widest text-zinc-500 font-medium mb-12'>
+        <p className='text-xs uppercase tracking-widest text-[#52525b] dark:text-[#a1a1aa] font-medium mb-12'>
           Last updated: {lastUpdated}
         </p>
 
