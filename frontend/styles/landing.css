@@ -666,10 +666,14 @@ html:has(.ss-landing) {
   animation: ss-terminal-flicker 480ms ease-out;
 }
 @keyframes ss-terminal-flicker {
-  0%, 35%, 65% {
+  0%,
+  35%,
+  65% {
     box-shadow: 0 0 5px var(--ss-ink), 0 0 12px var(--ss-ink);
   }
-  20%, 50%, 100% {
+  20%,
+  50%,
+  100% {
     box-shadow: 0 0 0 transparent;
   }
 }

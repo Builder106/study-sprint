@@ -15,7 +15,8 @@
 .ss-easter-egg__ring-spark,
 .ss-easter-egg__bolt-strike,
 .ss-easter-egg__branches path {
-  filter: drop-shadow(0 0 3px var(--ss-ink)) drop-shadow(0 0 8px color-mix(in srgb, var(--ss-ink) 78%, transparent));
+  filter: drop-shadow(0 0 3px var(--ss-ink)) drop-shadow(0 0 8px color-mix(in srgb, var(--ss-ink)
+    78%, transparent));
 }
 
 .ss-easter-egg__ring-spark {
@@ -134,40 +135,95 @@
 }
 
 @keyframes ss-easter-circuit {
-  0% { opacity: 0; stroke-dashoffset: 100; }
-  12% { opacity: 1; }
-  78% { opacity: 1; stroke-dashoffset: 0; }
-  100% { opacity: 0; stroke-dashoffset: -17; }
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+  12% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: -17;
+  }
 }
 
 @keyframes ss-easter-charge-lap {
-  0% { opacity: 0; stroke-dashoffset: 100; }
-  14% { opacity: 1; }
-  78% { opacity: 1; stroke-dashoffset: 0; }
-  100% { opacity: 0; stroke-dashoffset: -17; }
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+  14% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: -17;
+  }
 }
 
 @keyframes ss-easter-strike {
-  0% { opacity: 0; stroke-dashoffset: 100; }
-  14% { opacity: 1; }
-  74% { opacity: 1; stroke-dashoffset: 0; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+  14% {
+    opacity: 1;
+  }
+  74% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes ss-easter-sequence {
-  0% { opacity: 0; stroke-dashoffset: 100; }
-  12% { opacity: 1; }
-  82% { opacity: 1; stroke-dashoffset: 0; }
-  100% { opacity: 0; stroke-dashoffset: -28; }
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+  12% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: -28;
+  }
 }
 
 @keyframes ss-easter-branch {
-  0% { opacity: 0; stroke-dashoffset: 100; }
-  18% { opacity: 1; }
-  60% { opacity: 1; stroke-dashoffset: 0; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+  18% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ss-easter-egg { display: none; }
+  .ss-easter-egg {
+    display: none;
+  }
 }

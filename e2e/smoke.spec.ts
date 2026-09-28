@@ -23,8 +23,12 @@ interface FixtureGoal {
 
 type RouteHandler = (route: Route) => Promise<void>;
 
-type EasterEgg = 'week-circuit' | 'full-charge' | 'duration-sequence' | 'overcharge' |
-  'week-and-charge';
+type EasterEgg =
+  | 'week-circuit'
+  | 'full-charge'
+  | 'duration-sequence'
+  | 'overcharge'
+  | 'week-and-charge';
 
 function easterEgg(page: Page, name: EasterEgg) {
   return page.locator(`.ss-easter-egg[data-easter-egg="${name}"]`);
@@ -59,11 +63,14 @@ async function seedGuestStudy(
         endedAt: oldDate.toISOString(),
       });
     }
-    localStorage.setItem('studysprint:guest-study:v1', JSON.stringify({
-      goals: [{ id: goalId, title: 'Focus session' }],
-      activeGoalId: goalId,
-      sessions,
-    }));
+    localStorage.setItem(
+      'studysprint:guest-study:v1',
+      JSON.stringify({
+        goals: [{ id: goalId, title: 'Focus session' }],
+        activeGoalId: goalId,
+        sessions,
+      }),
+    );
   }, options);
 }
 
@@ -442,25 +449,33 @@ test.describe('PR smoke suite', () => {
     const panel = page.getByTestId('egg-preview-panel');
     await panel.locator('summary').click();
     const before = await page.evaluate(() =>
-      JSON.stringify(Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)))
+      JSON.stringify(
+        Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)),
+      )
     );
 
-    for (const name of [
-      'week-circuit',
-      'full-charge',
-      'duration-sequence',
-      'overcharge',
-      'week-and-charge',
-    ] as const) {
+    for (
+      const name of [
+        'week-circuit',
+        'full-charge',
+        'duration-sequence',
+        'overcharge',
+        'week-and-charge',
+      ] as const
+    ) {
       await panel.getByTestId(`preview-${name}`).click();
       await expect(easterEgg(page, name)).toBeVisible();
       await expect(easterEgg(page, name)).toHaveCount(0, { timeout: 2_000 });
     }
 
     await expect(page.locator('.ss-object')).toHaveAttribute('data-phase', 'idle');
-    expect(await page.evaluate(() =>
-      JSON.stringify(Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)))
-    )).toBe(before);
+    expect(
+      await page.evaluate(() =>
+        JSON.stringify(
+          Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)),
+        )
+      ),
+    ).toBe(before);
     expect(writes).toEqual([]);
   });
 
@@ -476,26 +491,34 @@ test.describe('PR smoke suite', () => {
     const panel = page.getByTestId('egg-preview-panel');
     await panel.locator('summary').click();
     const before = await page.evaluate(() =>
-      JSON.stringify(Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)))
+      JSON.stringify(
+        Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)),
+      )
     );
     await panel.getByTestId('preview-play-all').click();
 
-    for (const name of [
-      'week-circuit',
-      'full-charge',
-      'duration-sequence',
-      'overcharge',
-      'week-and-charge',
-    ] as const) {
+    for (
+      const name of [
+        'week-circuit',
+        'full-charge',
+        'duration-sequence',
+        'overcharge',
+        'week-and-charge',
+      ] as const
+    ) {
       await expect(easterEgg(page, name)).toHaveAttribute('data-easter-egg', name, {
         timeout: 3_000,
       });
     }
     await expect(page.locator('.ss-easter-egg')).toHaveCount(0, { timeout: 2_000 });
     await expect(page.locator('.ss-object')).toHaveAttribute('data-phase', 'idle');
-    expect(await page.evaluate(() =>
-      JSON.stringify(Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)))
-    )).toBe(before);
+    expect(
+      await page.evaluate(() =>
+        JSON.stringify(
+          Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)),
+        )
+      ),
+    ).toBe(before);
     expect(writes).toEqual([]);
   });
 
@@ -521,26 +544,34 @@ test.describe('PR smoke suite', () => {
     const panel = page.getByTestId('egg-preview-panel');
     await panel.locator('summary').click();
     const before = await page.evaluate(() =>
-      JSON.stringify(Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)))
+      JSON.stringify(
+        Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)),
+      )
     );
     await panel.getByTestId('preview-play-all').click();
 
-    for (const name of [
-      'week-circuit',
-      'full-charge',
-      'duration-sequence',
-      'overcharge',
-      'week-and-charge',
-    ] as const) {
+    for (
+      const name of [
+        'week-circuit',
+        'full-charge',
+        'duration-sequence',
+        'overcharge',
+        'week-and-charge',
+      ] as const
+    ) {
       await expect(easterEgg(page, name)).toHaveAttribute('data-easter-egg', name, {
         timeout: 3_000,
       });
     }
     await expect(page.locator('.ss-easter-egg')).toHaveCount(0, { timeout: 2_000 });
     await expect(page.locator('.ss-object')).toHaveAttribute('data-phase', 'idle');
-    expect(await page.evaluate(() =>
-      JSON.stringify(Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)))
-    )).toBe(before);
+    expect(
+      await page.evaluate(() =>
+        JSON.stringify(
+          Object.entries(localStorage).sort(([left], [right]) => left.localeCompare(right)),
+        )
+      ),
+    ).toBe(before);
     expect(writes).toEqual([]);
     expect(localBackend.goalCount).toBe(0);
     expect(localBackend.sessionCount).toBe(0);
@@ -604,7 +635,9 @@ test.describe('PR smoke suite', () => {
       await page.getByRole('button', {
         name: activation === 1
           ? 'Start a 30 minute focus timer'
-          : activation % 2 === 0 ? 'Pause focus timer' : 'Resume focus timer',
+          : activation % 2 === 0
+          ? 'Pause focus timer'
+          : 'Resume focus timer',
       }).click();
     }
 
