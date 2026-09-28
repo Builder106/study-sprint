@@ -3,6 +3,11 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-28: Stabilized transient landing egg smoke checks #test
+
+Milestone smoke checks wait for the renderer after reloading seeded browser data,
+then observe the brief effect while save-result assertions run.
+
 ## 2026-09-28: Tightened public-page accessibility checks #fix
 
 Dark auth-page colors now use explicit values the audit can parse, legal update labels meet 7:1 contrast in both themes, and the landing utility controls form a named group. The landing audit filters only unresolved contrast checks that explicitly reference its decorative WebGL canvas.
