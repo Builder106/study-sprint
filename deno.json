@@ -89,7 +89,6 @@
     "react-dom": "npm:react-dom@19.3.0",
     "react-hook-form": "npm:react-hook-form@7.88.0",
     "react-markdown": "npm:react-markdown@10.1.0",
-    "react-popper": "npm:react-popper@2.3.0",
     "react-resizable-panels": "npm:react-resizable-panels@4.12.4",
     "react-responsive-masonry": "npm:react-responsive-masonry@2.9.0",
     "react-router": "npm:react-router@8.4.0",
