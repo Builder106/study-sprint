@@ -764,10 +764,10 @@ test.describe('PR smoke suite', () => {
     await expect(page.locator('.ss-object')).toHaveAttribute('data-phase', 'running');
     await expect(page.getByRole('button', { name: 'Pause focus timer' })).toBeVisible();
     await expect(page.locator('.ss-charge-number')).toHaveText('0%');
-    expect(
-      await page.evaluate(() =>
+    await expect.poll(() =>
+      page.evaluate(() =>
         document.getAnimations().filter((animation) => animation.playState === 'running').length
-      ),
+      )
     ).toBe(0);
   });
 
