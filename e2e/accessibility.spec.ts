@@ -98,7 +98,8 @@ for (const theme of THEMES) {
           }, theme);
 
           await page.goto(target.path, { waitUntil: 'domcontentloaded' });
-          await page.waitForTimeout(300);
+          await expect(page.getByRole('main')).toBeVisible();
+          await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 
           const results = await new AxeBuilder({ page })
             .options({
