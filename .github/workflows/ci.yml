@@ -57,10 +57,10 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - name: Open-source license compliance scan
-        run: deno run -A npm:license-checker --summary
       - name: Install deps
         run: deno install --allow-scripts=npm:@tailwindcss/oxide
+      - name: Open-source license compliance scan
+        run: node scripts/license-scan.mjs
       - name: TypeScript typecheck
         run: deno task check
 
