@@ -3,6 +3,11 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-29: Strengthen duration chip outlines #accessibility
+
+Duration chips use a theme-aware outline above 3:1 contrast. The decorative
+orbit guides keep their lighter rule.
+
 ## 2026-09-29: Fail CI on unexpected Vite and runtime warnings #policy
 
 Vite warnings now fail in development and production builds. The required

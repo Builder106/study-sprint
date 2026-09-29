@@ -17,6 +17,7 @@ html:has(.ss-landing) {
   --ss-ink: var(--brand-lime-ink);
   --ss-secondary: color-mix(in oklab, var(--foreground) 65%, var(--background));
   --ss-line: color-mix(in oklab, var(--foreground) 22%, var(--background));
+  --ss-control-line: color-mix(in oklab, var(--foreground) 45%, var(--background));
   background: var(--background);
   color: var(--foreground);
   min-height: 100svh;
@@ -467,7 +468,7 @@ html:has(.ss-landing) {
   cursor: pointer;
   color: var(--ss-secondary);
   background: var(--background);
-  border: 1px solid var(--ss-line);
+  border: 1px solid var(--ss-control-line);
   border-radius: 999px;
   font-size: 0.9rem;
   transform: var(--ss-duration-offset);
