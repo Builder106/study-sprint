@@ -1,4 +1,5 @@
-import { expect, type Page, type Route, test as base } from '@playwright/test';
+import { type Page, type Route } from '@playwright/test';
+import { expect, test as base } from './setup/warning-gate';
 
 const LOCAL_SUPABASE_URL = 'http://127.0.0.1:54321';
 const ACCESS_TOKEN = 'local-smoke-access-token';

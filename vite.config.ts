@@ -6,19 +6,19 @@ import react from '@vitejs/plugin-react';
 // import.meta.dirname is ES2024 and works in both Deno and Node 20+.
 const root = import.meta.dirname ?? new URL('.', import.meta.url).pathname;
 
-function createBuildLogger() {
+function createStrictLogger() {
   const logger = createLogger();
   const warn = logger.warn.bind(logger);
   logger.warn = (message, options) => {
     warn(message, options);
-    throw new Error(`Build warning treated as an error: ${message}`);
+    throw new Error(`Vite warning treated as an error: ${message}`);
   };
   logger.warnOnce = logger.warn;
   return logger;
 }
 
-export default defineConfig(({ command }) => ({
-  customLogger: command === 'build' ? createBuildLogger() : undefined,
+export default defineConfig(() => ({
+  customLogger: createStrictLogger(),
   plugins: [
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them

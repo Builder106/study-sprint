@@ -2,10 +2,12 @@
 // Enforces 100% line, branch, and function coverage across covered modules.
 
 const covDir = 'cov_profile';
+// Deno includes preload modules in coverage even though this one is test plumbing.
+const coverageExclude = '--exclude=(test\\.(js|mjs|ts|jsx|tsx)|scripts/test-warning-gate\\.ts)$';
 
 // 1. Run tests with coverage collection
 const testCmd = new Deno.Command(Deno.execPath(), {
-  args: ['test', `--coverage=${covDir}`],
+  args: ['test', `--coverage=${covDir}`, '--preload=./scripts/test-warning-gate.ts'],
   stdout: 'inherit',
   stderr: 'inherit',
 });
@@ -16,7 +18,7 @@ if (!testStatus.success) {
 
 // 2. Generate lcov report
 const covCmd = new Deno.Command(Deno.execPath(), {
-  args: ['coverage', covDir, '--lcov'],
+  args: ['coverage', coverageExclude, covDir, '--lcov'],
   stdout: 'piped',
   stderr: 'inherit',
 });
@@ -30,7 +32,7 @@ const lcovText = new TextDecoder().decode(covOutput.stdout);
 
 // Also print the summary table to console for visibility
 const summaryCmd = new Deno.Command(Deno.execPath(), {
-  args: ['coverage', covDir],
+  args: ['coverage', coverageExclude, covDir],
   stdout: 'inherit',
   stderr: 'inherit',
 });

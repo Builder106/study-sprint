@@ -129,11 +129,11 @@ jobs:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
       - name: Install dependencies
         run: deno install --allow-scripts=npm:@tailwindcss/oxide
-      - name: Run local E2E smoke suite
+      - name: Run local E2E smoke suite with warning gate
         run: deno task test:e2e:smoke
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-      - name: Run automated accessibility audit
+      - name: Run automated accessibility audit with warning gate
         run: deno task test:accessibility
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright

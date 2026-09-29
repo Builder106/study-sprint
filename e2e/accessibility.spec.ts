@@ -1,7 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { expect, test } from './setup/warning-gate';
 
 type Theme = 'light' | 'dark';
 type AxeResultKind = 'violations' | 'incomplete';
@@ -24,7 +25,15 @@ const VIEWPORTS = [
 ] as const;
 
 const THEMES: readonly Theme[] = ['light', 'dark'];
-const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'wcag2aaa', 'best-practice'];
+const WCAG_TAGS = [
+  'wcag2a',
+  'wcag2aa',
+  'wcag21a',
+  'wcag21aa',
+  'wcag22aa',
+  'wcag2aaa',
+  'best-practice',
+];
 const AAA_RULES = {
   'color-contrast-enhanced': { enabled: true },
   'identical-links-same-purpose': { enabled: true },
@@ -46,7 +55,7 @@ async function applyDocumentedExceptions(
   results: AxeResult[],
   target: AuditTarget,
   page: Page,
-  kind: AxeResultKind
+  kind: AxeResultKind,
 ): Promise<AxeResult[]> {
   const filteredResults: AxeResult[] = [];
   for (const result of results) {
@@ -58,7 +67,10 @@ async function applyDocumentedExceptions(
     for (const node of result.nodes) {
       const targetSelector = String(node.target);
       // Exception: Three.js / WebGL charge sculpture on landing page
-      if (target.name === 'landing' && (targetSelector.includes('canvas') || targetSelector.includes('.charge-sculpture'))) {
+      if (
+        target.name === 'landing' &&
+        (targetSelector.includes('canvas') || targetSelector.includes('.charge-sculpture'))
+      ) {
         continue;
       }
       // Axe cannot determine contrast for the DOM charge readout layered over its canvas.
@@ -90,7 +102,9 @@ function formatResults(results: AxeResult[]): string {
   return results
     .map(
       (r) =>
-        `- [${r.id}] ${r.help}\n  Nodes:\n${r.nodes.map((n) => `    * ${JSON.stringify(n.target)}`).join('\n')}`
+        `- [${r.id}] ${r.help}\n  Nodes:\n${
+          r.nodes.map((n) => `    * ${JSON.stringify(n.target)}`).join('\n')
+        }`,
     )
     .join('\n');
 }
@@ -131,31 +145,31 @@ for (const theme of THEMES) {
             results.violations as AxeResult[],
             target,
             page,
-            'violations'
+            'violations',
           );
           const incomplete = await applyDocumentedExceptions(
             results.incomplete as AxeResult[],
             target,
             page,
-            'incomplete'
+            'incomplete',
           );
 
           const outputDir = path.resolve(process.cwd(), 'audit-output/accessibility');
           fs.mkdirSync(outputDir, { recursive: true });
           const outputPath = path.join(
             outputDir,
-            `${target.name}-${theme}-${viewport.name}.json`
+            `${target.name}-${theme}-${viewport.name}.json`,
           );
           fs.writeFileSync(outputPath, JSON.stringify(results, null, 2));
 
           expect(
             violations,
-            `${target.name} has accessibility violations:\n${formatResults(violations)}`
+            `${target.name} has accessibility violations:\n${formatResults(violations)}`,
           ).toEqual([]);
 
           expect(
             incomplete,
-            `${target.name} has unresolved accessibility reviews:\n${formatResults(incomplete)}`
+            `${target.name} has unresolved accessibility reviews:\n${formatResults(incomplete)}`,
           ).toEqual([]);
         });
       }

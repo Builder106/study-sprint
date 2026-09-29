@@ -3,6 +3,16 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-29: Fail CI on unexpected Vite and runtime warnings #policy
+
+Vite warnings now fail in development and production builds. The required
+Playwright smoke and accessibility suites capture browser warnings, Node
+warning events, and test-process `console.warn` calls. Deno unit tests fail on
+`console.warn`. The E2E suites allow only Motion's exact reduced-motion
+advisory and Chromium's WebGL readback advisory for the decorative landing
+canvas; all other warnings fail. Coverage excludes the test-only warning
+preload because it is harness code, not application code.
+
 ## 2026-09-28: Stabilize milestone smoke test startup #test
 
 The combined milestone test waits for auth to finish on both page loads, then installs its fake
