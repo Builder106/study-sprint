@@ -28,7 +28,7 @@ gradually when idle. The interface uses a clean monochromatic base paired with e
 | Electric lime  | `#ccff00`   | Signature accent for XP, level counters, charge, active tabs                                                                                                                                                                                                                          |
 | Lime hover     | `#b3e600`   | Interactive hover state for electric lime buttons and links                                                                                                                                                                                                                           |
 | Lime highlight | `#e5ff4d`   | Charge highlights and active glows                                                                                                                                                                                                                                                    |
-| Lime ink       | `#526d00`   | Lime as _text_ on a light surface. The brand limes are background fills; as foreground text on white they measure 1.18:1 (`#ccff00`) and 1.48:1 (`#b3e600`), well under the 4.5:1 AA floor. This one measures 5.92:1. Dark mode keeps `#ccff00`, which measures 16.85:1 on `#0a0a0a`. |
+| Lime ink       | `#3d5200`   | Lime as _text_ on a light surface. Use electric lime as a fill with dark text on light surfaces; `#ccff00` as text on white measures 1.18:1. This ink measures 8.73:1 on white. Dark mode keeps `#ccff00`, which measures 16.85:1 on `#0a0a0a`. |
 
 ### Surface tokens (Light vs. Dark mode)
 

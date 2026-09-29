@@ -13,6 +13,12 @@ advisory and Chromium's WebGL readback advisory for the decorative landing
 canvas; all other warnings fail. Coverage excludes the test-only warning
 preload because it is harness code, not application code.
 
+## 2026-09-29: Keep light-mode neon readable #accessibility
+
+The landing headline uses neon as a fill with dark text in light mode, while
+dark mode keeps neon text. The highlighted text stays inline so Axe can measure
+its background without mistaking its text bounds for an overlap.
+
 ## 2026-09-28: Stabilize milestone smoke test startup #test
 
 The combined milestone test waits for auth to finish on both page loads, then installs its fake

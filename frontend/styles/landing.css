@@ -143,23 +143,23 @@ html:has(.ss-landing) {
 }
 .ss-introduction h1 .ss-charge-word {
   position: relative;
-  display: inline-block;
-  color: var(--ss-secondary);
+  display: inline;
+  margin-inline: -0.12em;
+  padding-inline: 0.12em;
+  border-radius: 0.14em;
+  color: var(--primary);
 }
-.ss-charge-word::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  color: var(--ss-ink);
-  clip-path: inset(0 100% 0 0);
-  pointer-events: none;
+.dark .ss-introduction h1 .ss-charge-word {
+  margin-inline: 0;
+  padding-inline: 0;
+  color: var(--brand-lime);
 }
 .ss-charge-word::before {
   content: '';
   position: absolute;
   z-index: 1;
   top: -0.08em;
-  right: -0.12em;
+  right: -0.32em;
   width: 0.22em;
   aspect-ratio: 1;
   background: var(--brand-lime);
@@ -172,9 +172,12 @@ html:has(.ss-landing) {
   animation: ss-focus-settle calc(var(--ss-entry-duration) - 200ms)
     cubic-bezier(0.2, 0.8, 0.25, 1) 200ms both;
 }
-.ss-introduction[data-bolt-entered='true']:not([data-still='true']) .ss-charge-word::after {
+.ss-introduction[data-bolt-entered='true']:not([data-still='true']) .ss-charge-word {
   animation: ss-charge-reveal calc(var(--ss-entry-duration) - 500ms)
     cubic-bezier(0.18, 0.74, 0.25, 1) 500ms both;
+}
+.dark .ss-introduction[data-bolt-entered='true']:not([data-still='true']) .ss-charge-word {
+  animation: none;
 }
 .ss-introduction[data-bolt-entered='true']:not([data-still='true']) .ss-charge-word::before {
   animation: ss-charge-spark 220ms ease-out calc(var(--ss-entry-duration) - 220ms) both;
@@ -184,8 +187,11 @@ html:has(.ss-landing) {
   transform: none;
   filter: none;
 }
-.ss-introduction[data-still='true'] .ss-charge-word::after {
-  clip-path: none;
+.ss-introduction[data-still='true'] .ss-charge-word {
+  background-color: var(--brand-lime);
+}
+.dark .ss-introduction[data-still='true'] .ss-charge-word {
+  background-color: transparent;
 }
 .ss-introduction[data-still='true'] .ss-charge-word::before {
   display: none;
@@ -508,9 +514,14 @@ html:has(.ss-landing) {
   font-size: 0.65rem;
 }
 .ss-durations label:has(input:checked) {
-  color: var(--ss-ink);
-  border-color: var(--ss-ink);
-  background: color-mix(in srgb, var(--ss-ink) 10%, var(--background));
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--brand-lime);
+}
+.dark .ss-durations label:has(input:checked) {
+  color: var(--brand-lime);
+  border-color: var(--brand-lime);
+  background: color-mix(in srgb, var(--brand-lime) 10%, var(--background));
 }
 .ss-duration-stem {
   display: block;
@@ -802,14 +813,11 @@ html:has(.ss-landing) {
   }
 }
 @keyframes ss-charge-reveal {
-  0% {
-    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  from {
+    background-color: transparent;
   }
-  72% {
-    clip-path: polygon(0 0, 104% 0, 98% 100%, 0 100%);
-  }
-  100% {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  to {
+    background-color: var(--brand-lime);
   }
 }
 @keyframes ss-charge-spark {

@@ -705,9 +705,7 @@ export function Landing() {
         >
           <h1 aria-label='Focus in. Charge up.'>
             <span className='ss-focus-word' aria-hidden='true'>Focus in.</span>{' '}
-            <span className='ss-charge-word' data-text='Charge up.' aria-hidden='true'>
-              Charge up.
-            </span>
+            <span className='ss-charge-word' aria-hidden='true'>Charge up.</span>
           </h1>
           <p>Make time for one thing. See what it adds up to.</p>
         </div>
