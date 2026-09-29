@@ -8,6 +8,12 @@
 Duration chips use a theme-aware outline above 3:1 contrast. The decorative
 orbit guides keep their lighter rule.
 
+## 2026-09-29: Add goal-form hover feedback #interaction
+
+Goal fields ease to the theme accent and a soft shadow on hover. Enabled Add
+buttons shift to the lime hover color and lift slightly; reduced-motion
+settings skip the transitions.
+
 ## 2026-09-29: Fail CI on unexpected Vite and runtime warnings #policy
 
 Vite warnings now fail in development and production builds. The required

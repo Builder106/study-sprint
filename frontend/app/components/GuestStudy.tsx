@@ -232,12 +232,12 @@ export function GuestStudy({ embedded = false }: { embedded?: boolean }) {
                   value={goalTitle}
                   onChange={(event) => setGoalTitle(event.target.value)}
                   placeholder='What will you study?'
-                  className='min-h-11 min-w-0 flex-1 rounded-md border border-zinc-300 bg-transparent px-3 dark:border-white/30'
+                  className='min-h-11 min-w-0 flex-1 rounded-md border border-zinc-300 bg-transparent px-3 transition-[border-color,box-shadow] duration-200 ease-out hover:border-brand-lime-ink hover:shadow-sm dark:border-white/30 dark:hover:border-brand-lime motion-reduce:transition-none'
                 />
                 <button
                   type='submit'
                   disabled={!!readError}
-                  className='min-h-11 rounded-md bg-[#ccff00] px-3 font-medium text-black disabled:opacity-50'
+                  className='min-h-11 rounded-md bg-brand-lime px-3 font-medium text-black transition-[background-color,box-shadow,translate] duration-200 ease-out enabled:hover:-translate-y-0.5 enabled:hover:bg-brand-lime-hover enabled:hover:shadow-md disabled:opacity-50 motion-reduce:transition-none motion-reduce:enabled:hover:translate-y-0'
                 >
                   Add
                 </button>
