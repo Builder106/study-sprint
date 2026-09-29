@@ -14,6 +14,11 @@ Goal fields ease to the theme accent and a soft shadow on hover. Enabled Add
 buttons shift to the lime hover color and lift slightly; reduced-motion
 settings skip the transitions.
 
+## 2026-09-29: Mark landing legal links clearly #interaction
+
+Privacy and Terms stay underlined in the landing footer. Their text eases to
+the theme accent on hover and keyboard focus.
+
 ## 2026-09-29: Fail CI on unexpected Vite and runtime warnings #policy
 
 Vite warnings now fail in development and production builds. The required

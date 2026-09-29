@@ -785,6 +785,18 @@ html:has(.ss-landing) {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
+  text-decoration: underline;
+  text-decoration-color: var(--ss-ink);
+  text-underline-offset: 0.2em;
+  transition: color 180ms ease, text-decoration-color 180ms ease;
+}
+.ss-footer a:is(:hover, :focus-visible) {
+  color: var(--ss-ink);
+  text-decoration-color: currentColor;
+}
+.ss-footer a:focus-visible {
+  outline: 2px solid var(--ss-ink);
+  outline-offset: 3px;
 }
 @keyframes ss-caption-in {
   from {
