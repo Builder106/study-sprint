@@ -1065,8 +1065,8 @@ export function Landing() {
       <footer className='ss-footer'>
         <p>Go solo, or find company in a study room.</p>
         <nav aria-label='Legal'>
-          <Link to='/privacy'>Privacy</Link>
-          <Link to='/terms'>Terms</Link>
+          <Link className='legal-link' to='/privacy'>Privacy</Link>
+          <Link className='legal-link' to='/terms'>Terms</Link>
         </nav>
       </footer>
     </div>

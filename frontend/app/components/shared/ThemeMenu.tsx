@@ -19,7 +19,7 @@ export function ThemeMenu() {
         <button
           type='button'
           aria-label='Theme settings'
-          className='grid h-11 w-11 place-items-center text-zinc-600 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-lime-ink dark:text-zinc-400 dark:hover:text-zinc-50 dark:focus-visible:outline-brand-lime'
+          className='theme-menu-trigger grid h-11 w-11 cursor-pointer place-items-center text-zinc-600 transition-colors duration-200 hover:text-brand-lime-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-lime-ink dark:text-zinc-400 dark:hover:text-brand-lime dark:focus-visible:outline-brand-lime'
         >
           <CurrentIcon className='h-4 w-4' aria-hidden='true' />
         </button>

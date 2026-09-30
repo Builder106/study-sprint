@@ -319,8 +319,8 @@ export function GuestStudy({ embedded = false }: { embedded?: boolean }) {
       {!embedded && (
         <footer className='mx-auto flex max-w-5xl flex-wrap gap-4 px-4 py-8 text-sm text-zinc-600 dark:text-zinc-400'>
           <Link to='/'>Home</Link>
-          <Link to='/privacy'>Privacy</Link>
-          <Link to='/terms'>Terms</Link>
+          <Link className='legal-link' to='/privacy'>Privacy</Link>
+          <Link className='legal-link' to='/terms'>Terms</Link>
         </footer>
       )}
     </div>

@@ -3,3 +3,67 @@
 @import './tokens.css';
 @import './theme.css';
 @import './landing.css';
+
+@media (prefers-reduced-motion: no-preference) {
+  .legal-link {
+    position: relative;
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    text-decoration: none;
+    transition: color 180ms ease;
+  }
+
+  .legal-link::after {
+    position: absolute;
+    right: 0;
+    bottom: 0.55rem;
+    left: 0;
+    height: 1px;
+    background: var(--brand-lime-ink);
+    content: '';
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .dark .legal-link::after {
+    background: var(--brand-lime);
+  }
+
+  .legal-link:is(:hover, :focus-visible)::after {
+    transform: scaleX(1);
+  }
+}
+
+.legal-link {
+  cursor: pointer;
+  color: color-mix(in oklab, var(--foreground) 65%, var(--background));
+}
+
+.legal-link:is(:hover, :focus-visible) {
+  color: var(--brand-lime-ink);
+}
+
+.dark .legal-link:is(:hover, :focus-visible) {
+  color: var(--brand-lime);
+}
+
+.legal-link:focus-visible {
+  outline: 2px solid var(--brand-lime-ink);
+  outline-offset: 3px;
+}
+
+.dark .legal-link:focus-visible {
+  outline-color: var(--brand-lime);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .theme-menu-trigger svg {
+    transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .theme-menu-trigger:is(:hover, :focus-visible) svg {
+    transform: translateY(-1px) scale(1.08);
+  }
+}

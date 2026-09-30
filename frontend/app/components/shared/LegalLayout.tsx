@@ -55,13 +55,13 @@ export function LegalLayout({ title, lastUpdated, children }: Props) {
         <div className='flex justify-center gap-6'>
           <Link
             to='/privacy'
-            className='hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors'
+            className='legal-link'
           >
             Privacy
           </Link>
           <Link
             to='/terms'
-            className='hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors'
+            className='legal-link'
           >
             Terms
           </Link>
