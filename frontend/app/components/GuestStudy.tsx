@@ -245,20 +245,31 @@ export function GuestStudy({ embedded = false }: { embedded?: boolean }) {
               {data.goals.length === 0
                 ? <p className='mt-3 text-sm text-zinc-600 dark:text-zinc-400'>No goals yet.</p>
                 : (
-                  <ul className='mt-3 space-y-2'>
-                    {data.goals.map((goal) => (
-                      <li key={goal.id} className='flex items-center gap-2'>
-                        <button
-                          type='button'
-                          aria-pressed={data.activeGoalId === goal.id}
-                          onClick={() =>
-                            setData((current) => ({ ...current, activeGoalId: goal.id }))}
-                          className='min-h-11 flex-1 rounded-md border border-zinc-300 px-3 text-left aria-pressed:border-[#526d00] dark:border-white/30 dark:aria-pressed:border-[#ccff00]'
-                        >
-                          {goal.title}
-                        </button>
-                      </li>
-                    ))}
+                    <ul className='mt-3 space-y-2'>
+                      {data.goals.map((goal) => (
+                        <li key={goal.id} className='flex items-center gap-2'>
+                          {data.goals.length > 1
+                            ? (
+                              <button
+                                type='button'
+                                aria-pressed={data.activeGoalId === goal.id}
+                                onClick={() =>
+                                  setData((current) => ({ ...current, activeGoalId: goal.id }))}
+                                className='min-h-11 flex-1 rounded-md border border-zinc-300 px-3 text-left aria-pressed:border-[#526d00] dark:border-white/30 dark:aria-pressed:border-[#ccff00]'
+                              >
+                                {goal.title}
+                              </button>
+                            )
+                            : (
+                              <span
+                                aria-current='true'
+                                className='min-h-11 flex-1 rounded-md border border-zinc-300 px-3 py-2 text-left dark:border-white/30'
+                              >
+                                {goal.title}
+                              </span>
+                            )}
+                        </li>
+                      ))}
                   </ul>
                 )}
             </section>
