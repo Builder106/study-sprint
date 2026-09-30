@@ -3,6 +3,17 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-29: Share sign-in and registration UI #refactor
+
+Both auth pages now use shared layout, theme, field, divider, error, submit,
+and authenticated-user redirect code. Login and registration validation and
+submission remain page-specific.
+
+## 2026-09-30: Share legal-link hover feedback #interaction
+
+Privacy and Terms links across landing, guest, and legal pages now share one
+theme-aware underline animation and keyboard-focus treatment.
+
 ## 2026-09-29: Strengthen duration chip outlines #accessibility
 
 Duration chips use a theme-aware outline above 3:1 contrast. The decorative
