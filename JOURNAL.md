@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-30: Scope dark headline contrast review #accessibility
+
+Axe cannot calculate contrast for the dark-mode neon gradient headline. CI filters only that element's incomplete gradient review; measured contrast violations remain blocking, and the heading keeps its accessible text label.
+
 ## 2026-09-29: Share sign-in and registration UI #refactor
 
 Both auth pages now use shared layout, theme, field, divider, error, submit,

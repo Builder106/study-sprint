@@ -55,6 +55,7 @@ async function applyDocumentedExceptions(
   results: AxeResult[],
   target: AuditTarget,
   page: Page,
+  theme: Theme,
   kind: AxeResultKind,
 ): Promise<AxeResult[]> {
   const filteredResults: AxeResult[] = [];
@@ -66,6 +67,20 @@ async function applyDocumentedExceptions(
     const nodes: AxeNode[] = [];
     for (const node of result.nodes) {
       const targetSelector = String(node.target);
+      // Axe cannot measure the intentional neon gradient on the dark landing headline.
+      const unresolvedHeadlineGradient = node.any?.some(
+        ({ data }) => data?.messageKey === 'bgGradient',
+      );
+      if (
+        target.name === 'landing' &&
+        theme === 'dark' &&
+        kind === 'incomplete' &&
+        result.id === 'color-contrast' &&
+        targetSelector.includes('.ss-charge-word') &&
+        unresolvedHeadlineGradient
+      ) {
+        continue;
+      }
       // Exception: Three.js / WebGL charge sculpture on landing page
       if (
         target.name === 'landing' &&
@@ -145,12 +160,14 @@ for (const theme of THEMES) {
             results.violations as AxeResult[],
             target,
             page,
+            theme,
             'violations',
           );
           const incomplete = await applyDocumentedExceptions(
             results.incomplete as AxeResult[],
             target,
             page,
+            theme,
             'incomplete',
           );
 
