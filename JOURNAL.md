@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-30: Brand the initial loading state #interaction
+
+Session restoration and lazy route entry now show a shared StudySprint loading screen with a short lime charge sweep. The screen keeps readable status text and shows a static full charge for reduced motion.
+
 ## 2026-09-30: Scope dark headline contrast review #accessibility
 
 Axe cannot calculate contrast for the dark-mode neon gradient headline. CI filters only that element's incomplete gradient review; measured contrast violations remain blocking, and the heading keeps its accessible text label.

@@ -1,0 +1,61 @@
+.ss-loading-screen {
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
+  place-items: center;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.ss-loading-content {
+  display: flex;
+  width: min(16rem, calc(100% - 3rem));
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ss-loading-name {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.ss-loading-track {
+  width: 100%;
+  height: 2px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--foreground) 18%, var(--background));
+}
+
+.ss-loading-charge {
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: var(--brand-lime-ink);
+  transform: translateX(-100%);
+  animation: ss-loading-charge 1.4s ease-in-out infinite;
+}
+
+.dark .ss-loading-charge {
+  background: var(--brand-lime);
+}
+
+.ss-loading-label {
+  color: color-mix(in oklab, var(--foreground) 70%, var(--background));
+  font-size: 0.875rem;
+}
+
+@keyframes ss-loading-charge {
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-loading-charge {
+    width: 100%;
+    transform: none;
+    animation: none;
+  }
+}
