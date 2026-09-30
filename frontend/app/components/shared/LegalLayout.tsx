@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { ArrowLeft, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { LogoMark } from './Logo';
 
 interface Props {
@@ -12,6 +12,10 @@ interface Props {
 
 export function LegalLayout({ title, lastUpdated, children }: Props) {
   const { resolvedTheme, setTheme } = useTheme();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-[#fafafa] font-sans selection:bg-[#ccff00] selection:text-black flex flex-col'>
