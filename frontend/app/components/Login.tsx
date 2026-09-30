@@ -1,10 +1,16 @@
 import { Link, useNavigate } from 'react-router';
-import { ArrowRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useAuth } from '@/lib/auth';
-import { LogoMark } from './shared/Logo';
-import { ThemeMenu } from './shared/ThemeMenu';
+import {
+  AuthDivider,
+  AuthError,
+  AuthField,
+  AuthPage,
+  AuthSubmitButton,
+  useRedirectAuthenticatedUser,
+} from './shared/AuthPage';
 import { GoogleSignInButton } from './shared/GoogleSignInButton';
 
 /**
@@ -23,9 +29,7 @@ export function Login() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (user) navigate('/dashboard', { replace: true });
-  }, [user, navigate]);
+  useRedirectAuthenticatedUser(user);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -43,102 +47,59 @@ export function Login() {
   };
 
   return (
-    <div className='flex min-h-screen flex-col bg-white font-sans text-zinc-900 selection:bg-[var(--brand-lime)] selection:text-black dark:bg-[#0a0a0a] dark:text-[#fafafa]'>
-      <header className='flex items-center justify-between border-b border-zinc-200 px-6 py-6 sm:px-8 dark:border-white/10'>
-        <Link to='/' className='flex items-center gap-2 text-lg font-medium tracking-tight'>
-          <LogoMark size={28} />
-          StudySprint
-        </Link>
-        <ThemeMenu />
-      </header>
+    <AuthPage>
+      <Link
+        to='/'
+        className='group mb-8 inline-flex items-center gap-2 text-xs font-bold tracking-widest text-zinc-700 uppercase transition-colors hover:text-[var(--brand-lime-ink)] dark:text-[#d4d4d8] dark:hover:text-[#ccff00] sm:mb-10'
+      >
+        <ArrowLeft className='w-4 h-4 transition-transform group-hover:-translate-x-1' />
+        Back
+      </Link>
 
-      <main className='mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-6 py-16 sm:px-8'>
-        <h1 className='mb-8 text-4xl font-medium tracking-tighter'>Sign in</h1>
+      <h1 className='mb-8 text-4xl font-medium tracking-tighter'>Sign in</h1>
 
-        <div className='mb-8'>
-          <GoogleSignInButton label='Sign in with Google' onError={setError} />
-          <div className='mt-8 flex items-center gap-4'>
-            <div className='h-px flex-1 bg-zinc-200 dark:bg-white/10' />
-            <span className='text-[10px] font-bold tracking-widest text-zinc-700 uppercase dark:text-[#d4d4d8]'>
-              or with email
-            </span>
-            <div className='h-px flex-1 bg-zinc-200 dark:bg-white/10' />
-          </div>
+      <div className='mb-8'>
+        <GoogleSignInButton label='Sign in with Google' onError={setError} />
+        <AuthDivider />
+      </div>
+
+      <form className='flex flex-col gap-8' onSubmit={onSubmit}>
+        <AuthField
+          id='login-email'
+          label='Email address'
+          type='email'
+          autoComplete='email'
+          value={email}
+          onChange={setEmail}
+        />
+        <AuthField
+          id='login-password'
+          label='Password'
+          type='password'
+          autoComplete='current-password'
+          value={password}
+          onChange={setPassword}
+        />
+
+        {error && <AuthError message={error} />}
+
+        <div className='pt-4'>
+          <AuthSubmitButton
+            label='Sign in'
+            submitting={submitting}
+            submittingLabel='Signing in…'
+          />
         </div>
 
-        <form className='flex flex-col gap-8' onSubmit={onSubmit}>
-          <div className='space-y-3'>
-            <label
-              htmlFor='login-email'
-              className='block text-xs font-medium tracking-widest text-zinc-700 uppercase dark:text-[#d4d4d8]'
-            >
-              Email address
-            </label>
-            <input
-              id='login-email'
-              type='email'
-              required
-              autoComplete='email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder='name@example.com'
-              className='w-full rounded-none border-b border-zinc-300 bg-transparent px-0 py-3 text-zinc-900 transition-colors placeholder:text-zinc-400 focus:border-[var(--brand-lime)] focus:outline-none dark:border-white/20 dark:text-[#fafafa] dark:placeholder:text-zinc-700'
-            />
-          </div>
-
-          <div className='space-y-3'>
-            <label
-              htmlFor='login-password'
-              className='block text-xs font-medium tracking-widest text-zinc-700 uppercase dark:text-[#d4d4d8]'
-            >
-              Password
-            </label>
-            <input
-              id='login-password'
-              type='password'
-              required
-              autoComplete='current-password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder='••••••••'
-              className='w-full rounded-none border-b border-zinc-300 bg-transparent px-0 py-3 text-zinc-900 transition-colors placeholder:text-zinc-400 focus:border-[var(--brand-lime)] focus:outline-none dark:border-white/20 dark:text-[#fafafa] dark:placeholder:text-zinc-700'
-            />
-          </div>
-
-          {error && (
-            <div className='text-xs font-medium text-red-400' role='alert'>
-              {error}
-            </div>
-          )}
-
-          <div className='pt-4'>
-            <button
-              type='submit'
-              disabled={submitting}
-              className='flex h-14 w-full items-center justify-center gap-2 rounded-full bg-[var(--brand-lime)] text-sm font-medium whitespace-nowrap text-black transition-colors hover:bg-[var(--brand-lime-hover)] disabled:opacity-50'
-            >
-              {submitting
-                ? (
-                  'Signing in…'
-                )
-                : (
-                  <>
-                    Sign in <ArrowRight className='h-4 w-4' />
-                  </>
-                )}
-            </button>
-          </div>
-
-          <div className='text-center'>
-            <Link
-              to='/register'
-              className='text-sm text-zinc-700 transition-colors hover:text-zinc-900 dark:text-[#d4d4d8] dark:hover:text-[#f4f4f5]'
-            >
-              Create an account
-            </Link>
-          </div>
-        </form>
-      </main>
-    </div>
+        <div className='text-center'>
+          <Link
+            to='/register'
+            className='inline-block cursor-pointer text-sm text-zinc-700 transition-[color,translate] duration-200 ease-out hover:-translate-y-0.5 hover:text-brand-lime-ink focus-visible:text-brand-lime-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-lime-ink dark:text-[#d4d4d8] dark:hover:text-brand-lime dark:focus-visible:text-brand-lime motion-reduce:transition-none motion-reduce:hover:translate-y-0'
+          >
+            Create an account
+          </Link>
+        </div>
+      </form>
+    </AuthPage>
   );
 }

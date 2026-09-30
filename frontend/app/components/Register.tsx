@@ -1,25 +1,28 @@
 import { Link, useNavigate } from 'react-router';
-import { ArrowLeft, ArrowRight, Moon, Sun } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useTheme } from 'next-themes';
 import { useAuth } from '@/lib/auth';
 import { PASSWORD_MIN_LENGTH, validatePassword } from '@/lib/password';
-import { LogoMark } from './shared/Logo';
+import {
+  AuthDivider,
+  AuthError,
+  AuthField,
+  AuthPage,
+  AuthSubmitButton,
+  useRedirectAuthenticatedUser,
+} from './shared/AuthPage';
 import { GoogleSignInButton } from './shared/GoogleSignInButton';
 
 export function Register() {
   const navigate = useNavigate();
   const { user, register } = useAuth();
-  const { resolvedTheme, setTheme } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (user) navigate('/dashboard', { replace: true });
-  }, [user, navigate]);
+  useRedirectAuthenticatedUser(user);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -41,113 +44,65 @@ export function Register() {
   };
 
   return (
-    <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-[#fafafa] font-sans flex flex-col'>
-      <header className='px-8 py-6 flex justify-between items-center border-b border-zinc-200 dark:border-white/10'>
-        <Link
-          to='/'
-          className='font-medium text-lg tracking-tight flex items-center gap-2 hover:opacity-80 transition-opacity'
-        >
-          <LogoMark size={28} />
-          StudySprint
-        </Link>
-        <button
-          onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-          aria-label='Toggle theme'
-          className='p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-[#fafafa] transition-colors'
-        >
-          {resolvedTheme === 'dark' ? <Sun className='w-4 h-4' /> : <Moon className='w-4 h-4' />}
-        </button>
-      </header>
+    <AuthPage>
+      <Link
+        to='/'
+        className='group mb-8 inline-flex items-center gap-2 text-xs font-bold tracking-widest text-zinc-700 uppercase transition-colors hover:text-[var(--brand-lime-ink)] dark:text-[#d4d4d8] dark:hover:text-[#ccff00] sm:mb-10'
+      >
+        <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
+        Back
+      </Link>
 
-      <main className='flex-1 flex items-center justify-center px-8 py-16'>
-        <div className='w-full max-w-sm'>
+      <h1 className='mb-8 whitespace-nowrap text-3xl font-medium tracking-tighter sm:mb-10 sm:text-4xl'>
+        Create account
+      </h1>
+
+      <div className='mb-6 sm:mb-8'>
+        <GoogleSignInButton label='Sign up with Google' onError={setError} />
+        <AuthDivider />
+      </div>
+
+      <form className='flex flex-col gap-6 sm:gap-8' onSubmit={onSubmit} noValidate>
+        <AuthField
+          id='register-email'
+          label='Email address'
+          type='email'
+          autoComplete='email'
+          value={email}
+          onChange={setEmail}
+        />
+        <AuthField
+          id='register-password'
+          label={(
+            <>
+              Password{' '}
+              <span>(min. {PASSWORD_MIN_LENGTH} characters)</span>
+            </>
+          )}
+          type='password'
+          autoComplete='new-password'
+          value={password}
+          onChange={setPassword}
+          minLength={PASSWORD_MIN_LENGTH}
+        />
+
+        {error && <AuthError message={error} />}
+
+        <AuthSubmitButton
+          label='Create account'
+          submitting={submitting}
+          submittingLabel='Creating account…'
+        />
+
+        <div className='text-center'>
           <Link
-            to='/'
-            className='inline-flex items-center gap-2 text-xs font-bold text-zinc-700 uppercase tracking-widest hover:text-[var(--brand-lime-ink)] dark:text-[#d4d4d8] dark:hover:text-[#ccff00] mb-12 transition-colors group'
+            to='/login'
+            className='inline-block cursor-pointer text-sm text-zinc-700 transition-[color,translate] duration-200 ease-out hover:-translate-y-0.5 hover:text-brand-lime-ink focus-visible:text-brand-lime-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-lime-ink dark:text-[#d4d4d8] dark:hover:text-brand-lime dark:focus-visible:text-brand-lime motion-reduce:transition-none motion-reduce:hover:translate-y-0'
           >
-            <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
-            Back
+            Already have an account? Sign in
           </Link>
-
-          <h1 className='text-4xl md:text-5xl font-medium tracking-tighter mb-10'>
-            Create account.
-          </h1>
-
-          <div className='mb-8'>
-            <GoogleSignInButton label='Sign up with Google' onError={setError} />
-            <div className='flex items-center gap-4 mt-8'>
-              <div className='flex-1 h-px bg-zinc-200 dark:bg-white/10' />
-              <span className='text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-[#d4d4d8]'>
-                or with email
-              </span>
-              <div className='flex-1 h-px bg-zinc-200 dark:bg-white/10' />
-            </div>
-          </div>
-
-          <form className='flex flex-col gap-8' onSubmit={onSubmit} noValidate>
-            <div className='space-y-3'>
-              <label className='text-xs uppercase tracking-widest text-zinc-700 dark:text-[#d4d4d8] font-medium'>
-                Email address
-              </label>
-              <input
-                type='email'
-                required
-                autoComplete='email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder='name@example.com'
-                className='w-full bg-transparent border-b border-zinc-300 dark:border-white/20 px-0 py-3 text-zinc-900 dark:text-[#fafafa] placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:outline-none focus:border-[#ccff00] transition-colors rounded-none'
-              />
-            </div>
-
-            <div className='space-y-3'>
-              <label className='text-xs uppercase tracking-widest text-zinc-700 dark:text-[#d4d4d8] font-medium'>
-                Password{' '}
-                <span className='text-zinc-700 dark:text-[#d4d4d8]'>
-                  (min. {PASSWORD_MIN_LENGTH} characters)
-                </span>
-              </label>
-              <input
-                type='password'
-                required
-                minLength={PASSWORD_MIN_LENGTH}
-                autoComplete='new-password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder='••••••••'
-                className='w-full bg-transparent border-b border-zinc-300 dark:border-white/20 px-0 py-3 text-zinc-900 dark:text-[#fafafa] placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:outline-none focus:border-[#ccff00] transition-colors rounded-none'
-              />
-            </div>
-
-            {error && (
-              <div className='text-xs text-red-400 font-medium' role='alert'>
-                {error}
-              </div>
-            )}
-
-            <button
-              type='submit'
-              disabled={submitting}
-              className='w-full bg-[#ccff00] text-black h-14 rounded-full text-sm font-medium flex items-center justify-center gap-2 hover:bg-[#b3e600] transition-colors disabled:opacity-50'
-            >
-              {submitting ? 'Creating account…' : (
-                <>
-                  Create account <ArrowRight className='w-4 h-4' />
-                </>
-              )}
-            </button>
-
-            <div className='text-center'>
-              <Link
-                to='/'
-                className='text-sm text-zinc-700 hover:text-zinc-900 dark:text-[#d4d4d8] dark:hover:text-[#f4f4f5] transition-colors'
-              >
-                Already have an account? Sign in
-              </Link>
-            </div>
-          </form>
         </div>
-      </main>
-    </div>
+      </form>
+    </AuthPage>
   );
 }
