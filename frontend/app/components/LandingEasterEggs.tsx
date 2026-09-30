@@ -33,9 +33,11 @@ function durationSequencePath(): string {
     const end = radians[index + 1];
     if (end === undefined) return [];
     const span = end - start;
-    return Array.from({ length: 6 }, (_, step) => {
-      const angle = start + span * step / 5;
-      const radius = 1 + (Math.random() - 0.5) * 0.018;
+    return Array.from({ length: 5 }, (_, step) => {
+      const angle = start + span * step / 4;
+      const direction = step % 2 === 0 ? 1 : -1;
+      const jitter = step === 0 || step === 4 ? 0 : direction * (0.05 + Math.random() * 0.02);
+      const radius = 1 + jitter;
       const x = RING.cx + Math.cos(angle) * RING.rx * radius;
       const y = RING.cy + Math.sin(angle) * RING.ry * radius;
       return `${x.toFixed(1)} ${y.toFixed(1)}`;

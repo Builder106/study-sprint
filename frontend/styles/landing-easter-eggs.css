@@ -55,8 +55,12 @@
 }
 
 .ss-easter-egg[data-easter-egg='duration-sequence'] .ss-easter-egg__ring-spark {
-  stroke-width: 4;
-  stroke-dasharray: 28 72;
+  stroke-width: 2.5;
+  stroke: var(--brand-lime);
+  filter:
+    drop-shadow(0 0 2px var(--brand-lime))
+    drop-shadow(0 0 7px color-mix(in srgb, var(--brand-lime) 72%, transparent));
+  stroke-dasharray: 14 86;
   animation: ss-easter-sequence 1.05s cubic-bezier(0.25, 0.75, 0.25, 1) both;
 }
 
