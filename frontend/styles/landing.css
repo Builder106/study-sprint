@@ -153,7 +153,12 @@ html:has(.ss-landing) {
 .dark .ss-introduction h1 .ss-charge-word {
   margin-inline: 0;
   padding-inline: 0;
-  color: var(--brand-lime);
+  color: transparent;
+  background-image: linear-gradient(to right, var(--brand-lime) 50%, var(--ss-secondary) 50%);
+  background-position: 100% 0;
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
 }
 .ss-charge-word::before {
   content: '';
@@ -178,7 +183,7 @@ html:has(.ss-landing) {
     cubic-bezier(0.18, 0.74, 0.25, 1) 500ms both;
 }
 .dark .ss-introduction[data-bolt-entered='true']:not([data-still='true']) .ss-charge-word {
-  animation: none;
+  animation-name: ss-charge-text-reveal;
 }
 .ss-introduction[data-bolt-entered='true']:not([data-still='true']) .ss-charge-word::before {
   animation: ss-charge-spark 220ms ease-out calc(var(--ss-entry-duration) - 220ms) both;
@@ -192,7 +197,7 @@ html:has(.ss-landing) {
   background-color: var(--brand-lime);
 }
 .dark .ss-introduction[data-still='true'] .ss-charge-word {
-  background-color: transparent;
+  background-position: 0 0;
 }
 .ss-introduction[data-still='true'] .ss-charge-word::before {
   display: none;
@@ -814,6 +819,14 @@ html:has(.ss-landing) {
   }
   to {
     background-color: var(--brand-lime);
+  }
+}
+@keyframes ss-charge-text-reveal {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
   }
 }
 @keyframes ss-charge-spark {
