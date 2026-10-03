@@ -12,7 +12,12 @@
   width: min(16rem, calc(100% - 3rem));
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
+}
+
+.ss-loading-bolt {
+  display: block;
+  color: color-mix(in oklab, var(--foreground) 18%, var(--background));
 }
 
 .ss-loading-name {
@@ -21,41 +26,7 @@
   letter-spacing: -0.04em;
 }
 
-.ss-loading-track {
-  width: 100%;
-  height: 2px;
-  overflow: hidden;
-  background: color-mix(in oklab, var(--foreground) 18%, var(--background));
-}
-
-.ss-loading-charge {
-  display: block;
-  width: 40%;
-  height: 100%;
-  background: var(--brand-lime-ink);
-  transform: translateX(-100%);
-  animation: ss-loading-charge 1.4s ease-in-out infinite;
-}
-
-.dark .ss-loading-charge {
-  background: var(--brand-lime);
-}
-
 .ss-loading-label {
   color: color-mix(in oklab, var(--foreground) 70%, var(--background));
   font-size: 0.875rem;
-}
-
-@keyframes ss-loading-charge {
-  to {
-    transform: translateX(250%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ss-loading-charge {
-    width: 100%;
-    transform: none;
-    animation: none;
-  }
 }

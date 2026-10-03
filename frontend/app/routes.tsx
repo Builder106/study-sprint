@@ -32,6 +32,8 @@ export const router = createBrowserRouter([
     Component: RootLayout,
     children: [
       { index: true, Component: Landing },
+      // TEMP: isolated preview of LoadingScreen, not for commit.
+      { path: 'dev/loading-preview', Component: LoadingScreen },
       {
         path: 'guest',
         HydrateFallback: RouteLoading,
