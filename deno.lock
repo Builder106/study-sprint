@@ -54,7 +54,7 @@
     "npm:embla-carousel-react@8.6.0": "8.6.0_react@19.3.0",
     "npm:input-otp@1.5.0": "1.5.0_react@19.3.0_react-dom@19.3.0__react@19.3.0",
     "npm:lucide-react@1.51.0": "1.51.0_@types+react@19.3.0_react@19.3.0",
-    "npm:motion@13.4.4": "13.4.4_react@19.3.0_react-dom@19.3.0__react@19.3.0",
+    "npm:motion@14.0.0": "14.0.0_react@19.3.0_react-dom@19.3.0__react@19.3.0",
     "npm:next-themes@0.4.6": "0.4.6_react@19.3.0_react-dom@19.3.0__react@19.3.0",
     "npm:playwright-bdd@^9.2.1": "9.2.1_@playwright+test@1.63.0",
     "npm:playwright@1.59.1": "1.59.1",
@@ -2242,8 +2242,8 @@
     "find-root@1.1.0": {
       "integrity": "sha512-NKfW6bec6GfKc0SGx1e07QZY9PE99u0Bft/0rzSD5k3sO/vwkVUpDUKVm5Gpp5Ue3YfShPFTX2070tDs5kB9Ng=="
     },
-    "framer-motion@13.4.6_react@19.3.0_react-dom@19.3.0__react@19.3.0": {
-      "integrity": "sha512-TwKWt2CC8rjhARzwV00TZIh04ipumSAqyKM/JZmS+urdncSHg6wTF/mfj/Fd6Oi2W01TZSWsiA3uxXDrXZtKyw==",
+    "framer-motion@14.0.0_react@19.3.0_react-dom@19.3.0__react@19.3.0": {
+      "integrity": "sha512-QAtHmybrDFSliyW1sexMtSQTQd+1jw2ajibEmzpuI4XdPVzQkn+dAzJMm2sW3pl9MJuSS4xN51djQ7huhlP/VA==",
       "dependencies": [
         "motion-dom",
         "motion-utils",
@@ -2857,17 +2857,17 @@
         "mime-db"
       ]
     },
-    "motion-dom@13.4.5": {
-      "integrity": "sha512-p63p2Doq+US/O5wADauIPUVx0/eONHMLPzsudBM9XMWRuBQLXogdxH0vwIA8WYQZw864pyzoV723xoDqakwWTg==",
+    "motion-dom@14.0.0": {
+      "integrity": "sha512-aU3ApXo1yTpeUi3JU+jbDk2TELjxPE3MbBMUP7nZHlARb6RweJK+ojmLjpuB0YsY6zhbBl1YWGo8LMsI1/Llqw==",
       "dependencies": [
         "motion-utils"
       ]
     },
-    "motion-utils@13.3.0": {
-      "integrity": "sha512-sgSschQp7EseHInIlR7hBbMuvet3RA0bs28KPZAXJcGKGdxHGvh1ogpYDilY3bOMtl73EqPNmp75sAKHYPU5sg=="
+    "motion-utils@14.0.0": {
+      "integrity": "sha512-jBsyjVxTTRZNeuvd/v+btVXr90LQkYl4HhRu9T2ARc+PMnvkmjsjRVeAg4Qm10b6TlTw+kykWI8gu/6LuvpLSQ=="
     },
-    "motion@13.4.4_react@19.3.0_react-dom@19.3.0__react@19.3.0": {
-      "integrity": "sha512-lyX5kpAum2MmigecKWrFdIj3Sjn7pHek2EUrXY0WGZbOjJ1f5NfX0g4KQAb2Bp2EqL0a6dUzse11s1n7OYr5jg==",
+    "motion@14.0.0_react@19.3.0_react-dom@19.3.0__react@19.3.0": {
+      "integrity": "sha512-oGc2lkge2lkRZCP+J8/JsnYu4NFjqP1MtXirNdetn3QbvK2JqwM9A200EdT4C598KfzDhjLT12zF21xDM4Oilw==",
       "dependencies": [
         "framer-motion",
         "react@19.3.0",
@@ -3683,7 +3683,7 @@
       "npm:embla-carousel-react@8.6.0",
       "npm:input-otp@1.5.0",
       "npm:lucide-react@1.51.0",
-      "npm:motion@13.4.4",
+      "npm:motion@14.0.0",
       "npm:next-themes@0.4.6",
       "npm:playwright-bdd@^9.2.1",
       "npm:playwright@1.63.0",
