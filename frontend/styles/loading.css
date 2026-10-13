@@ -1,0 +1,32 @@
+.ss-loading-screen {
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
+  place-items: center;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.ss-loading-content {
+  display: flex;
+  width: min(16rem, calc(100% - 3rem));
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ss-loading-bolt {
+  display: block;
+  color: color-mix(in oklab, var(--foreground) 18%, var(--background));
+}
+
+.ss-loading-name {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.ss-loading-label {
+  color: color-mix(in oklab, var(--foreground) 70%, var(--background));
+  font-size: 0.875rem;
+}

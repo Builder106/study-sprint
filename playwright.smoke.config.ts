@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = 'http://127.0.0.1:4173';
+const port = Number(process.env.SMOKE_PORT ?? 4173);
+const baseURL = `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: '.',
@@ -16,7 +17,7 @@ export default defineConfig({
     video: 'off',
   },
   webServer: {
-    command: 'node_modules/.bin/vite --host 127.0.0.1 --port 4173 --strictPort',
+    command: `node_modules/.bin/vite --host 127.0.0.1 --port ${port} --strictPort`,
     url: baseURL,
     reuseExistingServer: false,
     timeout: 30_000,

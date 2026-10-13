@@ -1,4 +1,6 @@
-import { assertEquals } from 'jsr:@std/assert';
+import { assertEquals, assertStringIncludes } from 'jsr:@std/assert';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { BatteryBolt, batteryAriaLabel, chargeToFillColor, clampCharge } from './BatteryBolt.tsx';
 
 Deno.test('BatteryBolt helpers clamp charge values', () => {
@@ -22,11 +24,15 @@ Deno.test('BatteryBolt helpers describe the clamped rounded charge', () => {
 });
 
 Deno.test('BatteryBolt component produces SVG element tree', () => {
-  const elem = BatteryBolt({ chargePct: 85, size: 100, className: 'custom-bolt' });
-  assertEquals(elem.props.width, 100);
-  assertEquals(elem.props.height, 100);
-  assertEquals(elem.props.className, 'custom-bolt');
+  const markup = renderToStaticMarkup(
+    createElement(BatteryBolt, { chargePct: 85, size: 100, className: 'custom-bolt' }),
+  );
+  assertStringIncludes(markup, 'width="100"');
+  assertStringIncludes(markup, 'height="100"');
+  assertStringIncludes(markup, 'class="custom-bolt"');
+  assertStringIncludes(markup, 'aria-label="Battery at 85% charge"');
 
-  const elemDefault = BatteryBolt({ chargePct: 40 });
-  assertEquals(elemDefault.props.width, 120);
+  const defaultMarkup = renderToStaticMarkup(createElement(BatteryBolt, { chargePct: 40 }));
+  assertStringIncludes(defaultMarkup, 'width="120"');
+  assertStringIncludes(defaultMarkup, 'height="120"');
 });

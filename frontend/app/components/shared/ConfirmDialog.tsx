@@ -51,7 +51,10 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
       {children}
       <AD.Root open={open} onOpenChange={(v) => !v && settle(false)}>
         <AD.Portal>
-          <AD.Overlay className='fixed inset-0 z-50 bg-black/60 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0' />
+          <AD.Overlay
+            onClick={() => settle(false)}
+            className='fixed inset-0 z-50 bg-black/60 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0'
+          />
           <AD.Content className='fixed left-1/2 top-1/2 z-50 w-[min(440px,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0a0a0a] p-6 shadow-2xl focus:outline-none'>
             <AD.Title className='text-lg font-medium tracking-tight text-zinc-900 dark:text-zinc-50'>
               {opts?.title}
@@ -65,7 +68,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
               <AD.Cancel asChild>
                 <button
                   onClick={() => settle(false)}
-                  className='px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors'
+                  className='cursor-pointer px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors'
                 >
                   {opts?.cancelLabel ?? 'Cancel'}
                 </button>
@@ -73,7 +76,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
               <AD.Action asChild>
                 <button
                   onClick={() => settle(true)}
-                  className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${confirmClass}`}
+                  className={`cursor-pointer px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${confirmClass}`}
                 >
                   {opts?.confirmLabel ?? 'Confirm'}
                 </button>

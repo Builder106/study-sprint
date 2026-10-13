@@ -57,22 +57,22 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - name: Open-source license compliance scan
-        run: deno run -A npm:license-checker --summary
       - name: Install deps
         run: deno install --allow-scripts=npm:@tailwindcss/oxide
+      - name: Open-source license compliance scan
+        run: node scripts/license-scan.mjs
       - name: TypeScript typecheck
         run: deno task check
 
   build:
-    name: Build & Bundle Budget
+    name: Build & Zero-warning Bundle Budget
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - name: Build
+      - name: Build with warnings treated as errors
         # Vite inlines VITE_* values at build time. CI builds with placeholders
         # so we can verify "is this buildable?" without exposing real keys to
         # PR forks. The deployed bundle is built locally with real .env values
@@ -129,10 +129,15 @@ jobs:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
       - name: Install dependencies
         run: deno install --allow-scripts=npm:@tailwindcss/oxide
-      - name: Run local E2E smoke suite
+      - name: Run local E2E smoke suite with warning gate
         run: deno task test:e2e:smoke
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+      - name: Run automated accessibility audit with warning gate
+        run: deno task test:accessibility
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+          PLAYWRIGHT_A11Y_SCOPE: pr
 
   # The complete BDD suite remains a manual diagnostic workflow. It uses the
   # shared Supabase project and is not a pull request or deployment dependency.
@@ -193,9 +198,19 @@ jobs:
             test-results/
           retention-days: 14
 
+  matrix-evidence:
+    name: Accessibility matrix evidence
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno task verify:a11y-matrix --mode=pr
+
   deploy:
     name: Trigger Vercel Deployment
-    needs: [fmt, lint, typecheck, build, unit, e2e-smoke]
+    needs: [fmt, lint, typecheck, build, unit, e2e-smoke, matrix-evidence]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')
     runs-on: ubuntu-24.04
     steps:

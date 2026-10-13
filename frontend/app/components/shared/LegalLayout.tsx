@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { ArrowLeft, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { LogoMark } from './Logo';
 
 interface Props {
@@ -13,8 +13,12 @@ interface Props {
 export function LegalLayout({ title, lastUpdated, children }: Props) {
   const { resolvedTheme, setTheme } = useTheme();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-zinc-50 font-sans selection:bg-[#ccff00] selection:text-black flex flex-col'>
+    <div className='min-h-screen bg-white dark:bg-[#0a0a0a] text-zinc-900 dark:text-[#fafafa] font-sans selection:bg-[#ccff00] selection:text-black flex flex-col'>
       <header className='px-8 py-6 flex justify-between items-center border-b border-zinc-200 dark:border-white/10'>
         <Link
           to='/'
@@ -35,33 +39,33 @@ export function LegalLayout({ title, lastUpdated, children }: Props) {
       <main className='flex-1 max-w-3xl mx-auto w-full px-8 py-16'>
         <Link
           to='/'
-          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] mb-12 transition-colors group'
+          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-700 uppercase tracking-widest hover:text-[var(--brand-lime-ink)] dark:text-zinc-300 dark:hover:text-[#ccff00] mb-12 transition-colors group'
         >
           <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
           Back
         </Link>
 
         <h1 className='text-4xl md:text-5xl font-medium tracking-tighter mb-4'>{title}</h1>
-        <p className='text-xs uppercase tracking-widest text-zinc-500 font-medium mb-12'>
+        <p className='text-xs uppercase tracking-widest text-[#52525b] dark:text-[#a1a1aa] font-medium mb-12'>
           Last updated: {lastUpdated}
         </p>
 
-        <div className='prose prose-zinc dark:prose-invert max-w-none prose-headings:font-medium prose-headings:tracking-tight prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-2 prose-p:text-zinc-700 dark:prose-p:text-zinc-300 prose-p:leading-relaxed prose-ul:text-zinc-700 dark:prose-ul:text-zinc-300 prose-li:my-1 prose-a:text-[#ccff00] prose-a:no-underline hover:prose-a:underline prose-strong:text-zinc-900 dark:prose-strong:text-zinc-50'>
+        <div className='prose prose-zinc dark:prose-invert max-w-none prose-headings:font-medium prose-headings:tracking-tight prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-2 prose-p:text-zinc-700 dark:prose-p:text-zinc-300 prose-p:leading-relaxed prose-ul:text-zinc-700 dark:prose-ul:text-zinc-300 prose-li:my-1 prose-a:text-[var(--brand-lime-ink)] dark:prose-a:text-[#ccff00] prose-a:no-underline hover:prose-a:underline prose-strong:text-zinc-900 dark:prose-strong:text-[#fafafa]'>
           {children}
         </div>
       </main>
 
-      <footer className='border-t border-zinc-200 dark:border-white/10 px-8 py-8 text-center text-xs text-zinc-500'>
+      <footer className='border-t border-zinc-200 dark:border-white/10 px-8 py-8 text-center text-xs text-zinc-700 dark:text-zinc-300'>
         <div className='flex justify-center gap-6'>
           <Link
             to='/privacy'
-            className='hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors'
+            className='legal-link'
           >
             Privacy
           </Link>
           <Link
             to='/terms'
-            className='hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors'
+            className='legal-link'
           >
             Terms
           </Link>

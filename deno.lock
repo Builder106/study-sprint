@@ -7,6 +7,7 @@
     "jsr:@std/internal@^1.0.12": "1.0.13",
     "jsr:@std/path@*": "1.1.4",
     "jsr:@std/path@^1.1.4": "1.1.4",
+    "npm:@axe-core/playwright@^4.13.0": "4.13.0_playwright-core@1.64.0",
     "npm:@emotion/react@11.14.0": "11.14.0_react@19.3.0",
     "npm:@emotion/styled@11.14.1": "11.14.1_@emotion+react@11.14.0__react@19.3.0_react@19.3.0",
     "npm:@mui/icons-material@9.4.0": "9.4.0_@mui+material@9.4.0__@emotion+react@11.14.0___react@19.3.0__@emotion+styled@11.14.1___@emotion+react@11.14.0____react@19.3.0___react@19.3.0__@types+react@19.3.0__react@19.3.0__react-dom@19.3.0___react@19.3.0_@types+react@19.3.0_react@19.3.0_react-dom@19.3.0__react@19.3.0",
@@ -45,6 +46,7 @@
     "npm:@types/node@^26.6.4": "26.6.4",
     "npm:@types/react-dom@^19.3.0": "19.3.0_@types+react@19.3.0",
     "npm:@types/react@^19.3.0": "19.3.0",
+    "npm:@types/three@0.186.0": "0.186.0",
     "npm:@vitejs/plugin-react@6.1.1": "6.1.1_vite@8.3.2__@types+node@26.6.4_@types+node@26.6.4",
     "npm:canvas-confetti@1.9.4": "1.9.4",
     "npm:class-variance-authority@0.7.1": "0.7.1",
@@ -53,6 +55,7 @@
     "npm:date-fns@4.4.0": "4.4.0",
     "npm:embla-carousel-react@8.6.0": "8.6.0_react@19.3.0",
     "npm:input-otp@1.5.0": "1.5.0_react@19.3.0_react-dom@19.3.0__react@19.3.0",
+    "npm:lottie-web@5.13.0": "5.13.0",
     "npm:lucide-react@1.51.0": "1.51.0_@types+react@19.3.0_react@19.3.0",
     "npm:motion@14.0.0": "14.0.0_react@19.3.0_react-dom@19.3.0__react@19.3.0",
     "npm:next-themes@0.4.6": "0.4.6_react@19.3.0_react-dom@19.3.0__react@19.3.0",
@@ -65,7 +68,6 @@
     "npm:react-dom@19.3.0": "19.3.0_react@19.3.0",
     "npm:react-hook-form@7.89.0": "7.89.0_@types+react@19.3.0_react@19.3.0",
     "npm:react-markdown@10.1.0": "10.1.0_@types+react@19.3.0_react@19.3.0",
-    "npm:react-popper@2.3.0": "2.3.0_@popperjs+core@2.11.8_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:react-resizable-panels@4.14.2": "4.14.2_react@19.3.0_react-dom@19.3.0__react@19.3.0",
     "npm:react-responsive-masonry@2.9.0": "2.9.0_react@19.3.0",
     "npm:react-router@8.4.0": "8.4.0_react@19.3.0_react-dom@19.3.0__react@19.3.0",
@@ -76,6 +78,7 @@
     "npm:supabase@^2.119.0": "2.120.0",
     "npm:tailwind-merge@3.7.0": "3.7.0",
     "npm:tailwindcss@4.3.3": "4.3.3",
+    "npm:three@0.186.1": "0.186.1",
     "npm:tw-animate-css@1.4.0": "1.4.0",
     "npm:typescript@~7.0.2": "7.0.2",
     "npm:vaul@1.1.2": "1.1.2_react@19.3.0_react-dom@19.3.0__react@19.3.0",
@@ -109,6 +112,13 @@
     }
   },
   "npm": {
+    "@axe-core/playwright@4.13.0_playwright-core@1.64.0": {
+      "integrity": "sha512-6YLx+kxXu5GJceG4ozFg+33a2EMTdjYwWGloJ3sb9Kta5pp+ZNS53uxGVog5JetIY8s++P5UrtX+cri+u0VAVg==",
+      "dependencies": [
+        "axe-core",
+        "playwright-core@1.64.0"
+      ]
+    },
     "@babel/code-frame@7.29.7": {
       "integrity": "sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw==",
       "dependencies": [
@@ -252,6 +262,9 @@
     "@date-fns/tz@1.5.0": {
       "integrity": "sha512-lwYN/vDPeNRULcepoE/LO2Pgx+7/RV+S9ARfbc9lr2DtGkOD7pAiruHvbR1RX3Qyf6ja47EWJDMsNK5vK08DJg=="
     },
+    "@dimforge/rapier3d-compat@0.12.0": {
+      "integrity": "sha512-uekIGetywIgopfD97oDL5PfeezkFpNhwlzlaEYNOA0N6ghdsOvh/HYjSMek5Q2O1PYvRSDFcqFVJl4r4ZBwOow=="
+    },
     "@ecies/ciphers@0.2.6_@noble+ciphers@1.3.0": {
       "integrity": "sha512-patgsRPKGkhhoBjETV4XxD0En4ui5fbX0hzayqI3M8tvNMGUoUvmyYAIWwlxBc1KX5cturfqByYdj5bYGRpN9g==",
       "dependencies": [
@@ -307,7 +320,7 @@
         "@emotion/utils",
         "@emotion/weak-memoize",
         "hoist-non-react-statics",
-        "react@19.3.0"
+        "react"
       ]
     },
     "@emotion/serialize@1.3.3": {
@@ -333,7 +346,7 @@
         "@emotion/serialize",
         "@emotion/use-insertion-effect-with-fallbacks",
         "@emotion/utils",
-        "react@19.3.0"
+        "react"
       ]
     },
     "@emotion/unitless@0.10.0": {
@@ -342,7 +355,7 @@
     "@emotion/use-insertion-effect-with-fallbacks@1.2.0_react@19.3.0": {
       "integrity": "sha512-yJMtVdH59sxi/aVJBpk9FQq+OR8ll5GT8oWd57UpeaKEVGab41JWaCFA7FRLoMLloOZF/c/wsPoe+bfGmRKgDg==",
       "dependencies": [
-        "react@19.3.0"
+        "react"
       ]
     },
     "@emotion/utils@1.4.2": {
@@ -368,8 +381,8 @@
       "integrity": "sha512-cC52bHwM/n/CxS87FH0yWdngEZrjdtLW/qVruo68qg+prK7ZQ4YGdut2GyDVpoGeAYe/h899rVeOVm6Oi40k2A==",
       "dependencies": [
         "@floating-ui/dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ]
     },
     "@floating-ui/utils@0.2.11": {
@@ -411,7 +424,7 @@
         "@babel/runtime",
         "@mui/material",
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -433,8 +446,8 @@
         "clsx",
         "csstype",
         "prop-types",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0",
+        "react",
+        "react-dom",
         "react-is@19.2.8",
         "react-transition-group"
       ],
@@ -451,7 +464,7 @@
         "@mui/utils",
         "@types/react",
         "prop-types",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -468,7 +481,7 @@
         "@emotion/styled",
         "csstype",
         "prop-types",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@emotion/react",
@@ -489,7 +502,7 @@
         "clsx",
         "csstype",
         "prop-types",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@emotion/react",
@@ -516,7 +529,7 @@
         "@types/react",
         "clsx",
         "prop-types",
-        "react@19.3.0",
+        "react",
         "react-is@19.2.8"
       ],
       "optionalPeers": [
@@ -568,8 +581,8 @@
         "@radix-ui/react-use-controllable-state",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -586,8 +599,8 @@
         "@radix-ui/react-primitive",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -600,8 +613,8 @@
         "@radix-ui/react-primitive",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -614,8 +627,8 @@
         "@radix-ui/react-primitive",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -633,8 +646,8 @@
         "@radix-ui/react-use-layout-effect",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -653,8 +666,8 @@
         "@radix-ui/react-use-size",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -674,8 +687,8 @@
         "@radix-ui/react-use-layout-effect",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -691,8 +704,8 @@
         "@radix-ui/react-slot",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -703,7 +716,7 @@
       "integrity": "sha512-+48PbAAbq3didjJxa+OaWY2ZwgAKsNiRGyeHKszblZMQ+kcpd9pAaT11cMkGEie0vsOi3QdeTE6d5Fe3Gn61kA==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -719,8 +732,8 @@
         "@radix-ui/react-use-controllable-state",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -731,7 +744,7 @@
       "integrity": "sha512-RHCUGwKHDr0hDGg4X7ma4JG4/+12qxw8rkh5QKdDldlCvtja6nUx1Ef/8HVrJze81lEsgLQlqjzjGNHantgnQA==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -756,8 +769,8 @@
         "@types/react",
         "@types/react-dom",
         "aria-hidden",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0",
+        "react",
+        "react-dom",
         "react-remove-scroll"
       ],
       "optionalPeers": [
@@ -769,7 +782,7 @@
       "integrity": "sha512-5pzg4FGQNpExhnhT2zlrP1wZFaYCd1K0nYWoFAdcYoYK868IEigqMX3B3f8yIoRlAhAeDWciLI6ZdCKHF9P4Vg==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -785,8 +798,8 @@
         "@radix-ui/react-use-effect-event",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -805,8 +818,8 @@
         "@radix-ui/react-use-controllable-state",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -817,7 +830,7 @@
       "integrity": "sha512-RNOJjfZMTyBM6xYmV3IVGXkPjIhcBAuv48POevAXwrGJhkWZ9p1rFoIS1JFooPuT193AZmRsCPhpoVJxx6OPoQ==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -831,8 +844,8 @@
         "@radix-ui/react-use-callback-ref",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -853,8 +866,8 @@
         "@radix-ui/react-use-controllable-state",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -866,7 +879,7 @@
       "dependencies": [
         "@radix-ui/react-use-layout-effect",
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -878,8 +891,8 @@
         "@radix-ui/react-primitive",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -908,8 +921,8 @@
         "@types/react",
         "@types/react-dom",
         "aria-hidden",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0",
+        "react",
+        "react-dom",
         "react-remove-scroll"
       ],
       "optionalPeers": [
@@ -932,8 +945,8 @@
         "@radix-ui/react-use-controllable-state",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -959,8 +972,8 @@
         "@radix-ui/react-visually-hidden",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -986,8 +999,8 @@
         "@types/react",
         "@types/react-dom",
         "aria-hidden",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0",
+        "react",
+        "react-dom",
         "react-remove-scroll"
       ],
       "optionalPeers": [
@@ -1010,8 +1023,8 @@
         "@radix-ui/rect",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1025,8 +1038,8 @@
         "@radix-ui/react-use-layout-effect",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1039,8 +1052,8 @@
         "@radix-ui/react-use-layout-effect",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1053,8 +1066,8 @@
         "@radix-ui/react-slot",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1068,8 +1081,8 @@
         "@radix-ui/react-primitive",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1090,8 +1103,8 @@
         "@radix-ui/react-use-size",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1114,8 +1127,8 @@
         "@radix-ui/react-use-layout-effect",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1136,8 +1149,8 @@
         "@radix-ui/react-use-layout-effect",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1170,8 +1183,8 @@
         "@types/react",
         "@types/react-dom",
         "aria-hidden",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0",
+        "react",
+        "react-dom",
         "react-remove-scroll"
       ],
       "optionalPeers": [
@@ -1185,8 +1198,8 @@
         "@radix-ui/react-primitive",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1209,8 +1222,8 @@
         "@radix-ui/react-use-size",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1222,7 +1235,7 @@
       "dependencies": [
         "@radix-ui/react-compose-refs",
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -1239,8 +1252,8 @@
         "@radix-ui/react-use-size",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1260,8 +1273,8 @@
         "@radix-ui/react-use-controllable-state",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1280,8 +1293,8 @@
         "@radix-ui/react-use-controllable-state",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1296,8 +1309,8 @@
         "@radix-ui/react-use-controllable-state",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1322,8 +1335,8 @@
         "@radix-ui/react-visually-hidden",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1334,7 +1347,7 @@
       "integrity": "sha512-R6OUY2e2fA6Yn6s+VSx5KBV6Nx8LQEhu+cz7LCej18rQ1HLyg9PSC9jP/ZNx0o6FAIK9c0F1kHylzSxKsdlkrQ==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -1347,7 +1360,7 @@
         "@radix-ui/react-use-effect-event",
         "@radix-ui/react-use-layout-effect",
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -1358,7 +1371,7 @@
       "dependencies": [
         "@radix-ui/react-use-layout-effect",
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -1368,7 +1381,7 @@
       "integrity": "sha512-umO/aJ+82CpOnhDZUTbILCQf7kU/g0iv+oGs/Q8jw7IkhWBzaEP4sA268PhFAJTFetbwp3ICc6ktpI4TqtxcIw==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -1378,7 +1391,7 @@
       "integrity": "sha512-K20DkRkUwDnxEYMBPcg3Y6voLkEy5p5QQmszZgLngKKiC7dzBR/aEuK3w1qlx2JWDUNH6FluahYdgR3BP+QbYw==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -1388,7 +1401,7 @@
       "integrity": "sha512-XoSLhbRbqxFtgJoi2fNHA3C6pDlY34x508vUpUGoFZfvePfHXHbE1lC4FYFMnJWgiCRroSTw6fOsXQoVS9RwZg==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -1399,7 +1412,7 @@
       "dependencies": [
         "@radix-ui/rect",
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -1410,7 +1423,7 @@
       "dependencies": [
         "@radix-ui/react-use-layout-effect",
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -1422,8 +1435,8 @@
         "@radix-ui/react-primitive",
         "@types/react",
         "@types/react-dom",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react",
@@ -1448,14 +1461,14 @@
         "@standard-schema/spec",
         "@standard-schema/utils",
         "immer",
-        "react@19.3.0",
+        "react",
         "react-redux",
         "redux@5.0.1",
         "redux-thunk",
         "reselect"
       ],
       "optionalPeers": [
-        "react@19.3.0",
+        "react",
         "react-redux"
       ]
     },
@@ -1738,6 +1751,9 @@
     "@teppeis/multimaps@3.0.0": {
       "integrity": "sha512-ID7fosbc50TbT0MK0EG12O+gAP3W3Aa/Pz4DaTtQtEvlc9Odaqi0de+xuZ7Li2GtK4HzEX7IuRWS/JmZLksR3Q=="
     },
+    "@tweenjs/tween.js@23.1.3": {
+      "integrity": "sha512-vJmvvwFxYuGnF2axRtPYocag6Clbb5YS7kLL+SO/TeVFzHqDIWrNKYtcsPMibjDx9O+bu+psAy9NKfWklassUA=="
+    },
     "@types/d3-array@3.2.2": {
       "integrity": "sha512-hOLWVbm7uRza0BYXpIIW5pxfrKe0W+D5lrFiAEYR+pb6w3N2SwSMaJbXdUfSEv+dT4MfHBLtn5js0LAWaO6otw=="
     },
@@ -1834,6 +1850,20 @@
         "csstype"
       ]
     },
+    "@types/stats.js@0.17.4": {
+      "integrity": "sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA=="
+    },
+    "@types/three@0.186.0": {
+      "integrity": "sha512-mxYSBpDC+D0pLfSP6sW4WZTcT+nrtmZcimMqnVmy36Hte3XpeYSrvgg4TRdaM1GemGog1AWzI5qL2VoIfMXbJQ==",
+      "dependencies": [
+        "@dimforge/rapier3d-compat",
+        "@tweenjs/tween.js",
+        "@types/stats.js",
+        "@types/webxr",
+        "fflate",
+        "meshoptimizer"
+      ]
+    },
     "@types/unist@2.0.11": {
       "integrity": "sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA=="
     },
@@ -1842,6 +1872,9 @@
     },
     "@types/use-sync-external-store@0.0.6": {
       "integrity": "sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg=="
+    },
+    "@types/webxr@0.5.24": {
+      "integrity": "sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg=="
     },
     "@typescript/typescript-aix-ppc64@7.0.2": {
       "integrity": "sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==",
@@ -1962,6 +1995,9 @@
         "tslib"
       ]
     },
+    "axe-core@4.13.0": {
+      "integrity": "sha512-UzGt8zg7Ny8djbYMhxl2zuEevVa7r2gJjYY5Lwr1xM7+XU2nd6CkIWFTVcCIbAP63vSz71NaVyyuSk9lHKcy0A=="
+    },
     "babel-plugin-macros@3.1.0": {
       "integrity": "sha512-Cg7TFGpIr01vOQNODXOOaGz2NpCU5gl8x1qJFbb6hbZxR7XrcE2vtbAsTAbJ7/xwJtUuJEw8K8Zr/AE0LHlesg==",
       "dependencies": [
@@ -2028,8 +2064,8 @@
         "@radix-ui/react-dialog",
         "@radix-ui/react-id",
         "@radix-ui/react-primitive",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ]
     },
     "comma-separated-tokens@2.0.3": {
@@ -2181,7 +2217,7 @@
       "dependencies": [
         "embla-carousel",
         "embla-carousel-reactive-utils",
-        "react@19.3.0"
+        "react"
       ]
     },
     "embla-carousel-reactive-utils@8.6.0_embla-carousel@8.6.0": {
@@ -2239,6 +2275,9 @@
         "picomatch"
       ]
     },
+    "fflate@0.8.3": {
+      "integrity": "sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA=="
+    },
     "find-root@1.1.0": {
       "integrity": "sha512-NKfW6bec6GfKc0SGx1e07QZY9PE99u0Bft/0rzSD5k3sO/vwkVUpDUKVm5Gpp5Ue3YfShPFTX2070tDs5kB9Ng=="
     },
@@ -2247,13 +2286,13 @@
       "dependencies": [
         "motion-dom",
         "motion-utils",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0",
+        "react",
+        "react-dom",
         "tslib"
       ],
       "optionalPeers": [
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ]
     },
     "fsevents@2.3.2": {
@@ -2335,8 +2374,8 @@
     "input-otp@1.5.0_react@19.3.0_react-dom@19.3.0__react@19.3.0": {
       "integrity": "sha512-3AcfdW1sNG0FmSA5hHMBXG7jNW5CdcdKs8ln8JOmn6S2SRkoXoJx+2UwC+ZvjflfnOdHJx0SfQ9/YjlxVYLtGQ==",
       "dependencies": [
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ]
     },
     "internmap@2.0.3": {
@@ -2563,11 +2602,14 @@
       ],
       "bin": true
     },
+    "lottie-web@5.13.0": {
+      "integrity": "sha512-+gfBXl6sxXMPe8tKQm7qzLnUy5DUPJPKIyRHwtpCpyUEYjHYRJC/5gjUvdkuO2c3JllrPtHXH5UJJK8LRYl5yQ=="
+    },
     "lucide-react@1.51.0_@types+react@19.3.0_react@19.3.0": {
       "integrity": "sha512-9929jimol5y7VbXUlVKcgURMSeIxFJB7dtWCkRAaNnF7KiCRkSkhmqWPUmAmUFYPezNawFk6qvz3Mu0gEnfI4g==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -2678,6 +2720,9 @@
       "dependencies": [
         "@types/mdast"
       ]
+    },
+    "meshoptimizer@1.1.1": {
+      "integrity": "sha512-oRFNWJRDA/WTrVj7NWvqa5HqE1t9MYDj2VaWirQCzCCrAd2GHrqR/sQezCxiWATPNlKTcRaPRHPJwIRoPBAp5g=="
     },
     "micromark-core-commonmark@2.0.3": {
       "integrity": "sha512-RDBrHEMSxVFLg6xvnXmb1Ayr2WzLAWjeSATAoxwKYJV94TeNavgoIdA0a9ytzDSVzBy2YKFK+emCPOEibLeCrg==",
@@ -2870,13 +2915,13 @@
       "integrity": "sha512-oGc2lkge2lkRZCP+J8/JsnYu4NFjqP1MtXirNdetn3QbvK2JqwM9A200EdT4C598KfzDhjLT12zF21xDM4Oilw==",
       "dependencies": [
         "framer-motion",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0",
+        "react",
+        "react-dom",
         "tslib"
       ],
       "optionalPeers": [
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ]
     },
     "ms@2.1.3": {
@@ -2889,8 +2934,8 @@
     "next-themes@0.4.6_react@19.3.0_react-dom@19.3.0__react@19.3.0": {
       "integrity": "sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA==",
       "dependencies": [
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ]
     },
     "object-assign@4.1.1": {
@@ -2963,6 +3008,10 @@
       "integrity": "sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg==",
       "bin": true
     },
+    "playwright-core@1.64.0": {
+      "integrity": "sha512-T9r+MZkTECl2+oUcZ26YgZzTrYidTsIhYYkJix+6iDOymOb1FB2RLLSOxRGnZGv5DStt+aduIVbt+E8WygXYpg==",
+      "bin": true
+    },
     "playwright@1.59.1": {
       "integrity": "sha512-C8oWjPR3F81yljW9o5OxcWzfh6avkVwDD2VYdwIGqTkl+OGFISgypqzfu7dOe4QNLL2aqcWBmI3PMtLIK233lw==",
       "dependencies": [
@@ -3012,7 +3061,7 @@
         "@date-fns/tz",
         "@types/react",
         "date-fns",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -3034,36 +3083,25 @@
         "dnd-core",
         "fast-deep-equal",
         "hoist-non-react-statics",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/node",
         "@types/react"
       ]
     },
-    "react-dom@18.3.1_react@18.3.1": {
-      "integrity": "sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==",
-      "dependencies": [
-        "loose-envify",
-        "react@18.3.1",
-        "scheduler@0.23.2"
-      ]
-    },
     "react-dom@19.3.0_react@19.3.0": {
       "integrity": "sha512-JDk8dgif51OjFoDE70+OT9ICyYr+69HlmihNwp1+Nsfbna3t5sIiCa9ZJktDmQ4/1b/rn26hIAR2uYXDMr5r0Q==",
       "dependencies": [
-        "react@19.3.0",
-        "scheduler@0.28.0"
+        "react",
+        "scheduler"
       ]
-    },
-    "react-fast-compare@3.2.2": {
-      "integrity": "sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ=="
     },
     "react-hook-form@7.89.0_@types+react@19.3.0_react@19.3.0": {
       "integrity": "sha512-vKcoCfy8RKZDrhSdqsRFp0uEOdS1AhLjOL6hR7Wmfzg1akNxEhaPf5WORx8SgEQPVXakdDyDkqQp+KNxVnnPHg==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0"
+        "react"
       ],
       "optionalPeers": [
         "@types/react"
@@ -3085,7 +3123,7 @@
         "hast-util-to-jsx-runtime",
         "html-url-attributes",
         "mdast-util-to-hast",
-        "react@19.3.0",
+        "react",
         "remark-parse",
         "remark-rehype",
         "unified",
@@ -3093,22 +3131,12 @@
         "vfile"
       ]
     },
-    "react-popper@2.3.0_@popperjs+core@2.11.8_react@18.3.1_react-dom@18.3.1__react@18.3.1": {
-      "integrity": "sha512-e1hj8lL3uM+sgSR4Lxzn5h1GxBlpa4CQz0XLF8kx4MDrDRWY0Ena4c97PUeSX9i5W3UAfDP0z0FXCTQkoXUl3Q==",
-      "dependencies": [
-        "@popperjs/core",
-        "react@18.3.1",
-        "react-dom@18.3.1_react@18.3.1",
-        "react-fast-compare",
-        "warning"
-      ]
-    },
     "react-redux@9.3.0_@types+react@19.3.0_react@19.3.0_redux@5.0.1": {
       "integrity": "sha512-KQopgqFo/p/fgmAs5qz6p5RWaNAzq40WAu7fJIXnQpYxFPbJYtsJPWvGeF2rOBaY/kEuV77AVsX8TsQzKm+A/g==",
       "dependencies": [
         "@types/react",
         "@types/use-sync-external-store",
-        "react@19.3.0",
+        "react",
         "redux@5.0.1",
         "use-sync-external-store"
       ],
@@ -3121,7 +3149,7 @@
       "integrity": "sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0",
+        "react",
         "react-style-singleton",
         "tslib"
       ],
@@ -3133,7 +3161,7 @@
       "integrity": "sha512-Iqb9NjCCTt6Hf+vOdNIZGdTiH1QSqr27H/Ek9sv/a97gfueI/5h1s3yRi1nngzMUaOOToin5dI1dXKdXiF+u0Q==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0",
+        "react",
         "react-remove-scroll-bar",
         "react-style-singleton",
         "tslib",
@@ -3147,15 +3175,15 @@
     "react-resizable-panels@4.14.2_react@19.3.0_react-dom@19.3.0__react@19.3.0": {
       "integrity": "sha512-s35mfXhwpPEPnB+BKPCZJ9VZU0CHb1I9trm9tijEGBNv1Srl0HzIweENeXnsQvd0Xm9BeOBkEzDGVJOZM2mkEQ==",
       "dependencies": [
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ]
     },
     "react-responsive-masonry@2.9.0_react@19.3.0": {
       "integrity": "sha512-Gf/YDIkb8+QhIUnofrGihZtU+gyjV+yiDg4mOpjxTJLOQNACSvVZAgIWTaAPrGBO+oig3M9hTwarc+YBuFFCdQ==",
       "dependencies": [
         "prop-types",
-        "react@19.3.0"
+        "react"
       ]
     },
     "react-router@8.4.0_react@19.3.0_react-dom@19.3.0__react@19.3.0": {
@@ -3163,11 +3191,11 @@
       "dependencies": [
         "@remix-run/route-pattern",
         "cookie-es",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
-        "react-dom@19.3.0_react@19.3.0"
+        "react-dom"
       ]
     },
     "react-slick@0.31.0_react@19.3.0_react-dom@19.3.0__react@19.3.0": {
@@ -3176,8 +3204,8 @@
         "classnames",
         "json2mq",
         "lodash.debounce",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0",
+        "react",
+        "react-dom",
         "resize-observer-polyfill"
       ]
     },
@@ -3186,7 +3214,7 @@
       "dependencies": [
         "@types/react",
         "get-nonce",
-        "react@19.3.0",
+        "react",
         "tslib"
       ],
       "optionalPeers": [
@@ -3200,14 +3228,8 @@
         "dom-helpers",
         "loose-envify",
         "prop-types",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
-      ]
-    },
-    "react@18.3.1": {
-      "integrity": "sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==",
-      "dependencies": [
-        "loose-envify"
+        "react",
+        "react-dom"
       ]
     },
     "react@19.3.0": {
@@ -3222,8 +3244,8 @@
         "es-toolkit",
         "eventemitter3",
         "immer",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0",
+        "react",
+        "react-dom",
         "react-is@19.2.8",
         "react-redux",
         "reselect",
@@ -3323,12 +3345,6 @@
       ],
       "bin": true
     },
-    "scheduler@0.23.2": {
-      "integrity": "sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==",
-      "dependencies": [
-        "loose-envify"
-      ]
-    },
     "scheduler@0.28.0": {
       "integrity": "sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw=="
     },
@@ -3336,8 +3352,8 @@
       "integrity": "sha512-UM/ByIoFra8yzV75n1o0Puu0bw5U/9UNnDacrJNspekBewIfsQ3D6ez1nvlWpt7aTsO6rujQtifBpycwIivqlg==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ],
       "optionalPeers": [
         "@types/react"
@@ -3430,6 +3446,9 @@
     },
     "tapable@2.3.3": {
       "integrity": "sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A=="
+    },
+    "three@0.186.1": {
+      "integrity": "sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA=="
     },
     "tiny-invariant@1.3.3": {
       "integrity": "sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg=="
@@ -3531,7 +3550,7 @@
       "integrity": "sha512-jQL3lRnocaFtu3V00JToYz/4QkNWswxijDaCVNZRiRTO3HQDLsdu1ZtmIUvV4yPp+rvWm5j0y0TG/S61cuijTg==",
       "dependencies": [
         "@types/react",
-        "react@19.3.0",
+        "react",
         "tslib"
       ],
       "optionalPeers": [
@@ -3543,7 +3562,7 @@
       "dependencies": [
         "@types/react",
         "detect-node-es",
-        "react@19.3.0",
+        "react",
         "tslib"
       ],
       "optionalPeers": [
@@ -3553,7 +3572,7 @@
     "use-sync-external-store@1.6.0_react@19.3.0": {
       "integrity": "sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==",
       "dependencies": [
-        "react@19.3.0"
+        "react"
       ]
     },
     "util-deprecate@1.0.2": {
@@ -3563,8 +3582,8 @@
       "integrity": "sha512-ZFkClGpWyI2WUQjdLJ/BaGuV6AVQiJ3uELGk3OYtP+B6yCO7Cmn9vPFXVJkRaGkOJu3m8bQMgtyzNHixULceQA==",
       "dependencies": [
         "@radix-ui/react-dialog",
-        "react@19.3.0",
-        "react-dom@19.3.0_react@19.3.0"
+        "react",
+        "react-dom"
       ]
     },
     "vfile-message@4.0.3": {
@@ -3618,12 +3637,6 @@
       ],
       "bin": true
     },
-    "warning@4.0.3": {
-      "integrity": "sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==",
-      "dependencies": [
-        "loose-envify"
-      ]
-    },
     "xmlbuilder@15.1.1": {
       "integrity": "sha512-yMqGBqtXyeN1e3TGYvgNgDVZ3j84W4cwkOXQswghol6APgZWaff9lnbvN7MHYJOiXsvGPXtjTYJEiC9J2wv9Eg=="
     },
@@ -3636,6 +3649,7 @@
   },
   "workspace": {
     "dependencies": [
+      "npm:@axe-core/playwright@^4.13.0",
       "npm:@emotion/react@11.14.0",
       "npm:@emotion/styled@11.14.1",
       "npm:@mui/icons-material@9.4.0",
@@ -3674,6 +3688,7 @@
       "npm:@types/node@^26.6.4",
       "npm:@types/react-dom@^19.3.0",
       "npm:@types/react@^19.3.0",
+      "npm:@types/three@0.186.0",
       "npm:@vitejs/plugin-react@6.1.1",
       "npm:canvas-confetti@1.9.4",
       "npm:class-variance-authority@0.7.1",
@@ -3682,6 +3697,7 @@
       "npm:date-fns@4.4.0",
       "npm:embla-carousel-react@8.6.0",
       "npm:input-otp@1.5.0",
+      "npm:lottie-web@5.13.0",
       "npm:lucide-react@1.51.0",
       "npm:motion@14.0.0",
       "npm:next-themes@0.4.6",
@@ -3693,7 +3709,6 @@
       "npm:react-dom@19.3.0",
       "npm:react-hook-form@7.89.0",
       "npm:react-markdown@10.1.0",
-      "npm:react-popper@2.3.0",
       "npm:react-resizable-panels@4.14.2",
       "npm:react-responsive-masonry@2.9.0",
       "npm:react-router@8.4.0",
@@ -3704,10 +3719,93 @@
       "npm:supabase@^2.119.0",
       "npm:tailwind-merge@3.7.0",
       "npm:tailwindcss@4.3.3",
+      "npm:three@0.186.1",
       "npm:tw-animate-css@1.4.0",
       "npm:typescript@~7.0.2",
       "npm:vaul@1.1.2",
       "npm:vite@8.3.2"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@axe-core/playwright@^4.13.0",
+        "npm:@emotion/react@11.14.0",
+        "npm:@emotion/styled@11.14.1",
+        "npm:@mui/icons-material@9.4.0",
+        "npm:@mui/material@9.4.0",
+        "npm:@playwright/test@1.63.0",
+        "npm:@popperjs/core@2.11.8",
+        "npm:@radix-ui/react-accordion@1.2.20",
+        "npm:@radix-ui/react-alert-dialog@1.1.23",
+        "npm:@radix-ui/react-aspect-ratio@1.1.15",
+        "npm:@radix-ui/react-avatar@1.2.6",
+        "npm:@radix-ui/react-checkbox@1.3.11",
+        "npm:@radix-ui/react-collapsible@1.1.20",
+        "npm:@radix-ui/react-context-menu@2.3.7",
+        "npm:@radix-ui/react-dialog@1.1.23",
+        "npm:@radix-ui/react-dropdown-menu@2.1.24",
+        "npm:@radix-ui/react-hover-card@1.1.23",
+        "npm:@radix-ui/react-label@2.1.15",
+        "npm:@radix-ui/react-menubar@1.1.24",
+        "npm:@radix-ui/react-navigation-menu@1.2.22",
+        "npm:@radix-ui/react-popover@1.1.23",
+        "npm:@radix-ui/react-progress@1.1.16",
+        "npm:@radix-ui/react-radio-group@1.4.7",
+        "npm:@radix-ui/react-scroll-area@1.2.18",
+        "npm:@radix-ui/react-select@2.3.7",
+        "npm:@radix-ui/react-separator@1.1.15",
+        "npm:@radix-ui/react-slider@1.4.7",
+        "npm:@radix-ui/react-slot@1.3.3",
+        "npm:@radix-ui/react-switch@1.3.7",
+        "npm:@radix-ui/react-tabs@1.1.21",
+        "npm:@radix-ui/react-toggle-group@1.1.19",
+        "npm:@radix-ui/react-toggle@1.1.18",
+        "npm:@radix-ui/react-tooltip@1.2.16",
+        "npm:@supabase/supabase-js@2.117.2",
+        "npm:@tailwindcss/typography@~0.5.20",
+        "npm:@tailwindcss/vite@4.3.3",
+        "npm:@types/node@^26.6.4",
+        "npm:@types/react-dom@^19.3.0",
+        "npm:@types/react@^19.3.0",
+        "npm:@types/three@0.186.0",
+        "npm:@vitejs/plugin-react@6.1.1",
+        "npm:canvas-confetti@1.9.4",
+        "npm:class-variance-authority@0.7.1",
+        "npm:clsx@2.1.1",
+        "npm:cmdk@1.1.1",
+        "npm:date-fns@4.4.0",
+        "npm:embla-carousel-react@8.6.0",
+        "npm:input-otp@1.5.0",
+        "npm:lottie-web@5.13.0",
+        "npm:lucide-react@1.51.0",
+        "npm:motion@14.0.0",
+        "npm:next-themes@0.4.6",
+        "npm:playwright-bdd@^9.2.1",
+        "npm:playwright@1.63.0",
+        "npm:react-day-picker@10.0.2",
+        "npm:react-dnd-html5-backend@16.0.1",
+        "npm:react-dnd@16.0.1",
+        "npm:react-dom@19.3.0",
+        "npm:react-hook-form@7.89.0",
+        "npm:react-markdown@10.1.0",
+        "npm:react-resizable-panels@4.14.2",
+        "npm:react-responsive-masonry@2.9.0",
+        "npm:react-router@8.4.0",
+        "npm:react-slick@0.31.0",
+        "npm:react@19.3.0",
+        "npm:recharts@3.10.1",
+        "npm:sonner@2.0.8",
+        "npm:supabase@^2.119.0",
+        "npm:tailwind-merge@3.7.0",
+        "npm:tailwindcss@4.3.3",
+        "npm:three@0.186.1",
+        "npm:tw-animate-css@1.4.0",
+        "npm:typescript@~7.0.2",
+        "npm:vaul@1.1.2",
+        "npm:vite@8.3.2"
+      ],
+      "overrides": {
+        "playwright": "1.63.0"
+      }
+    }
   }
 }

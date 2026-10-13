@@ -101,11 +101,12 @@
    * DESIGN.md § Accessibility only covers lime as a background fill paired with
    * dark text. As foreground text on white, the brand values fail WCAG AA badly
    * — #ccff00 measures 1.18:1 and #b3e600 measures 1.48:1 against #ffffff, where
-   * AA for body text needs 4.5:1. This darkened lime measures 5.92:1 and stays
-   * in the same hue family. Use it wherever lime carries text in light mode;
+   * AA for body text needs 4.5:1. This darkened lime measures 7.58:1 against
+   * the selected marker fill and 8.73:1 against white. Use it wherever lime
+   * carries text in light mode;
    * dark mode keeps --brand-lime, which measures 16.85:1 on #0a0a0a.
    */
-  --brand-lime-ink: #526d00;
+  --brand-lime-ink: #3d5200;
 }
 
 @theme inline {
