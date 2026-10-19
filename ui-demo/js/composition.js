@@ -5,6 +5,9 @@ export function wireDemo(id) {
     const duration = Number(shot.dataset.duration);
     timeline.fromTo(shot, { opacity: 0, scale: 1 }, { opacity: 1, scale: 1.045, duration, ease: "none", immediateRender: false }, start)
       .to(shot, { opacity: 0, duration: 0.4, ease: "none" }, start + duration - 0.4);
+    if (shot.dataset.panTo) {
+      timeline.fromTo(shot, { objectPosition: shot.dataset.panFrom }, { objectPosition: shot.dataset.panTo, duration: Number(shot.dataset.panDuration), ease: "power2.inOut", immediateRender: false }, start + Number(shot.dataset.panAt));
+    }
   });
   document.querySelectorAll(".caption").forEach((caption) => {
     const start = Number(caption.dataset.start);
