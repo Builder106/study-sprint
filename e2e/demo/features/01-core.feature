@@ -4,7 +4,7 @@ Feature: Demo — Core Workflow
   Scenario: New student registers and logs their first session
     Given I am on the StudySprint home page
     When I navigate to the registration page
-    And I enter the email "example@example.com" and password "password123"
+    And I enter the email "example@example.com" and password "calc-sprint-26"
     And I submit the registration form
     Then I should be redirected to the dashboard
     When I navigate to the new goal page
