@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-19: Retold TheInterval with the charge battery #milestone #decision
+
+The Tier 3 trailer kept its six beats but swapped the plant for a static port of `BatteryBolt` and the streak for charge, following the app's own model: one session from empty reaches 12%, a two-day gap drains it to 0% on "Most people stop here.", and steady study refills it to a pulsing 100%. The counters now use the seeded account's real totals after the recorded session (173 hours, 93 sessions, 52 days since empty), and the end card borrows the landing page's "Focus in. Charge up." The music bed's existing half-second gap near 7 seconds is unchanged.
+
 ## 2026-10-19: Re-recorded the Tier 1 and Tier 2 videos for the battery #milestone #decision
 
 All three video tiers still showed the plant. The seeder kept the demo account at 100% charge, so the tour's payoff had nothing to show; it now leaves today empty and eases the last five days, so the recorded 90-minute session lifts the charge from 72% to 87% and crosses the 80% pulse threshold on camera (level 13 to 14 too). The core demo had been failing since May because `password123` trips the registration validator. Tier 1 now records on the seeded account so the heatmap and battery have data, and `demo:both` converts GIFs after each pass because Playwright clears `test-results/` on every run. The `ui-demo/` social cut uses the new take, frames the battery card, and pans the log shot from the timer to the modal. HyperFrames needs `HYPERFRAMES_BROWSER_PATH` pointed at a real Chromium when the system one is only a snap stub. The Tier 3 trailer is still plant-based and needs a new storyboard.
