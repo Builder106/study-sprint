@@ -1,6 +1,6 @@
 // Seeds multi-week study history + social fixtures onto the demo account so
-// Tier 2/3 recordings show a full battery, a long charge run, a textured
-// heatmap, and a populated leaderboard. `create_starter_data_for`
+// Tier 2/3 recordings show a well-charged battery, a long charge run, a
+// textured heatmap, and a populated leaderboard. `create_starter_data_for`
 // provides (that RPC seeds 2 goals and zero sessions, by design, so the QA
 // suite's "first session" scenarios stay deterministic). Run this AFTER
 // `deno task test:setup`, which must have already created the demo account.
@@ -9,7 +9,9 @@
 // e2e/demo/features/10-tour.feature logs a 90-minute, quality-5 ("Mastered")
 // session during recording. This script seeds total XP to TARGET_XP_BEFORE_LOG
 // so the recording has a realistic XP total. The 45-day history reaches full
-// charge before recording and stays above empty throughout the tour.
+// charge, then a few light days ease it back below BatteryBolt's 80% pulse
+// threshold. Today has no seeded session, so the recorded session is what
+// pushes the charge back over 80% and starts the pulse on camera.
 //
 // ── Timezone ──────────────────────────────────────────────────────────────
 // All date math here is UTC. The recording VM's system tz is Etc/UTC, and
@@ -72,7 +74,11 @@ const SESSION_LOG_QUALITY = 5;
 const TARGET_XP_BEFORE_LOG = 19_450;
 const XP_TOLERANCE = 130;
 
-const STREAK_DAYS = 45; // days 44..0 ago inclusive of today
+const STREAK_DAYS = 45; // days 44..1 ago; today is left for the recorded session
+const COOLDOWN_DAYS = 5; // days 5..1 ago get short sessions so charge eases below 80%
+const COOLDOWN_MIN_DURATION = 20;
+const COOLDOWN_MAX_DURATION = 30;
+const PULSE_THRESHOLD_PCT = 80; // BatteryBolt pulses at or above this charge
 const MID_START = STREAK_DAYS; // 45
 const MID_END = 180;
 const OLD_START = 181;
@@ -176,12 +182,12 @@ function addSession(
 }
 
 function generateShape() {
-  // Phase 1: streak window — every day, exactly 1 session/day. Session COUNT
-  // doesn't affect the heatmap, only per-day minutes do, so a second
-  // same-day session is pure session-count cost with no visual benefit.
+  // Phase 1: streak window — every day before today, exactly 1 session/day.
+  // Session COUNT doesn't affect the heatmap, only per-day minutes do, so a
+  // second same-day session is pure session-count cost with no visual benefit.
   let dawnDone = false;
   let nightDone = false;
-  for (let i = STREAK_DAYS - 1; i >= 0; i--) {
+  for (let i = STREAK_DAYS - 1; i >= 1; i--) {
     let hour = randInt(9, 22);
     if (!dawnDone && i === 33) {
       hour = randInt(5, 6); // dawn_patrol: before 07:00 UTC
@@ -190,7 +196,9 @@ function generateShape() {
       hour = randInt(0, 2); // night_owl: 00:00-03:00 UTC
       nightDone = true;
     }
-    const duration = randInt(55, 170);
+    const duration = i <= COOLDOWN_DAYS
+      ? randInt(COOLDOWN_MIN_DURATION, COOLDOWN_MAX_DURATION)
+      : randInt(55, 170);
     const quality = pick([3, 3, 4, 4, 5, 5, 5]);
     addSession(i, weightedSubject(), duration, quality, hour);
   }
@@ -223,6 +231,7 @@ interface Profile {
   level: number;
   xp: number;
   current_charge_pct: number;
+  reached_full_charge: boolean;
   days_since_empty: number;
   longest_days_since_empty: number;
   total_sessions: number;
@@ -246,12 +255,14 @@ function computeProfile(list: GenSession[]): Profile {
   }
   const chargeByDate = new Map<string, number>();
   let charge = 0;
+  let reachedFullCharge = false;
   let currentRun = 0;
   let longestRun = 0;
   for (let i = 0; i < daily.length; i++) {
     if (i > 0) {
       charge = Math.min(100, Math.max(0, charge - 8 + Math.min(daily[i].minutes / 120, 1) * 20));
     }
+    if (charge >= 100) reachedFullCharge = true;
     chargeByDate.set(daily[i].date, charge);
     currentRun = charge > 0 ? currentRun + 1 : 0;
     longestRun = Math.max(longestRun, currentRun);
@@ -282,6 +293,7 @@ function computeProfile(list: GenSession[]): Profile {
     level,
     xp: totalXp,
     current_charge_pct: Math.round(charge),
+    reached_full_charge: reachedFullCharge,
     days_since_empty: currentRun,
     longest_days_since_empty: longestRun,
     total_sessions: list.length,
@@ -602,8 +614,11 @@ async function main() {
     'days_since_empty >= 40': profile.days_since_empty >= 40,
     [`xp within ${XP_TOLERANCE} of ${TARGET_XP_BEFORE_LOG}`]:
       Math.abs(profile.xp - TARGET_XP_BEFORE_LOG) <= XP_TOLERANCE,
-    'current_charge_pct === 100 (pre-log)': profile.current_charge_pct === 100,
-    'current_charge_pct === 100 (post-log)': postLog.current_charge_pct === 100,
+    [`current_charge_pct < ${PULSE_THRESHOLD_PCT} (pre-log)`]:
+      profile.current_charge_pct < PULSE_THRESHOLD_PCT,
+    [`current_charge_pct >= ${PULSE_THRESHOLD_PCT} (post-log)`]:
+      postLog.current_charge_pct >= PULSE_THRESHOLD_PCT,
+    'reached_full_charge (full_charge)': profile.reached_full_charge,
     'total_sessions < 100 (century locked)': profile.total_sessions < 100,
     'max_session_day < 10 (sprint_day locked)': profile.max_session_day < 10,
     'total_hours >= 100 (marathon)': profile.total_hours >= 100,
