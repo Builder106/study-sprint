@@ -17,7 +17,7 @@ export function Garden() {
       .gamificationProfile()
       .then(setProfile)
       .catch((err: Error | ApiError) =>
-        setError(err instanceof ApiError ? err.message : 'Failed to load garden')
+        setError(err instanceof ApiError ? err.message : 'Failed to load study charge')
       );
   }, []);
 
@@ -48,7 +48,7 @@ export function Garden() {
 
         {error && <div className='text-xs text-red-400 font-medium' role='alert'>{error}</div>}
 
-        {!profile && !error && <Spinner label='Loading garden' />}
+        {!profile && !error && <Spinner label='Loading study charge' />}
 
         {profile && (
           <>
