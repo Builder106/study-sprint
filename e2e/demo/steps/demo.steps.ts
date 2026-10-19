@@ -31,6 +31,7 @@ Then('I should see the XP bar', async ({ page }) => {
 Then('I should see the battery charge', async ({ page }) => {
   await expect(page.getByRole('img', { name: /Battery at \d+% charge/ }))
     .toBeVisible({ timeout: 8_000 });
+  await dwellForDemo(page, 2500);
 });
 
 // ── Focus tools (demo-only assertion; richer than the QA smoke check) ────────

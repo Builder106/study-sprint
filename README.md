@@ -153,6 +153,7 @@ is created automatically by an `auth.users` trigger.
 ```bash
 deno task test            # Gherkin E2E suite, headless (Playwright via Deno)
 deno task test:e2e:ui     # Playwright UI mode
+deno task seed:demo       # seed the demo account's history first so the demos show real data
 deno task demo            # records narrated walkthrough videos (dark theme)
 deno task demo:light      # same, in light theme — needed for the README hero <picture>
 deno task demo:both       # records both themes and converts each pass to GIFs
