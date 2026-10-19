@@ -25,7 +25,7 @@
     "seed:demo:teardown": "deno run -A e2e/setup/teardown-demo-history.ts",
     "demo": "DEMO=1 node ./node_modules/.bin/bddgen --config playwright.demo.config.ts && DEMO=1 node ./node_modules/.bin/playwright test --config playwright.demo.config.ts",
     "demo:light": "DEMO=1 DEMO_THEME=light node ./node_modules/.bin/bddgen --config playwright.demo.config.ts && DEMO=1 DEMO_THEME=light node ./node_modules/.bin/playwright test --config playwright.demo.config.ts",
-    "demo:both": "deno task demo && deno task demo:light",
+    "demo:both": "deno task demo && deno task gif && deno task demo:light && deno task gif",
     "gif": "deno run -A scripts/videos-to-gifs.ts",
     "social-card": "deno run -A scripts/render-social-card.ts",
 

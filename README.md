@@ -155,7 +155,7 @@ deno task test            # Gherkin E2E suite, headless (Playwright via Deno)
 deno task test:e2e:ui     # Playwright UI mode
 deno task demo            # records narrated walkthrough videos (dark theme)
 deno task demo:light      # same, in light theme — needed for the README hero <picture>
-deno task demo:both       # records both themes back-to-back
+deno task demo:both       # records both themes and converts each pass to GIFs
 deno task gif             # convert test-results/videos/*-{dark,light}.mp4 → docs/gifs/*.gif
 ```text
 
