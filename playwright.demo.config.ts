@@ -6,8 +6,9 @@ import { defineBddConfig } from 'playwright-bdd';
 // Shares step definitions with the QA suite under e2e/steps/, plus demo-only
 // steps under e2e/demo/steps/. Generated test files go to a separate
 // .features-gen-demo so they don't collide with the QA `bddgen` output.
+// 10-tour.feature needs the seeded account, so only playwright.tour.config.ts runs it.
 const testDir = defineBddConfig({
-  features: 'e2e/demo/features/**/*.feature',
+  features: 'e2e/demo/features/0*.feature',
   steps: ['e2e/steps/**/*.ts', 'e2e/demo/steps/**/*.ts'],
   outputDir: '.features-gen-demo',
 });
