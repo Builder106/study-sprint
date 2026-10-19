@@ -18,8 +18,9 @@ export function clampCharge(pct) {
 
 export function chargeToFillColor(pct) {
   const value = clampCharge(pct);
+  // value is clamped to 100 and the last stop is 100, so a match always exists.
   const upperIndex = COLOR_STOPS.findIndex((stop) => stop.pct >= value);
-  const upper = COLOR_STOPS[upperIndex === -1 ? COLOR_STOPS.length - 1 : upperIndex];
+  const upper = COLOR_STOPS[upperIndex];
   const lower = COLOR_STOPS[Math.max(0, upperIndex - 1)];
   const t = lower.pct === upper.pct ? 0 : (value - lower.pct) / (upper.pct - lower.pct);
   const rgb = lower.rgb.map((channel, index) => Math.round(channel + (upper.rgb[index] - channel) * t));
