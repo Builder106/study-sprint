@@ -60,7 +60,7 @@ export function GoogleCalendarBadge({ onChange }: Props) {
       {status.connected
         ? (
           <>
-            <span className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#ccff00]'>
+            <span className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-brand-lime-ink dark:text-brand-lime'>
               <Calendar className='w-4 h-4' /> Calendar linked
             </span>
             <button
@@ -77,7 +77,7 @@ export function GoogleCalendarBadge({ onChange }: Props) {
           <button
             onClick={connect}
             disabled={busy}
-            className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors disabled:opacity-50'
+            className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-brand-lime-ink dark:hover:text-brand-lime transition-colors disabled:opacity-50'
           >
             <LinkIcon className='w-3 h-3' /> {busy ? 'Connecting…' : 'Connect Calendar'}
           </button>

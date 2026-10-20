@@ -48,7 +48,7 @@ export function SelectItem({ children, ...props }: ItemProps) {
   return (
     <S.Item
       {...props}
-      className='flex items-center justify-between gap-3 px-3 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg cursor-pointer outline-none select-none text-zinc-700 dark:text-zinc-300 data-[highlighted]:bg-zinc-100 dark:data-[highlighted]:bg-white/5 data-[highlighted]:text-[#ccff00] data-[state=checked]:text-[#ccff00] data-[disabled]:opacity-40 data-[disabled]:cursor-not-allowed'
+      className='flex items-center justify-between gap-3 px-3 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg cursor-pointer outline-none select-none text-zinc-700 dark:text-zinc-300 data-[highlighted]:bg-zinc-100 dark:data-[highlighted]:bg-white/5 data-[highlighted]:text-brand-lime-ink dark:data-[highlighted]:text-brand-lime data-[state=checked]:text-brand-lime-ink dark:data-[state=checked]:text-brand-lime data-[disabled]:opacity-40 data-[disabled]:cursor-not-allowed'
     >
       <S.ItemText>{children}</S.ItemText>
       <S.ItemIndicator>

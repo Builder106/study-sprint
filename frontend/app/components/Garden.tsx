@@ -27,14 +27,14 @@ export function Garden() {
       <main className='max-w-5xl mx-auto px-8 py-16 space-y-16'>
         <Link
           to='/dashboard'
-          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] transition-colors group'
+          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-brand-lime-ink dark:hover:text-brand-lime transition-colors group'
         >
           <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
           Back
         </Link>
 
         <div>
-          <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4'>
+          <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-lime-ink dark:text-brand-lime mb-4'>
             <Sparkles className='w-4 h-4' />
             Study charge
           </div>
@@ -68,7 +68,7 @@ export function Garden() {
                     <div className='text-[10px] font-bold uppercase tracking-widest text-zinc-500'>
                       Level
                     </div>
-                    <div className='text-6xl font-medium tracking-tighter text-[#ccff00] tabular-nums'>
+                    <div className='text-6xl font-medium tracking-tighter text-brand-lime-ink dark:text-brand-lime tabular-nums'>
                       {profile.level}
                     </div>
                   </div>
@@ -129,7 +129,7 @@ export function Garden() {
                   >
                     <Trophy
                       className={`w-4 h-4 mt-1 flex-shrink-0 ${
-                        a.unlocked ? 'text-[#ccff00]' : 'text-zinc-400 dark:text-zinc-600'
+                        a.unlocked ? 'text-brand-lime-ink dark:text-brand-lime' : 'text-zinc-400 dark:text-zinc-600'
                       }`}
                     />
                     <div>
@@ -178,7 +178,7 @@ function StatBox({
       </div>
       <div
         className={`text-2xl font-medium tracking-tighter tabular-nums ${
-          accent ? 'text-[#ccff00]' : 'text-zinc-900 dark:text-zinc-50'
+          accent ? 'text-brand-lime-ink dark:text-brand-lime' : 'text-zinc-900 dark:text-zinc-50'
         }`}
       >
         {value}

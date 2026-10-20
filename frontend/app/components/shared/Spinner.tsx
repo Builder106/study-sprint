@@ -14,7 +14,7 @@ export function Spinner({ label, size = 16, className = '' }: Props) {
       aria-live='polite'
     >
       <Loader2
-        className='animate-spin text-[#ccff00]'
+        className='animate-spin text-brand-lime-ink dark:text-brand-lime'
         style={{ width: size, height: size }}
         aria-hidden='true'
       />

@@ -188,7 +188,7 @@ function EventGroup({
                 ? (
                   <Link
                     to={`/goal/${e.imported.goal_id}`}
-                    className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#ccff00] hover:text-[#b3e600] transition-colors'
+                    className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-brand-lime-ink dark:text-brand-lime hover:text-[#b3e600] transition-colors'
                     title={`Logged to ${e.imported.goal_title}`}
                   >
                     <CheckCheck className='w-3 h-3' />
@@ -207,7 +207,7 @@ function EventGroup({
                 : (
                   <button
                     onClick={() => onImport(e)}
-                    className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors'
+                    className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-brand-lime-ink dark:hover:text-brand-lime transition-colors'
                   >
                     <Download className='w-3 h-3' />
                     Import
@@ -366,7 +366,7 @@ function ImportModal({
 
           {creatingNew && (
             <div className='space-y-4 pt-2 border-t border-zinc-200 dark:border-white/10'>
-              <div className='flex items-center gap-2 text-[10px] font-bold text-[#ccff00] uppercase tracking-widest pt-4'>
+              <div className='flex items-center gap-2 text-[10px] font-bold text-brand-lime-ink dark:text-brand-lime uppercase tracking-widest pt-4'>
                 <Plus className='w-3 h-3' />
                 New goal
               </div>

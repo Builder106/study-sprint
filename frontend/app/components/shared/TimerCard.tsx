@@ -138,7 +138,7 @@ export function TimerCard({ onLogSession }: Props) {
           <span
             className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border ${
               phase === 'work'
-                ? 'border-[#ccff00]/30 bg-[#ccff00]/10 text-[#ccff00]'
+                ? 'border-[#ccff00]/30 bg-[#ccff00]/10 text-brand-lime-ink dark:text-brand-lime'
                 : 'border-zinc-200 dark:border-white/10 text-zinc-500'
             }`}
           >

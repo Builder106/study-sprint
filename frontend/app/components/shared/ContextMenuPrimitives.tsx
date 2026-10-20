@@ -28,7 +28,7 @@ interface ItemProps extends Omit<ComponentPropsWithoutRef<typeof CM.Item>, 'chil
 export function ContextMenuItem({ icon, children, danger, ...props }: ItemProps) {
   const baseColor = danger
     ? 'text-red-500 data-[highlighted]:bg-red-500/10 data-[highlighted]:text-red-400'
-    : 'text-zinc-700 dark:text-zinc-300 data-[highlighted]:bg-zinc-100 dark:data-[highlighted]:bg-white/5 data-[highlighted]:text-[#ccff00]';
+    : 'text-zinc-700 dark:text-zinc-300 data-[highlighted]:bg-zinc-100 dark:data-[highlighted]:bg-white/5 data-[highlighted]:text-brand-lime-ink dark:data-[highlighted]:text-brand-lime';
   return (
     <CM.Item
       {...props}

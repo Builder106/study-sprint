@@ -246,7 +246,7 @@ export function Dashboard() {
             <Link
               to='/community'
               aria-label='Community'
-              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors'
+              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-brand-lime-ink dark:hover:text-brand-lime transition-colors'
             >
               <Users className='w-4 h-4' />
               <span className='hidden sm:inline'>Community</span>
@@ -254,7 +254,7 @@ export function Dashboard() {
             <Link
               to='/garden'
               aria-label='Study charge'
-              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors'
+              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-brand-lime-ink dark:hover:text-brand-lime transition-colors'
             >
               <Zap className='w-4 h-4' />
               <span className='hidden sm:inline'>Charge</span>
@@ -262,7 +262,7 @@ export function Dashboard() {
             <Link
               to='/analytics'
               aria-label='Analytics'
-              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors'
+              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-brand-lime-ink dark:hover:text-brand-lime transition-colors'
             >
               <BarChart3 className='w-4 h-4' />
               <span className='hidden sm:inline'>Analytics</span>
@@ -270,7 +270,7 @@ export function Dashboard() {
             <button
               onClick={() => setShowImport(true)}
               aria-label='Import from syllabus'
-              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors'
+              className='flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-brand-lime-ink dark:hover:text-brand-lime transition-colors'
             >
               <Sparkles className='w-4 h-4' />
               <span className='hidden sm:inline'>Import</span>
@@ -289,7 +289,7 @@ export function Dashboard() {
       <main className='max-w-5xl mx-auto px-8 py-16'>
         <div className='flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16'>
           <div>
-            <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4'>
+            <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-lime-ink dark:text-brand-lime mb-4'>
               <Activity className='w-4 h-4' />
               Welcome back
             </div>
@@ -308,7 +308,7 @@ export function Dashboard() {
                 <div className='text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1'>
                   Active
                 </div>
-                <div className='text-3xl font-medium tracking-tighter text-[#ccff00]'>
+                <div className='text-3xl font-medium tracking-tighter text-brand-lime-ink dark:text-brand-lime'>
                   {stats.active}
                 </div>
               </div>
@@ -381,7 +381,7 @@ export function Dashboard() {
                     aria-pressed={active}
                     className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border transition-colors ${
                       active
-                        ? 'border-[#ccff00] bg-[#ccff00]/10 text-[#ccff00]'
+                        ? 'border-[#ccff00] bg-[#ccff00]/10 text-brand-lime-ink dark:text-brand-lime'
                         : 'border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50'
                     }`}
                   >
@@ -401,7 +401,7 @@ export function Dashboard() {
                 aria-pressed={selectMode}
                 className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border transition-colors ${
                   selectMode
-                    ? 'border-[#ccff00] bg-[#ccff00]/10 text-[#ccff00]'
+                    ? 'border-[#ccff00] bg-[#ccff00]/10 text-brand-lime-ink dark:text-brand-lime'
                     : 'border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50'
                 }`}
               >
@@ -469,7 +469,7 @@ export function Dashboard() {
                     <div className='flex flex-col sm:flex-row sm:items-center gap-4 justify-between'>
                       <h3
                         className={`text-xl md:text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 transition-colors ${
-                          selectMode ? '' : 'group-hover:text-[#ccff00]'
+                          selectMode ? '' : 'group-hover:text-brand-lime-ink dark:group-hover:text-brand-lime'
                         }`}
                       >
                         {goal.title}
@@ -487,7 +487,7 @@ export function Dashboard() {
                       </span>
                       <span>
                         Logged:{' '}
-                        <span className='text-[#ccff00]'>
+                        <span className='text-brand-lime-ink dark:text-brand-lime'>
                           {minutesToHours(goal.logged_minutes)}h
                         </span>
                       </span>
@@ -502,7 +502,7 @@ export function Dashboard() {
                     </div>
                   </div>
                   {!selectMode && (
-                    <div className='hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-zinc-200 dark:border-white/10 group-hover:border-[#ccff00] group-hover:text-[#ccff00] transition-colors'>
+                    <div className='hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-zinc-200 dark:border-white/10 group-hover:border-[#ccff00] group-hover:text-brand-lime-ink dark:group-hover:text-brand-lime transition-colors'>
                       <ChevronRight className='w-5 h-5 group-hover:translate-x-0.5 transition-transform' />
                     </div>
                   )}
@@ -530,7 +530,7 @@ export function Dashboard() {
                       <div className='py-8 border-b border-zinc-200 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8 group-hover:bg-zinc-50 dark:group-hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl'>
                         <div className='flex-1 space-y-3'>
                           <div className='flex flex-col sm:flex-row sm:items-center gap-4 justify-between'>
-                            <h3 className='text-xl md:text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 group-hover:text-[#ccff00] transition-colors'>
+                            <h3 className='text-xl md:text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 group-hover:text-brand-lime-ink dark:group-hover:text-brand-lime transition-colors'>
                               {goal.title}
                             </h3>
                             <div className='flex-shrink-0'>
@@ -544,7 +544,7 @@ export function Dashboard() {
                               <span className='text-zinc-700 dark:text-zinc-300'>{target}h</span>
                             </span>
                             <span>
-                              Logged: <span className='text-[#ccff00]'>{logged}h</span>
+                              Logged: <span className='text-brand-lime-ink dark:text-brand-lime'>{logged}h</span>
                             </span>
                           </div>
 
@@ -558,7 +558,7 @@ export function Dashboard() {
                           </div>
                         </div>
 
-                        <div className='hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-zinc-200 dark:border-white/10 group-hover:border-[#ccff00] group-hover:text-[#ccff00] transition-colors'>
+                        <div className='hidden md:flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full border border-zinc-200 dark:border-white/10 group-hover:border-[#ccff00] group-hover:text-brand-lime-ink dark:group-hover:text-brand-lime transition-colors'>
                           <ChevronRight className='w-5 h-5 group-hover:translate-x-0.5 transition-transform' />
                         </div>
                       </div>
