@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-19: Tier 2 is landscape again; lime text gets an ink color #decision #accessibility
+
+The 9:16 social cut was the only Tier 2 left after the HyperFrames port, but the tour records at 2560×1600 and the app is desktop-first, so a vertical frame kept about a third of each screen and needed per-shot crops and a pan. `ui-demo/` is now a 49-second 16:9 cut of the same take that also shows the heatmap, syllabus import, community, and the study room. The vertical cut is out of the repo because HyperFrames allows one root composition per project; rebuild it only for a vertical platform. Shots now fade in over 0.4 s instead of across their whole length, and the music fades in and out. Separately, neon lime text on white was about 1.2:1, so lime text classes now pair `text-brand-lime-ink` (#3d5200) for light mode with neon for dark mode. The accessibility audit only covers public pages, which is how this shipped; signed-in pages need a login in that job. The first light re-record after the class change recorded long blank and loading stretches while the dev server rebuilt its cache, so record twice after big frontend edits.
+
 ## 2026-10-19: Retold TheInterval with the charge battery #milestone #decision
 
 The Tier 3 trailer kept its six beats but swapped the plant for a static port of `BatteryBolt` and the streak for charge, following the app's own model: one session from empty reaches 12%, a two-day gap drains it to 0% on "Most people stop here.", and steady study refills it to a pulsing 100%. The counters now use the seeded account's real totals after the recorded session (173 hours, 93 sessions, 52 days since empty), and the end card borrows the landing page's "Focus in. Charge up." The music bed's existing half-second gap near 7 seconds is unchanged.
