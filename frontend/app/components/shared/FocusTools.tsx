@@ -95,7 +95,7 @@ export function FocusTools({ goalId }: Props) {
         <span className='flex items-center gap-3'>
           {noise === 'off'
             ? <VolumeX className='w-4 h-4 text-zinc-500' />
-            : <Volume2 className='w-4 h-4 text-[#ccff00]' />}
+            : <Volume2 className='w-4 h-4 text-brand-lime-ink dark:text-brand-lime' />}
           Focus tools
         </span>
         <ChevronDown
@@ -117,7 +117,7 @@ export function FocusTools({ goalId }: Props) {
                   aria-pressed={noise === opt.value}
                   className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border transition-colors ${
                     noise === opt.value
-                      ? 'border-[#ccff00] bg-[#ccff00]/10 text-[#ccff00]'
+                      ? 'border-[#ccff00] bg-[#ccff00]/10 text-brand-lime-ink dark:text-brand-lime'
                       : 'border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50'
                   }`}
                 >

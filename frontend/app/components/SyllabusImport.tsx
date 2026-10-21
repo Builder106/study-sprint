@@ -103,7 +103,7 @@ export function SyllabusImport({ onClose, onCreated }: Props) {
       >
         <div className='px-8 py-6 border-b border-zinc-200 dark:border-white/10 flex items-center justify-between'>
           <h3 className='text-sm font-bold tracking-widest uppercase text-zinc-900 dark:text-zinc-50 flex items-center gap-2'>
-            <Sparkles className='w-4 h-4 text-[#ccff00]' />
+            <Sparkles className='w-4 h-4 text-brand-lime-ink dark:text-brand-lime' />
             Import from syllabus
           </h3>
           <button

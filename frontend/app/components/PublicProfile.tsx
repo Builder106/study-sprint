@@ -28,7 +28,7 @@ export function PublicProfile() {
       <main className='max-w-3xl mx-auto px-8 py-16 space-y-12'>
         <Link
           to='/community'
-          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] transition-colors group'
+          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-brand-lime-ink dark:hover:text-brand-lime transition-colors group'
         >
           <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
           Back
@@ -61,7 +61,7 @@ export function PublicProfile() {
                 <div className='flex items-center gap-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1'>
                   <Clock className='w-4 h-4' /> Total hours
                 </div>
-                <div className='text-2xl font-medium tracking-tighter text-[#ccff00] tabular-nums'>
+                <div className='text-2xl font-medium tracking-tighter text-brand-lime-ink dark:text-brand-lime tabular-nums'>
                   {minutesToHours(data.stats.total_minutes)}h
                 </div>
               </div>
@@ -102,7 +102,7 @@ export function PublicProfile() {
                             {formatDate(s.logged_at)}
                           </div>
                         </div>
-                        <div className='text-sm text-[#ccff00] tabular-nums flex-shrink-0'>
+                        <div className='text-sm text-brand-lime-ink dark:text-brand-lime tabular-nums flex-shrink-0'>
                           {formatDuration(s.duration_minutes)}
                         </div>
                       </li>

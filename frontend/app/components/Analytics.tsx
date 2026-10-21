@@ -110,14 +110,14 @@ export function Analytics() {
       <main className='max-w-6xl mx-auto px-8 py-16 space-y-16'>
         <Link
           to='/dashboard'
-          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] transition-colors group'
+          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-brand-lime-ink dark:hover:text-brand-lime transition-colors group'
         >
           <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
           Back
         </Link>
 
         <div>
-          <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4'>
+          <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-lime-ink dark:text-brand-lime mb-4'>
             <Activity className='w-4 h-4' />
             Insights
           </div>
@@ -395,7 +395,7 @@ function StatCard({
       </div>
       <div
         className={`text-3xl font-medium tracking-tighter tabular-nums ${
-          accent ? 'text-[#ccff00]' : 'text-zinc-900 dark:text-zinc-50'
+          accent ? 'text-brand-lime-ink dark:text-brand-lime' : 'text-zinc-900 dark:text-zinc-50'
         }`}
       >
         {value}

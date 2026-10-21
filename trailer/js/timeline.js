@@ -19,9 +19,9 @@ export const HF_TIMELINE = {
   B6: { from: sec(framesB.B6.from), duration: sec(framesB.B6.duration) },
   TOTAL_SECONDS: sec(framesB.B6.from + framesB.B6.duration),
   REAL_STATS: {
-    totalHours: 199,
-    totalSessions: 97,
-    streakDays: 45,
+    totalHours: 173,
+    totalSessions: 93,
+    daysSinceEmpty: 52,
     subjects: 5,
   },
 };

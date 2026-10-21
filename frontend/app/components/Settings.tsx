@@ -52,13 +52,13 @@ export function Settings() {
       <main className='max-w-2xl mx-auto px-8 py-16'>
         <Link
           to='/dashboard'
-          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] mb-12 transition-colors group'
+          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-brand-lime-ink dark:hover:text-brand-lime mb-12 transition-colors group'
         >
           <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
           Back
         </Link>
 
-        <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4'>
+        <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-lime-ink dark:text-brand-lime mb-4'>
           <KeyRound className='w-4 h-4' />
           Account
         </div>

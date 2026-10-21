@@ -57,7 +57,7 @@ export function Community() {
       <main className='max-w-6xl mx-auto px-8 py-12 space-y-12'>
         <Link
           to='/dashboard'
-          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] transition-colors group'
+          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-brand-lime-ink dark:hover:text-brand-lime transition-colors group'
         >
           <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
           Back
@@ -156,12 +156,12 @@ export function Community() {
                     {me.is_public
                       ? (
                         <>
-                          <span className='inline-flex items-center gap-1 text-[#ccff00] font-medium'>
+                          <span className='inline-flex items-center gap-1 text-brand-lime-ink dark:text-brand-lime font-medium'>
                             <Check className='w-3 h-3' /> Public
                           </span>
                           <Link
                             to={`/u/${me.username}`}
-                            className='inline-flex items-center gap-1 hover:text-[#ccff00]'
+                            className='inline-flex items-center gap-1 hover:text-brand-lime-ink dark:hover:text-brand-lime'
                           >
                             <ExternalLink className='w-3 h-3' /> View profile
                           </Link>
@@ -172,7 +172,7 @@ export function Community() {
                 </div>
                 <button
                   onClick={() => setEditingProfile(true)}
-                  className='text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] border border-zinc-300 dark:border-white/20 px-4 py-2 rounded-full hover:border-[#ccff00] transition-colors shrink-0'
+                  className='text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-brand-lime-ink dark:hover:text-brand-lime border border-zinc-300 dark:border-white/20 px-4 py-2 rounded-full hover:border-[#ccff00] transition-colors shrink-0'
                 >
                   Edit
                 </button>
@@ -220,7 +220,7 @@ export function Community() {
             ? (
               <div className='p-10 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-white/15 text-center'>
                 <div className='w-14 h-14 mx-auto rounded-full bg-[#ccff00]/15 flex items-center justify-center mb-4'>
-                  <Trophy className='w-6 h-6 text-[#ccff00]' />
+                  <Trophy className='w-6 h-6 text-brand-lime-ink dark:text-brand-lime' />
                 </div>
                 <div className='text-base font-medium tracking-tighter'>
                   No one's on the board yet.
@@ -294,13 +294,13 @@ export function Community() {
                           </div>
                           <Link
                             to={`/u/${entry.username}`}
-                            className='text-sm font-medium hover:text-[#ccff00] truncate'
+                            className='text-sm font-medium hover:text-brand-lime-ink dark:hover:text-brand-lime truncate'
                           >
                             {entry.display_name || entry.username}
                             <span className='text-zinc-500 font-light'>@{entry.username}</span>
                           </Link>
                         </div>
-                        <div className='text-sm tabular-nums text-[#ccff00] flex-shrink-0'>
+                        <div className='text-sm tabular-nums text-brand-lime-ink dark:text-brand-lime flex-shrink-0'>
                           {formatDuration(entry.weekly_minutes)}
                         </div>
                       </li>
@@ -372,7 +372,7 @@ export function Community() {
                 <button
                   onClick={() => setShowCreateRoom(true)}
                   aria-label='Add another room'
-                  className='p-5 rounded-xl border-2 border-dashed border-zinc-200 dark:border-white/10 hover:border-[#ccff00] hover:bg-[#ccff00]/5 transition-colors flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00]'
+                  className='p-5 rounded-xl border-2 border-dashed border-zinc-200 dark:border-white/10 hover:border-[#ccff00] hover:bg-[#ccff00]/5 transition-colors flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-brand-lime-ink dark:hover:text-brand-lime'
                 >
                   <Plus className='w-4 h-4' /> Add another room
                 </button>

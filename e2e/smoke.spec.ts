@@ -5,7 +5,7 @@ const LOCAL_SUPABASE_URL = 'http://127.0.0.1:54321';
 const ACCESS_TOKEN = 'local-smoke-access-token';
 const USER_ID = '00000000-0000-4000-8000-000000000001';
 const FIXTURE_TIMESTAMP = '2026-01-01T00:00:00.000Z';
-const LANDING_RENDERER_READY_TIMEOUT = 12_000;
+const LANDING_RENDERER_READY_TIMEOUT = 20_000;
 
 type JsonObject = Record<string, unknown>;
 

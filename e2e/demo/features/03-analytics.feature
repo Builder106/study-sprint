@@ -1,5 +1,6 @@
 Feature: Demo — Analytics and study charge
   Walk through the analytics dashboard and the charge-based study view.
+  # Record after `deno task seed:demo` so the heatmap and battery have data.
 
   Background:
     Given I am logged in as "demo@studysprint.app" with password "demo123"

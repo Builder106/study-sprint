@@ -1,6 +1,6 @@
 import { HF_TIMELINE, LIME } from "./timeline.js";
 import { LIT_ORDER, buildGridSvg } from "./grid-data.js";
-import { buildPlantSvg } from "./plant-svg.js";
+import { buildBatterySvg, chargeToFillColor } from "./battery-svg.js";
 import { mountBeatText } from "./beat-text.js";
 
 const T = HF_TIMELINE;
@@ -26,14 +26,18 @@ function litCountAt(time) {
   ]));
 }
 
-function streakAt(time) {
-  const firstEnd = T.B1.from + T.B1.duration;
-  const gapMidpoint = T.B2.from + T.B2.duration * 0.55;
-  const fourthEnd = T.B4.from + T.B4.duration;
-  if (time < firstEnd) return Math.round(interpolateClamped(time, [[0, 0], [firstEnd, 1]]));
-  if (time < gapMidpoint) return Math.round(interpolateClamped(time, [[firstEnd, 1], [gapMidpoint, 0]]));
-  if (time < fourthEnd) return Math.round(interpolateClamped(time, [[gapMidpoint, 0], [fourthEnd, T.REAL_STATS.streakDays]]));
-  return T.REAL_STATS.streakDays;
+// Follows the app's charge model: one full session from empty is +20 - 8 = 12%,
+// a couple of missed days drain that back to empty, and steady study refills it.
+function chargeAt(time) {
+  return Math.round(interpolateClamped(time, [
+    [0, 0],
+    [T.B1.from + T.B1.duration * 0.5, 0],
+    [T.B1.from + T.B1.duration, 12],
+    [T.B2.from + T.B2.duration * 0.55, 0],
+    [T.B3.from, 0],
+    [T.B3.from + T.B3.duration, 44],
+    [T.B4.from + T.B4.duration, 100],
+  ]));
 }
 
 function stat(value, label) {
@@ -72,13 +76,16 @@ export function buildComposition(layer, audio, timeline) {
   grid.appendChild(gridContent);
   layer.appendChild(grid);
 
-  const streak = document.createElement("div");
-  streak.style.cssText = "position:absolute;top:260px;left:0;right:0;text-align:center;font-family:Inter,sans-serif;font-weight:800;font-size:96px";
-  layer.appendChild(streak);
+  const status = document.createElement("div");
+  status.style.cssText = "position:absolute;top:230px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:0;font-family:Inter,sans-serif;font-weight:800;font-size:96px";
+  const statusBolt = document.createElement("div");
+  const statusText = document.createElement("div");
+  status.append(statusBolt, statusText);
+  layer.appendChild(status);
 
-  const plant = document.createElement("div");
-  plant.style.cssText = "position:absolute;bottom:90px;left:0;right:0;display:flex;justify-content:center";
-  layer.appendChild(plant);
+  const meter = document.createElement("div");
+  meter.style.cssText = "position:absolute;bottom:20px;left:0;right:0;display:none;justify-content:center";
+  layer.appendChild(meter);
 
   const state = { time: 0 };
   const fourthEnd = T.B4.from + T.B4.duration;
@@ -97,21 +104,17 @@ export function buildComposition(layer, audio, timeline) {
       const creep = 1 + Math.min(time, T.B5.from) * 0.0015;
       gridContent.style.transform = `scale(${interpolateClamped(time, [[T.B4.from, 1], [fourthEnd, 0.72]]) * creep}) translateY(${interpolateClamped(time, [[T.B4.from, 0], [fourthEnd, -260]])}px)`;
 
-      streak.style.display = time < T.B4.from ? "block" : "none";
-      const streakValue = streakAt(time);
-      streak.textContent = `${streakValue} day streak`;
-      streak.style.color = streakValue === 0 ? "rgba(255,255,255,.35)" : LIME;
+      const charge = chargeAt(time);
+      status.style.display = time < T.B4.from ? "flex" : "none";
+      statusBolt.innerHTML = buildBatterySvg(charge, { size: 200, time, id: "status" });
+      statusText.textContent = `${charge}% charged`;
+      statusText.style.color = charge === 0 ? "rgba(255,255,255,.35)" : chargeToFillColor(charge);
 
-      if (time < T.B5.from && time >= T.B3.from) {
-        const stageName = time >= T.B4.from + T.B4.duration * 0.85 ? "mature_tree"
-          : time >= T.B4.from + T.B4.duration * 0.55 ? "young_tree"
-            : time >= T.B4.from + T.B4.duration * 0.15 ? "sapling"
-              : time >= T.B3.from + 40 / 30 ? "sprout" : "seed";
-        plant.innerHTML = buildPlantSvg(stageName, { size: time >= T.B4.from ? 220 : 200 });
-        plant.style.display = "flex";
-      } else {
-        plant.style.display = "none";
-      }
+      const inMeter = time >= T.B4.from && time < T.B5.from;
+      meter.style.display = inMeter ? "flex" : "none";
+      if (inMeter) meter.innerHTML = buildBatterySvg(charge, { size: 340, time, id: "meter" });
+      if (time >= T.B5.from && time < T.B6.from) gardenBolt.innerHTML = buildBatterySvg(100, { size: 260, time, id: "garden" });
+      if (time >= T.B6.from) endBolt.innerHTML = buildBatterySvg(100, { size: 260, time, id: "end" });
     },
   }, 0);
 
@@ -127,20 +130,22 @@ export function buildComposition(layer, audio, timeline) {
   layer.appendChild(counter);
   const counterState = { progress: 0 };
   timeline.to(counterState, { progress: 1, duration: T.B4.duration - 80 / 30, ease: "none", onUpdate: () => {
-    counter.innerHTML = [stat(`${Math.round(T.REAL_STATS.totalHours * counterState.progress)}h`, "studied"), stat(`${Math.round(T.REAL_STATS.totalSessions * counterState.progress)}`, "sessions"), stat(`${T.REAL_STATS.streakDays}d`, "streak")].join("");
+    counter.innerHTML = [stat(`${Math.round(T.REAL_STATS.totalHours * counterState.progress)}h`, "studied"), stat(`${Math.round(T.REAL_STATS.totalSessions * counterState.progress)}`, "sessions"), stat(`${T.REAL_STATS.daysSinceEmpty}d`, "since empty")].join("");
   } }, T.B4.from + 40 / 30);
   timeline.set(counter, { display: "flex" }, T.B4.from).set(counter, { display: "none" }, T.B5.from);
 
   const garden = document.createElement("div");
   garden.style.cssText = "position:absolute;inset:0;display:none;align-items:center;justify-content:center";
-  garden.innerHTML = `${subjectDonutSvg()}${buildPlantSvg("blooming", { size: 260 })}<div style="position:absolute;bottom:140px"></div>`;
+  garden.innerHTML = `${subjectDonutSvg()}<div></div><div style="position:absolute;bottom:140px"></div>`;
+  const gardenBolt = garden.children[1];
   layer.appendChild(garden);
   timeline.set(garden, { display: "flex" }, T.B5.from).set(garden, { display: "none" }, T.B6.from);
   timeline.add(mountBeatText(garden.lastElementChild, "Every subject. Every hour you actually studied.", { size: 38, startOffset: T.B5.from, beatDuration: T.B5.duration }), 0);
 
   const invitation = document.createElement("div");
   invitation.style.cssText = "position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;opacity:0";
-  invitation.innerHTML = `<div>${buildPlantSvg("blooming", { size: 180 })}<div style="margin-top:24px;font-family:Inter,sans-serif;font-weight:800;font-size:76px;color:white;letter-spacing:-1px">Plant <span style="color:${LIME}">something.</span></div><div style="margin-top:18px;font-family:Inter,sans-serif;font-weight:500;font-size:26px;color:rgba(255,255,255,.7)">getstudysprint.vercel.app</div></div>`;
+  invitation.innerHTML = `<div><div></div><div style="margin-top:24px;font-family:Inter,sans-serif;font-weight:800;font-size:76px;color:white;letter-spacing:-1px">Focus in. <span style="color:${LIME}">Charge up.</span></div><div style="margin-top:18px;font-family:Inter,sans-serif;font-weight:500;font-size:26px;color:rgba(255,255,255,.7)">getstudysprint.vercel.app</div></div>`;
+  const endBolt = invitation.firstElementChild.firstElementChild;
   layer.appendChild(invitation);
   timeline.set(invitation, { display: "flex" }, T.B6.from).to(invitation, { opacity: 1, duration: 1 }, T.B6.from).to(invitation, { scale: 1.012, duration: 2, repeat: -1, yoyo: true, ease: "sine.inOut" }, T.B6.from);
 

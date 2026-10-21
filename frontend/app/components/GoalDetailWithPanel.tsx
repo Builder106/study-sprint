@@ -265,7 +265,7 @@ export function GoalDetailWithPanel() {
           ? (
             <button
               onClick={() => setShowPanel(true)}
-              className='text-[10px] font-bold uppercase tracking-widest text-[#ccff00] border border-[#ccff00]/20 bg-[#ccff00]/10 px-3 py-1.5 rounded-full hover:bg-[#ccff00]/20 transition-colors'
+              className='text-[10px] font-bold uppercase tracking-widest text-brand-lime-ink dark:text-brand-lime border border-[#ccff00]/20 bg-[#ccff00]/10 px-3 py-1.5 rounded-full hover:bg-[#ccff00]/20 transition-colors'
             >
               Details
             </button>
@@ -282,7 +282,7 @@ export function GoalDetailWithPanel() {
           <div className='max-w-4xl mx-auto'>
             <Link
               to='/dashboard'
-              className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] mb-12 transition-colors group'
+              className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-brand-lime-ink dark:hover:text-brand-lime mb-12 transition-colors group'
             >
               <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
               Back to sprints
@@ -311,12 +311,12 @@ export function GoalDetailWithPanel() {
                     </div>
                   </div>
                   <div>
-                    <div className='text-[10px] font-bold text-[#ccff00] uppercase tracking-widest mb-2'>
+                    <div className='text-[10px] font-bold text-brand-lime-ink dark:text-brand-lime uppercase tracking-widest mb-2'>
                       Logged
                     </div>
-                    <div className='text-2xl font-medium tracking-tighter text-[#ccff00]'>
+                    <div className='text-2xl font-medium tracking-tighter text-brand-lime-ink dark:text-brand-lime'>
                       {loggedHours}
-                      <span className='text-[#ccff00]/50 font-light'>h</span>
+                      <span className='text-brand-lime-ink/50 dark:text-brand-lime/50 font-light'>h</span>
                     </div>
                   </div>
                   <div>
@@ -333,7 +333,7 @@ export function GoalDetailWithPanel() {
                 <div className='space-y-4'>
                   <div className='flex justify-between text-[10px] font-bold text-zinc-500 uppercase tracking-widest'>
                     <span>Overall Progress</span>
-                    <span className='text-[#ccff00]'>{percent}%</span>
+                    <span className='text-brand-lime-ink dark:text-brand-lime'>{percent}%</span>
                   </div>
                   <ProgressBar percent={percent} />
                 </div>
@@ -351,7 +351,7 @@ export function GoalDetailWithPanel() {
                             <ContextMenuTrigger asChild>
                               <div className='py-6 border-b border-zinc-100 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors -mx-4 px-4 rounded-xl flex flex-col gap-2 group'>
                                 <div className='flex gap-4 justify-between items-baseline'>
-                                  <div className='text-xl font-medium tracking-tighter text-[#ccff00]'>
+                                  <div className='text-xl font-medium tracking-tighter text-brand-lime-ink dark:text-brand-lime'>
                                     {formatDuration(session.duration_minutes)}
                                   </div>
                                   <div className='text-[10px] font-bold uppercase tracking-widest text-zinc-500'>
@@ -367,7 +367,7 @@ export function GoalDetailWithPanel() {
                                   <div className='flex justify-end'>
                                     {session.gcal_event_id
                                       ? (
-                                        <span className='inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#ccff00]'>
+                                        <span className='inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-brand-lime-ink dark:text-brand-lime'>
                                           <CheckCheck className='w-3 h-3' /> On calendar
                                         </span>
                                       )
@@ -375,7 +375,7 @@ export function GoalDetailWithPanel() {
                                         <button
                                           onClick={() => exportToCalendar(session.id)}
                                           disabled={exportingSessionId === session.id}
-                                          className='inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors disabled:opacity-50'
+                                          className='inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-brand-lime-ink dark:hover:text-brand-lime transition-colors disabled:opacity-50'
                                         >
                                           <Calendar className='w-3 h-3' />
                                           {exportingSessionId === session.id
@@ -587,10 +587,10 @@ export function GoalDetailWithPanel() {
                       </div>
                     </div>
                     <div className='space-y-2'>
-                      <label className='text-[10px] font-bold text-[#ccff00] uppercase tracking-widest'>
+                      <label className='text-[10px] font-bold text-brand-lime-ink dark:text-brand-lime uppercase tracking-widest'>
                         Target Date
                       </label>
-                      <div className='text-lg font-medium text-[#ccff00]'>
+                      <div className='text-lg font-medium text-brand-lime-ink dark:text-brand-lime'>
                         {goal.target_date ? formatDate(goal.target_date) : '—'}
                       </div>
                     </div>

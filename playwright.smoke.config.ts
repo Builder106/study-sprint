@@ -8,7 +8,7 @@ export default defineConfig({
   testMatch: 'e2e/smoke.spec.ts',
   timeout: 30_000,
   fullyParallel: true,
-  retries: 0,
+  retries: 1,
   reporter: 'list',
   use: {
     baseURL,

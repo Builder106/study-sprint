@@ -3,6 +3,18 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-19: Tier 2 is landscape again; lime text gets an ink color #decision #accessibility
+
+The 9:16 social cut was the only Tier 2 left after the HyperFrames port, but the tour records at 2560×1600 and the app is desktop-first, so a vertical frame kept about a third of each screen and needed per-shot crops and a pan. `ui-demo/` is now a 49-second 16:9 cut of the same take that also shows the heatmap, syllabus import, community, and the study room. The vertical cut is out of the repo because HyperFrames allows one root composition per project; rebuild it only for a vertical platform. Shots now fade in over 0.4 s instead of across their whole length, and the music fades in and out. Separately, neon lime text on white was about 1.2:1, so lime text classes now pair `text-brand-lime-ink` (#3d5200) for light mode with neon for dark mode. The accessibility audit only covers public pages, which is how this shipped; signed-in pages need a login in that job. The first light re-record after the class change recorded long blank and loading stretches while the dev server rebuilt its cache, so record twice after big frontend edits.
+
+## 2026-10-19: Retold TheInterval with the charge battery #milestone #decision
+
+The Tier 3 trailer kept its six beats but swapped the plant for a static port of `BatteryBolt` and the streak for charge, following the app's own model: one session from empty reaches 12%, a two-day gap drains it to 0% on "Most people stop here.", and steady study refills it to a pulsing 100%. The counters now use the seeded account's real totals after the recorded session (173 hours, 93 sessions, 52 days since empty), and the end card borrows the landing page's "Focus in. Charge up." The music bed's existing half-second gap near 7 seconds is unchanged.
+
+## 2026-10-19: Re-recorded the Tier 1 and Tier 2 videos for the battery #milestone #decision
+
+All three video tiers still showed the plant. The seeder kept the demo account at 100% charge, so the tour's payoff had nothing to show; it now leaves today empty and eases the last five days, so the recorded 90-minute session lifts the charge from 72% to 87% and crosses the 80% pulse threshold on camera (level 13 to 14 too). The core demo had been failing since May because `password123` trips the registration validator. Tier 1 now records on the seeded account so the heatmap and battery have data, and `demo:both` converts GIFs after each pass because Playwright clears `test-results/` on every run. The `ui-demo/` social cut uses the new take, frames the battery card, and pans the log shot from the timer to the modal. HyperFrames needs `HYPERFRAMES_BROWSER_PATH` pointed at a real Chromium when the system one is only a snap stub. The Tier 3 trailer is still plant-based and needs a new storyboard.
+
 ## 2026-09-30: Brand the initial loading state #interaction
 
 Session restoration and lazy route entry now show a shared StudySprint loading screen with a short lime charge sweep. The screen keeps readable status text and shows a static full charge for reduced motion.

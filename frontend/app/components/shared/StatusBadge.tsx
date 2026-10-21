@@ -3,7 +3,7 @@ import type { GoalStatus } from '@/lib/types';
 
 const STYLES: Record<GoalStatus, { wrap: string; dot: string; label: string }> = {
   Active: {
-    wrap: 'bg-[#ccff00]/10 text-[#ccff00] border border-[#ccff00]/20',
+    wrap: 'bg-[#ccff00]/10 text-brand-lime-ink dark:text-brand-lime border border-[#ccff00]/20',
     dot: 'fill-[#ccff00] text-transparent',
     label: 'Active',
   },

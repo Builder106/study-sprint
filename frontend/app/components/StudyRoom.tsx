@@ -97,7 +97,7 @@ export function StudyRoom() {
           <div className='text-xs text-red-400 font-medium'>Room not found.</div>
           <Link
             to='/community'
-            className='text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00]'
+            className='text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-brand-lime-ink dark:hover:text-brand-lime'
           >
             Back to community
           </Link>
@@ -158,7 +158,7 @@ export function StudyRoom() {
       <main className='max-w-4xl mx-auto px-8 py-16 space-y-12'>
         <Link
           to='/community'
-          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-[#ccff00] transition-colors group'
+          className='inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest hover:text-brand-lime-ink dark:hover:text-brand-lime transition-colors group'
         >
           <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
           Community
@@ -166,7 +166,7 @@ export function StudyRoom() {
 
         <div className='flex flex-col md:flex-row md:items-end md:justify-between gap-4'>
           <div>
-            <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#ccff00] mb-4'>
+            <div className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-lime-ink dark:text-brand-lime mb-4'>
               <Users className='w-4 h-4' />
               Study room
             </div>
@@ -206,7 +206,7 @@ export function StudyRoom() {
                     ? (
                       <Link
                         to={`/u/${m.username}`}
-                        className='text-sm hover:text-[#ccff00]'
+                        className='text-sm hover:text-brand-lime-ink dark:hover:text-brand-lime'
                       >
                         {m.display_name || m.username}
                         <span className='text-zinc-500 font-light'>@{m.username}</span>
@@ -247,7 +247,7 @@ export function StudyRoom() {
                           <span className='text-zinc-500 font-light'>
                             {' '}studied{' '}
                           </span>
-                          <span className='font-medium text-[#ccff00]'>
+                          <span className='font-medium text-brand-lime-ink dark:text-brand-lime'>
                             {formatDuration(s.duration_minutes)}
                           </span>
                           <span className='text-zinc-500 font-light'>on</span>

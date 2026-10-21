@@ -12,11 +12,11 @@ test("beat cue points convert Remotion frames (30fps) to seconds", () => {
   assert.equal(HF_TIMELINE.TOTAL_SECONDS, 50);
 });
 
-test("REAL_STATS are ported verbatim, not invented", () => {
+test("REAL_STATS match the seeded demo account after the recorded session", () => {
   assert.deepEqual(HF_TIMELINE.REAL_STATS, {
-    totalHours: 199,
-    totalSessions: 97,
-    streakDays: 45,
+    totalHours: 173,
+    totalSessions: 93,
+    daysSinceEmpty: 52,
     subjects: 5,
   });
 });

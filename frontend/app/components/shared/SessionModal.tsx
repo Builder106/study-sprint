@@ -175,7 +175,7 @@ export function SessionModal({
                     onClick={() => setQuality(q)}
                     className={`py-3 px-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-colors ${
                       selected
-                        ? 'border-[#ccff00] bg-[#ccff00]/10 text-[#ccff00]'
+                        ? 'border-[#ccff00] bg-[#ccff00]/10 text-brand-lime-ink dark:text-brand-lime'
                         : 'border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50'
                     }`}
                   >

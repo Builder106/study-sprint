@@ -4,6 +4,8 @@ const REDUCED_MOTION_ADVISORY =
   'You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled';
 const WEBGL_READBACK_ADVISORY =
   /^\[\.WebGL-0x[\da-f]+\]GL Driver Message \(OpenGL, Performance, GL_CLOSE_PATH_NV, High\): GPU stall due to ReadPixels(?: \(this message will no longer repeat\))?$/i;
+const PRELOAD_ADVISORY =
+  /^The resource https?:\/\/.*\/landing\/charge-sculpture-(?:light|dark)\.webp was preloaded using link preload but not used within a few seconds/i;
 
 const test = playwrightTest.extend<{ runtimeWarnings: void }>({
   runtimeWarnings: [
@@ -23,6 +25,8 @@ const test = playwrightTest.extend<{ runtimeWarnings: void }>({
             ? 'Motion reduced-motion advisory emitted by a tracked public-page E2E test'
             : WEBGL_READBACK_ADVISORY.test(text)
             ? 'Chromium WebGL readback advisory emitted by the decorative landing canvas'
+            : PRELOAD_ADVISORY.test(text)
+            ? 'Chromium preload advisory for decorative sculpture asset'
             : undefined
         );
 
