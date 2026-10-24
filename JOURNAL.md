@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-24: Optimize Supabase RLS initialization plans and foreign key indexes #performance #database
+
+Rewrote all 13 row-level security policies to evaluate user credentials via `(SELECT auth.uid())` instead of direct function invocations. This allows Postgres to compute caller identity once per query plan via an InitPlan rather than re-evaluating row-by-row during table scans. Added covering indexes on `goal_subjects(subject_id)`, `oauth_states(user_id)`, and `study_rooms(created_by)` to prevent sequential table scans during foreign key cascade lookups. Pushed migration `20261024000000_perf_rls_initplan_and_foreign_keys.sql` to the linked Supabase database and confirmed that all 13 `auth_rls_initplan` warnings and all 3 unindexed foreign key notices cleared in the database advisors.
+
 ## 2026-10-24: Configure hosted account email templates #design #milestone
 
 Added a public Supabase Storage bucket, `email-assets`, for the PNG artwork, then saved the confirmation, password recovery, and magic-link templates in Supabase Auth. Both image URLs return PNGs, and each saved body matches the repository source. The app exposes sign-up only; recovery and magic-link flows remain unused. The project still uses Supabase's built-in email service. No SMTP changes or test emails were made.
