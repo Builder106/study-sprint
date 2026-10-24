@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-24: Add explicit deny RLS policy to oauth_states #security #database
+
+Added an explicit deny policy (`oauth_states_no_client_access`) with `USING (false)` to `public.oauth_states`. This resolves the `rls_enabled_no_policy` info suggestion in Supabase Security Advisor while ensuring client roles (`anon`, `authenticated`) cannot query or mutate OAuth state records, which remain strictly accessed by backend Edge Functions via the service role key.
+
 ## 2026-10-24: Harden social RPCs to SECURITY INVOKER with declarative RLS #security #performance
 
 Converted all 8 client-callable social RPCs (`create_room`, `list_my_rooms`, `join_room`, `leave_room`, `get_room`, `leaderboard`, `get_public_profile`, `reset_account`) from `SECURITY DEFINER` to `SECURITY INVOKER`. Added declarative, consolidated row-level security policies on `profiles`, `study_goals`, and `study_sessions` to govern public profile discovery and room co-member activity streams without elevated superuser privileges. Pushed migration `20261024000300_convert_social_rpcs_to_security_invoker.sql`, completely resolving all 8 `authenticated_security_definer_function_executable` warnings in Supabase Security Advisor while maintaining zero performance warnings.
