@@ -152,6 +152,9 @@
     ]
   },
   "lint": {
+    "rules": {
+      "include": ["no-explicit-any", "no-deprecated-deno-api"]
+    },
     "exclude": [
       "node_modules",
       "dist",

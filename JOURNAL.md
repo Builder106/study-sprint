@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-23: Lint the frontend for explicit `any` #ci #decision
+
+Deno lint now covers the frontend as well as the Supabase functions, with explicit `any` and deprecated Deno API checks enabled. The existing strict TypeScript checks remain in CI.
+
 ## 2026-10-23: Retired persistent staging #decision
 
 `main` is the only long-lived branch. CI and the production Vercel deploy hook run on pushes to `main`; the staging push trigger and deploy hook are gone. The project has no separate QA data or integration tests that need a permanent staging environment. The Easter egg preview remains available locally with `?easter-eggs=1`.
