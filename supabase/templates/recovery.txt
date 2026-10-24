@@ -1,0 +1,13 @@
+Reset your StudySprint password
+
+Reset your password
+
+We received a request to reset the password for your StudySprint account.
+
+Reset password: {{ .ConfirmationURL }}
+
+If you did not request a reset, you can ignore this email.
+
+StudySprint | Focus in. Charge up.
+Privacy: https://getstudysprint.vercel.app/privacy
+Support: vaughanolayinka@gmail.com

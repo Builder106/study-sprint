@@ -1,0 +1,13 @@
+Confirm your StudySprint email
+
+Confirm your email
+
+Use the button below to confirm the email address for your StudySprint account.
+
+Confirm email: {{ .ConfirmationURL }}
+
+If you did not create this account, you can ignore this email.
+
+StudySprint | Focus in. Charge up.
+Privacy: https://getstudysprint.vercel.app/privacy
+Support: vaughanolayinka@gmail.com

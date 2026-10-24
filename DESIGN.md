@@ -4,6 +4,9 @@ StudySprint combines focused study timing with a battery that charges from focus
 gradually when idle. The interface uses a clean monochromatic base paired with electric lime
 (`#ccff00`) for progress, active timers, and achievements.
 
+Email templates follow the [StudySprint email design system](docs/email-design-system.md), which
+sets their visual tokens, message structure, and accessibility rules.
+
 ## Design principles
 
 1. **Focus first layout** The interface minimizes visual noise so students can concentrate on their

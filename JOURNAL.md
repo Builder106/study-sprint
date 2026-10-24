@@ -3,6 +3,18 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-24: Configure hosted account email templates #design #milestone
+
+Added a public Supabase Storage bucket, `email-assets`, for the PNG artwork, then saved the confirmation, password recovery, and magic-link templates in Supabase Auth. Both image URLs return PNGs, and each saved body matches the repository source. The app exposes sign-up only; recovery and magic-link flows remain unused. The project still uses Supabase's built-in email service. No SMTP changes or test emails were made.
+
+## 2026-10-24: Build account email templates #design #milestone
+
+Added Supabase Auth HTML and plain-text designs for confirmation, recovery, and magic-link emails. The templates use a Glaxnimate charge mark and a small Blender render of the existing bolt as optional backgrounds. Live text and action links remain when images are blocked, without broken-image boxes. Recovery and magic-link flows are not exposed in the app, and hosted Auth settings were left alone.
+
+## 2026-10-24: Define the email design system #design #decision
+
+Added a provider-neutral guide for StudySprint's Supabase Auth emails and future product messages. It uses the app's black, white, and lime palette, sets message and accessibility rules, and leaves provider settings alone because the repository has no templates or notification sender.
+
 ## 2026-10-23: Lint the frontend for explicit `any` #ci #decision
 
 Deno lint now covers the frontend as well as the Supabase functions, with explicit `any` and deprecated Deno API checks enabled. The existing strict TypeScript checks remain in CI.
