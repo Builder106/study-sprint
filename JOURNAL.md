@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-24: Purge unmanaged subjects UPDATE policy and tighten study rooms SELECT #security #database
+
+Discovered an unmanaged `subjects_update_authenticated` policy present directly in the remote database with `true` expressions for both USING and WITH CHECK. Dropped the update policy, since subjects are a shared taxonomy that client roles should not mutate, and updated `study_rooms_select_authenticated` to check `(SELECT auth.uid()) IS NOT NULL`. Pushed migration `20261024000200_drop_unrestricted_subject_update_and_room_select.sql`, completely eliminating all policies with always-true expressions.
+
 ## 2026-10-24: Harden subjects RLS policy against always-true lint warning #security #database
 
 Replaced literal `true` policy expressions on `public.subjects` with explicit authentication and non-empty name validation checks (`(SELECT auth.uid()) IS NOT NULL` and `length(trim(name)) > 0`). Pushed migration `20261024000100_fix_subjects_rls_always_true.sql` to the linked database, clearing the `rls_policy_always_true` warning from Supabase Security Advisor.
