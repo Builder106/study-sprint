@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-24: Harden social RPCs to SECURITY INVOKER with declarative RLS #security #performance
+
+Converted all 8 client-callable social RPCs (`create_room`, `list_my_rooms`, `join_room`, `leave_room`, `get_room`, `leaderboard`, `get_public_profile`, `reset_account`) from `SECURITY DEFINER` to `SECURITY INVOKER`. Added declarative, consolidated row-level security policies on `profiles`, `study_goals`, and `study_sessions` to govern public profile discovery and room co-member activity streams without elevated superuser privileges. Pushed migration `20261024000300_convert_social_rpcs_to_security_invoker.sql`, completely resolving all 8 `authenticated_security_definer_function_executable` warnings in Supabase Security Advisor while maintaining zero performance warnings.
+
 ## 2026-10-24: Purge unmanaged subjects UPDATE policy and tighten study rooms SELECT #security #database
 
 Discovered an unmanaged `subjects_update_authenticated` policy present directly in the remote database with `true` expressions for both USING and WITH CHECK. Dropped the update policy, since subjects are a shared taxonomy that client roles should not mutate, and updated `study_rooms_select_authenticated` to check `(SELECT auth.uid()) IS NOT NULL`. Pushed migration `20261024000200_drop_unrestricted_subject_update_and_room_select.sql`, completely eliminating all policies with always-true expressions.
