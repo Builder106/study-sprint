@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-24: Tighten the account email layout #design
+
+Dropped the Blender bolt beside the confirmation copy. It repeated the header mark, squeezed the text into a narrow column on phones, and left an empty gutter when images were blocked; the other two templates never had it. Footers now use spacing instead of pipe separators, and preheaders are padded so inbox previews stop pulling in body copy. The design guide listed `#717182` for secondary text, which fails AA on the email canvas; it now records the `#52525b` the templates already used. The three hosted Supabase Auth templates were then updated through the Management API, after a check showed the dashboard copies matched the previous commit apart from trailing whitespace; a read-back confirmed they match the repository files.
+
 ## 2026-10-24: Add explicit deny RLS policy to oauth_states #security #database
 
 Added an explicit deny policy (`oauth_states_no_client_access`) with `USING (false)` to `public.oauth_states`. This resolves the `rls_enabled_no_policy` info suggestion in Supabase Security Advisor while ensuring client roles (`anon`, `authenticated`) cannot query or mutate OAuth state records, which remain strictly accessed by backend Edge Functions via the service role key.

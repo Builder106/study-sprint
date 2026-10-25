@@ -1,12 +1,13 @@
 # StudySprint email artwork
 
-StudySprint account emails use the app's charge bolt as a small visual cue. The templates keep the product name and actions as text, so the message still reads when images are blocked.
+StudySprint account emails use the Glaxnimate charge mark as their only artwork, in the header's trailing corner. The templates keep the product name and actions as text, so the message still reads when images are blocked.
 
 ## Files
 
 - `charge-bolt.blend` is the editable Blender scene. It imports the landing page's existing charge sculpture and renders a transparent 320 × 320 PNG.
 - `charge-mark.project.json` is the editable Glaxnimate project. The animated SVG shows a short bolt reveal. `charge-mark.static.svg` and `charge-mark.reduced-motion.svg` hold the complete still mark.
-- The email-compatible PNG exports are `frontend/public/email/charge-bolt.png` and `frontend/public/email/charge-mark.png`. Email templates use them as optional CSS backgrounds, so blocking images leaves the text layout intact without broken-image boxes. Clients that do not support background images simply omit the artwork.
+- `frontend/public/email/charge-mark.png` is the email export of the mark. The templates set it as an optional CSS background, so blocking images leaves the text layout intact without broken-image boxes. Clients that do not support background images omit it.
+- `frontend/public/email/charge-bolt.png` is the Blender render. No template uses it. It sat beside the confirmation copy, where it repeated the header mark and pushed the text into a narrow column on phones. It also left an empty gutter when images were blocked.
 - `previews/` contains browser screenshots made from the template files with sample links. These are design review images, not sent messages.
 
 ## Templates

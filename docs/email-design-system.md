@@ -17,7 +17,7 @@ Use the wordmark `StudySprint` as live text. The tagline `Focus in. Charge up.` 
 | Canvas | `#ececf0` | Email page background |
 | Content surface | `#ffffff` | Main message panel |
 | Primary text | `#030213` | Headings, body, and button text |
-| Secondary text | `#717182` | Supporting details and footer copy |
+| Secondary text | `#52525b` | Supporting details and footer copy. The app's `#717182` measures 4.06:1 on the canvas, below AA for 14px text; this value measures 7.73:1 on white and 6.56:1 on the canvas |
 | Brand accent | `#ccff00` | Primary action fill and small brand details |
 | Accent text | `#3d5200` | Links or small text on a light surface |
 | Divider | `#e4e4e7` | Rules and panel outlines |
@@ -51,7 +51,7 @@ Include a descriptive text link to the same destination when a button cannot be 
 
 ### Footer
 
-Use muted text for the product name, support destination, and relevant privacy or account links. Include an unsubscribe link only for messages that are actually optional product or marketing email. Do not add one to account-security messages unless the delivery rules require it.
+Use muted text for the product name, support destination, and relevant privacy or account links. Separate footer items with line breaks or spacing, not pipes or dots. Include an unsubscribe link only for messages that are actually optional product or marketing email. Do not add one to account-security messages unless the delivery rules require it.
 
 ## Message structure
 
