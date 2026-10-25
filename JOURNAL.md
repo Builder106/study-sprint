@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-25: Keep the trailer's stripes and captions in frame #incident #video
+
+The trailer showed a hard black panel spreading from the left edge from about 0:03. The phosphor stripes were one fixed-size layer moved with `translateX(time * 96px)`, so the layer itself slid off the frame and was gone by 0:20. The stripes now scroll inside the layer through `background-position`, which tiles forever. The three beat captions sat in one flex row, so each hidden caption pushed the visible one sideways; they now share one grid cell and are 64px instead of 40px so they read on a phone. The day-two caption ends when the meter bolt arrives, the grid lifts before the counters fade in, the grid fades out fully before the subject ring, and the end card names StudySprint with a 44px white URL. The charge starts filling at about 1s instead of 3.5s so the opening moves.
+
 ## 2026-10-24: Tighten the account email layout #design
 
 Dropped the Blender bolt beside the confirmation copy. It repeated the header mark, squeezed the text into a narrow column on phones, and left an empty gutter when images were blocked; the other two templates never had it. Footers now use spacing instead of pipe separators, and preheaders are padded so inbox previews stop pulling in body copy. The design guide listed `#717182` for secondary text, which fails AA on the email canvas; it now records the `#52525b` the templates already used. The three hosted Supabase Auth templates were then updated through the Management API, after a check showed the dashboard copies matched the previous commit apart from trailing whitespace; a read-back confirmed they match the repository files.

@@ -31,7 +31,7 @@ function litCountAt(time) {
 function chargeAt(time) {
   return Math.round(interpolateClamped(time, [
     [0, 0],
-    [T.B1.from + T.B1.duration * 0.5, 0],
+    [T.B1.from + T.B1.duration * 0.15, 0],
     [T.B1.from + T.B1.duration, 12],
     [T.B2.from + T.B2.duration * 0.55, 0],
     [T.B3.from, 0],
@@ -67,7 +67,7 @@ export function buildComposition(layer, audio, timeline) {
   stage.style.backgroundPosition = "0% 0%";
 
   const phosphorTexture = document.createElement("div");
-  phosphorTexture.style.cssText = "position:absolute;inset:-80px;z-index:0;pointer-events:none;opacity:.1;mix-blend-mode:screen;background-image:repeating-linear-gradient(118deg,transparent 0 8px,rgba(204,255,0,.8) 8px 11px,transparent 11px 22px);will-change:transform";
+  phosphorTexture.style.cssText = "position:absolute;inset:-80px;z-index:0;pointer-events:none;opacity:.1;mix-blend-mode:screen;background-image:repeating-linear-gradient(118deg,transparent 0 8px,rgba(204,255,0,.8) 8px 11px,transparent 11px 22px)";
   layer.appendChild(phosphorTexture);
 
   const grid = document.createElement("div");
@@ -88,7 +88,7 @@ export function buildComposition(layer, audio, timeline) {
   layer.appendChild(meter);
 
   const state = { time: 0 };
-  const fourthEnd = T.B4.from + T.B4.duration;
+  const counterStart = T.B4.from + 40 / 30;
   timeline.to(state, {
     time: T.TOTAL_SECONDS,
     duration: T.TOTAL_SECONDS,
@@ -96,13 +96,18 @@ export function buildComposition(layer, audio, timeline) {
     onUpdate: () => {
       const time = state.time;
       stage.style.backgroundPosition = `${(time / T.TOTAL_SECONDS) * 100}% 0%`;
-      phosphorTexture.style.transform = `translateX(${time * 96}px)`;
+      // Scroll the stripes inside the layer; moving the layer itself slid it off the frame.
+      phosphorTexture.style.backgroundPosition = `${time * 96}px 0`;
       const inGarden = time >= T.B5.from;
       grid.style.display = time < T.B6.from ? "flex" : "none";
       gridContent.innerHTML = buildGridSvg(litCountAt(time));
-      gridContent.style.opacity = inGarden ? interpolateClamped(time, [[fourthEnd, 1], [T.B5.from + T.B5.duration * 0.4, 0.22]]) : 1;
+      gridContent.style.opacity = inGarden ? interpolateClamped(time, [[T.B5.from, 1], [T.B5.from + 0.8, 0]]) : 1;
       const creep = 1 + Math.min(time, T.B5.from) * 0.0015;
-      gridContent.style.transform = `scale(${interpolateClamped(time, [[T.B4.from, 1], [fourthEnd, 0.72]]) * creep}) translateY(${interpolateClamped(time, [[T.B4.from, 0], [fourthEnd, -260]])}px)`;
+      // The grid clears the counter row before the counters fade in.
+      const gridLift = [[T.B4.from, 0], [counterStart, 1]];
+      const linearLift = interpolateClamped(time, gridLift);
+      const lift = linearLift * linearLift * (3 - 2 * linearLift);
+      gridContent.style.transform = `scale(${(1 - 0.28 * lift) * creep}) translateY(${-260 * lift}px)`;
 
       const charge = chargeAt(time);
       status.style.display = time < T.B4.from ? "flex" : "none";
@@ -119,11 +124,14 @@ export function buildComposition(layer, audio, timeline) {
   }, 0);
 
   const textLayer = document.createElement("div");
-  textLayer.style.cssText = "position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:120px";
+  // One grid cell for every caption, so hidden captions don't push the visible one off center.
+  textLayer.style.cssText = "position:absolute;inset:0;display:grid;place-items:end center;padding-bottom:120px";
   layer.appendChild(textLayer);
-  timeline.add(mountBeatText(textLayer, "One session.", { startOffset: T.B1.from, beatDuration: T.B1.duration }), 0);
-  timeline.add(mountBeatText(textLayer, "Most people stop here.", { startOffset: T.B2.from + 40 / 30, beatDuration: T.B2.duration - 40 / 30 }), 0);
-  timeline.add(mountBeatText(textLayer, "The only job is making day two easier.", { startOffset: T.B3.from + 1, beatDuration: T.B3.duration - 1 }), 0);
+  const captionSize = 64;
+  timeline.add(mountBeatText(textLayer, "One session.", { size: captionSize, startOffset: T.B1.from, beatDuration: T.B1.duration }), 0);
+  timeline.add(mountBeatText(textLayer, "Most people stop here.", { size: captionSize, startOffset: T.B2.from + 40 / 30, beatDuration: T.B2.duration - 40 / 30 }), 0);
+  // Ends when the meter bolt takes the bottom of the frame, not when B3's overlap does.
+  timeline.add(mountBeatText(textLayer, "The only job is making day two easier.", { size: captionSize, startOffset: T.B3.from + 1, beatDuration: T.B4.from - T.B3.from - 1 }), 0);
 
   const counter = document.createElement("div");
   counter.style.cssText = "position:absolute;top:560px;left:0;right:0;display:none;justify-content:center;gap:72px";
@@ -131,8 +139,10 @@ export function buildComposition(layer, audio, timeline) {
   const counterState = { progress: 0 };
   timeline.to(counterState, { progress: 1, duration: T.B4.duration - 80 / 30, ease: "none", onUpdate: () => {
     counter.innerHTML = [stat(`${Math.round(T.REAL_STATS.totalHours * counterState.progress)}h`, "studied"), stat(`${Math.round(T.REAL_STATS.totalSessions * counterState.progress)}`, "sessions"), stat(`${T.REAL_STATS.daysSinceEmpty}d`, "since empty")].join("");
-  } }, T.B4.from + 40 / 30);
-  timeline.set(counter, { display: "flex" }, T.B4.from).set(counter, { display: "none" }, T.B5.from);
+  } }, counterStart);
+  timeline.set(counter, { display: "flex", opacity: 0 }, counterStart)
+    .to(counter, { opacity: 1, duration: 0.4, ease: "none" }, counterStart)
+    .set(counter, { display: "none" }, T.B5.from);
 
   const garden = document.createElement("div");
   garden.style.cssText = "position:absolute;inset:0;display:none;align-items:center;justify-content:center";
@@ -140,11 +150,11 @@ export function buildComposition(layer, audio, timeline) {
   const gardenBolt = garden.children[1];
   layer.appendChild(garden);
   timeline.set(garden, { display: "flex" }, T.B5.from).set(garden, { display: "none" }, T.B6.from);
-  timeline.add(mountBeatText(garden.lastElementChild, "Every subject. Every hour you actually studied.", { size: 38, startOffset: T.B5.from, beatDuration: T.B5.duration }), 0);
+  timeline.add(mountBeatText(garden.lastElementChild, "Every subject. Every hour you actually studied.", { size: 56, startOffset: T.B5.from, beatDuration: T.B5.duration }), 0);
 
   const invitation = document.createElement("div");
   invitation.style.cssText = "position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;opacity:0";
-  invitation.innerHTML = `<div><div></div><div style="margin-top:24px;font-family:Inter,sans-serif;font-weight:800;font-size:76px;color:white;letter-spacing:-1px">Focus in. <span style="color:${LIME}">Charge up.</span></div><div style="margin-top:18px;font-family:Inter,sans-serif;font-weight:500;font-size:26px;color:rgba(255,255,255,.7)">getstudysprint.vercel.app</div></div>`;
+  invitation.innerHTML = `<div><div></div><div style="margin-top:8px;font-family:Inter,sans-serif;font-weight:800;font-size:120px;color:white;letter-spacing:-3px;line-height:1">StudySprint</div><div style="margin-top:28px;font-family:Inter,sans-serif;font-weight:700;font-size:64px;color:rgba(255,255,255,.85);letter-spacing:-1px">Focus in. <span style="color:${LIME}">Charge up.</span></div><div style="margin-top:36px;font-family:Inter,sans-serif;font-weight:600;font-size:44px;color:white">getstudysprint.vercel.app</div></div>`;
   const endBolt = invitation.firstElementChild.firstElementChild;
   layer.appendChild(invitation);
   timeline.set(invitation, { display: "flex" }, T.B6.from).to(invitation, { opacity: 1, duration: 1 }, T.B6.from).to(invitation, { scale: 1.012, duration: 2, repeat: -1, yoyo: true, ease: "sine.inOut" }, T.B6.from);

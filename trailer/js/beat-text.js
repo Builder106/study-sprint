@@ -2,6 +2,7 @@ export function mountBeatText(container, text, { size = 40, startOffset = 0, bea
   const element = document.createElement("div");
   element.textContent = text;
   element.style.cssText = `
+    grid-area: 1 / 1;
     opacity: 0;
     transform: translateY(14px);
     font-family: Inter, sans-serif;
