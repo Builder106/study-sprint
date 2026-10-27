@@ -10,7 +10,7 @@
     "check:deno": "deno check --config supabase/functions/deno.json supabase/functions/syllabus-parse/index.ts supabase/functions/google-calendar/index.ts",
     "fmt": "deno fmt",
     "fmt:check": "deno fmt --check",
-    "lint": "deno lint supabase/functions/syllabus-parse supabase/functions/google-calendar",
+    "lint": "deno lint frontend supabase/functions/syllabus-parse supabase/functions/google-calendar",
     "verify:a11y-matrix": "deno run --allow-read scripts/verify-a11y-matrix.ts",
 
     "test": "node ./node_modules/.bin/bddgen && node ./node_modules/.bin/playwright test",
