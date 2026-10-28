@@ -673,7 +673,7 @@ export const api = {
       headers['Content-Type'] = 'application/json';
       body = JSON.stringify({ text: input.text ?? '' });
     }
-    return functionsFetch<{
+    return await functionsFetch<{
       goals: {
         title: string;
         description: string;
