@@ -9,7 +9,7 @@ import './styles/index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider attribute='class' defaultTheme='dark' enableSystem={true} storageKey='theme'>
+    <ThemeProvider attribute='class' defaultTheme='dark' enableSystem storageKey='theme'>
       <AuthProvider>
         <ConfirmProvider>
           <App />
