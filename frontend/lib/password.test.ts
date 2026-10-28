@@ -1,4 +1,4 @@
-import { assertEquals, assertNotEquals } from 'jsr:@std/assert';
+import { assertEquals, assertNotEquals } from '@std/assert';
 import { validatePassword } from './password.ts';
 
 Deno.test('validatePassword - too short', () => {

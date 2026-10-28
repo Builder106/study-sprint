@@ -1,4 +1,4 @@
-import { assert, assertEquals } from 'jsr:@std/assert';
+import { assert, assertEquals } from '@std/assert';
 import { computeGamificationProfile, type GamificationSession } from './gamification.ts';
 
 // Build a UTC ISO timestamp N days before today at a given UTC hour.
