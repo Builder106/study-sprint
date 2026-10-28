@@ -3,6 +3,10 @@
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as things happen —
 > retrospectives need this raw material to land. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-28: Position StudySprint as the timer that knows your syllabus #product #roadmap
+
+Researched the market and found two camps that do not overlap. Syllabus planners (Ahead, Due Gooder, StudyTracker AI and others) extract deadlines but mention no focus timer or study rooms. Focus apps (Forest, Flora, Focusmate) never use course deadlines. Syllabus import alone is no longer rare, so the parser is not the differentiator. The combination of logged study time against parsed deadlines is. ROADMAP.md now orders work as pace engine and readiness battery first, then parser upgrades and course-scoped rooms, then review queue. Copy changes are deferred until the features exist. Competitor details come from vendor pages and were not verified by installing the apps.
+
 ## 2026-10-25: Keep the trailer's stripes and captions in frame #incident #video
 
 The trailer showed a hard black panel spreading from the left edge from about 0:03. The phosphor stripes were one fixed-size layer moved with `translateX(time * 96px)`, so the layer itself slid off the frame and was gone by 0:20. The stripes now scroll inside the layer through `background-position`, which tiles forever. The three beat captions sat in one flex row, so each hidden caption pushed the visible one sideways; they now share one grid cell and are 64px instead of 40px so they read on a phone. The day-two caption ends when the meter bolt arrives, the grid lifts before the counters fade in, the grid fades out fully before the subject ring, and the end card names StudySprint with a 44px white URL. The charge starts filling at about 1s instead of 3.5s so the opening moves.
