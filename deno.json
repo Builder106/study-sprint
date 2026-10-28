@@ -38,6 +38,7 @@
   "imports": {
     "three": "npm:three@0.186.1",
     "three/": "npm:three@0.186.1/",
+    "@std/assert": "jsr:@std/assert@1.0.19",
     "@types/three": "npm:@types/three@0.186.0",
     "@emotion/react": "npm:@emotion/react@11.14.0",
     "@emotion/styled": "npm:@emotion/styled@11.14.1",
@@ -110,7 +111,7 @@
     "playwright-bdd": "npm:playwright-bdd@^9.2.1",
     "tailwindcss": "npm:tailwindcss@4.3.3",
     "typescript": "npm:typescript@~7.0.2",
-    "vite": "npm:vite@8.3.2",
+    "vite": "npm:vite@8.3.5",
     "supabase": "npm:supabase@^2.119.0",
     "@axe-core/playwright": "npm:@axe-core/playwright@^4.13.0"
   },
