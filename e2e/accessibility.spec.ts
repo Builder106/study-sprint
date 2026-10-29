@@ -40,6 +40,9 @@ const AAA_RULES = {
   'meta-refresh-no-exceptions': { enabled: true },
 };
 
+const WEEKDAY_MINUTES_BUTTON =
+  /^button\[aria-label="(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday): \d+ minutes"\]$/;
+
 const auditTargets: readonly AuditTarget[] = [
   { name: 'landing', path: '/', smoke: true },
   { name: 'login', path: '/login', smoke: true },
@@ -60,6 +63,16 @@ async function applyDocumentedExceptions(
 ): Promise<AxeResult[]> {
   const filteredResults: AxeResult[] = [];
   for (const result of results) {
+    if (result.id === 'label-content-name-mismatch') {
+      // Axe cannot judge the one-letter weekday initials against their full-name labels.
+      const nodes = result.nodes.filter(
+        (node) =>
+          !(target.name === 'landing' && kind === 'incomplete' &&
+            WEEKDAY_MINUTES_BUTTON.test(String(node.target))),
+      );
+      if (nodes.length > 0) filteredResults.push({ ...result, nodes });
+      continue;
+    }
     if (result.id !== 'color-contrast' && result.id !== 'color-contrast-enhanced') {
       filteredResults.push(result);
       continue;
