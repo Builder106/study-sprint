@@ -19,7 +19,7 @@ on:
 # E2E job from racing itself against the shared Supabase demo account.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
