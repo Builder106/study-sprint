@@ -49,8 +49,11 @@ board and encode it:
 python3 scene/board.py
 OUT="$HOME/Library/Caches/blender-renders/study-sprint-trailer"
 caffeinate -dimsu Blender -b --factory-startup -P scene/blender_board.py -- "$OUT" --glare Low --frames 0-1499
-ffmpeg -framerate 30 -i "$OUT/frames/%04d.jpg" -c:v libx264 -crf 16 -preset slow -pix_fmt yuv420p public/board.mp4
+ffmpeg -framerate 30 -i "$OUT/frames/%04d.jpg" -c:v libx264 -crf 16 -preset slow -g 30 -keyint_min 30 -pix_fmt yuv420p -movflags +faststart public/board.mp4
 ```
+
+Keep the one-second keyframe interval: HyperFrames seeks the board video every
+frame, and sparse keyframes make it freeze or miss frames.
 
 `--stills 3.0,11.0` renders single frames for look checks. A restarted render
 skips frames it has already saved. Run `bash mix-audio.sh` on the build VM to mix
