@@ -1,170 +1,173 @@
-import { HF_TIMELINE, LIME } from "./timeline.js";
-import { LIT_ORDER, buildGridSvg } from "./grid-data.js";
-import { buildBatterySvg, chargeToFillColor } from "./battery-svg.js";
-import { mountBeatText } from "./beat-text.js";
+import { SCENE } from "./scene-data.js";
+import { mulberry32, hash } from "./arcs.js";
+import { drawArcBetween, drawElectrics, drawScreenSparks, powerOn, tipOnScreen } from "./fx.js";
+import { frameAt } from "./project.js";
 
-const T = HF_TIMELINE;
-const TOTAL_LIT = LIT_ORDER.length;
+const T = SCENE.times;
+const WIPE = { arc: [T.end + 0.85, T.end + 1.05], start: T.end + 1.0, end: T.end + 1.9 };
+const clamp01 = (u) => Math.max(0, Math.min(1, u));
 
-function interpolateClamped(time, points) {
-  if (time <= points[0][0]) return points[0][1];
-  for (let index = 0; index < points.length - 1; index += 1) {
-    const [start, startValue] = points[index];
-    const [end, endValue] = points[index + 1];
-    if (time <= end) return startValue + ((time - start) / (end - start)) * (endValue - startValue);
+function element(tag, className, parent, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text) node.textContent = text;
+  parent.appendChild(node);
+  return node;
+}
+
+// Offset of a node inside the stage, unaffected by preview scaling.
+function offsetIn(node, stage) {
+  let x = 0;
+  let y = 0;
+  for (let current = node; current && current !== stage; current = current.offsetParent) {
+    x += current.offsetLeft;
+    y += current.offsetTop;
   }
-  return points.at(-1)[1];
+  return { x, y, width: node.offsetWidth, height: node.offsetHeight };
 }
 
-function litCountAt(time) {
-  return Math.round(interpolateClamped(time, [
-    [0, 0],
-    [T.B1.from + T.B1.duration, 1],
-    [T.B2.from + T.B2.duration, 8],
-    [T.B3.from + T.B3.duration, 32],
-    [T.B4.from + T.B4.duration, TOTAL_LIT],
-  ]));
+function spike(time, at, peak, decay) {
+  return time >= at ? peak * Math.exp(-(time - at) / decay) : 0;
 }
 
-// Follows the app's charge model: one full session from empty is +20 - 8 = 12%,
-// a couple of missed days drain that back to empty, and steady study refills it.
-function chargeAt(time) {
-  return Math.round(interpolateClamped(time, [
-    [0, 0],
-    [T.B1.from + T.B1.duration * 0.15, 0],
-    [T.B1.from + T.B1.duration, 12],
-    [T.B2.from + T.B2.duration * 0.55, 0],
-    [T.B3.from, 0],
-    [T.B3.from + T.B3.duration, 44],
-    [T.B4.from + T.B4.duration, 100],
-  ]));
+function flashAt(time) {
+  let value = spike(time, T.reconnect, 0.5, 0.22) + spike(time, T.crash, 0.95, 0.5);
+  for (const day of T.days) value += spike(time, day, 0.07, 0.12);
+  return Math.min(1, value);
 }
 
-function stat(value, label) {
-  return `<div style="text-align:center"><div style="font-family:Inter,sans-serif;font-weight:800;font-size:64px;color:${LIME}">${value}</div><div style="font-family:Inter,sans-serif;font-weight:500;font-size:22px;color:rgba(255,255,255,.55);letter-spacing:1px;text-transform:uppercase">${label}</div></div>`;
+// The picture browns out while the charge drains.
+function brownoutAt(time) {
+  if (time < T.switchOpen || time >= T.stall) return 0;
+  const u = (time - T.switchOpen) / (T.stall - T.switchOpen);
+  const flick = mulberry32(hash(frameAt(time), 77))();
+  return Math.min(0.85, u * 0.35 + (flick > 0.7 ? 0.35 : 0));
 }
 
-function subjectDonutSvg() {
-  const radius = 210;
-  const circumference = 2 * Math.PI * radius;
-  const shares = [0.35, 0.25, 0.18, 0.12, 0.1];
-  const colors = ["#ccff00", "#8fd6ff", "#ff9ecb", "#ffd166", "#9d8dff"];
-  let offset = 0;
-  const arcs = shares.map((share, index) => {
-    const length = share * circumference;
-    const arc = `<circle r="${radius}" fill="none" stroke="${colors[index]}" stroke-width="18" stroke-dasharray="${length} ${circumference - length}" stroke-dashoffset="${-offset * circumference}" stroke-linecap="round" opacity=".9"/>`;
-    offset += share;
-    return arc;
-  }).join("");
-  return `<svg width="520" height="520" style="position:absolute"><g transform="translate(260 260) rotate(-90)">${arcs}</g></svg>`;
+function captionOpacity(caption, time) {
+  const on = powerOn(time - caption.start, caption.start * 10);
+  const off = clamp01((caption.end - time) / 0.35);
+  return time > caption.end ? 0 : on * off;
 }
 
-export function buildComposition(layer, audio, timeline) {
-  const stage = layer.parentElement;
-  layer.innerHTML = "";
-  stage.style.backgroundImage = "linear-gradient(112deg, #0a0a0a 0%, #0a0a0a 35%, #1a240d 50%, #0a0a0a 65%, #0a0a0a 100%)";
-  stage.style.backgroundSize = "240% 100%";
-  stage.style.backgroundPosition = "0% 0%";
+function makeGrain() {
+  const tile = document.createElement("canvas");
+  tile.width = tile.height = 256;
+  const context = tile.getContext("2d");
+  const image = context.createImageData(256, 256);
+  const random = mulberry32(4242);
+  for (let index = 0; index < image.data.length; index += 4) {
+    const value = Math.floor(random() * 255);
+    image.data[index] = image.data[index + 1] = image.data[index + 2] = value;
+    image.data[index + 3] = 255;
+  }
+  context.putImageData(image, 0, 0);
+  return tile;
+}
 
-  const phosphorTexture = document.createElement("div");
-  phosphorTexture.style.cssText = "position:absolute;inset:-80px;z-index:0;pointer-events:none;opacity:.1;mix-blend-mode:screen;background-image:repeating-linear-gradient(118deg,transparent 0 8px,rgba(204,255,0,.8) 8px 11px,transparent 11px 22px)";
-  layer.appendChild(phosphorTexture);
+export function buildComposition(stage, timeline) {
+  const overlay = stage.querySelector("#overlay");
+  const fx = element("canvas", "layer fx", overlay);
+  fx.width = SCENE.width;
+  fx.height = SCENE.height;
+  const fxContext = fx.getContext("2d");
+  const bloom = document.createElement("canvas");
+  bloom.width = SCENE.width / 2;
+  bloom.height = SCENE.height / 2;
+  const bloomContext = bloom.getContext("2d");
+  // Two blurred copies of the electrical layer, added back on top: the glow.
+  const applyBloom = () => {
+    for (const [radius, gain] of [[4, 0.8], [16, 0.6]]) {
+      bloomContext.globalCompositeOperation = "source-over";
+      bloomContext.filter = "none";
+      bloomContext.clearRect(0, 0, bloom.width, bloom.height);
+      bloomContext.filter = `blur(${radius}px)`;
+      bloomContext.drawImage(fx, 0, 0, bloom.width, bloom.height);
+      fxContext.setTransform(1, 0, 0, 1, 0, 0);
+      fxContext.globalCompositeOperation = "lighter";
+      fxContext.globalAlpha = gain;
+      fxContext.drawImage(bloom, 0, 0, SCENE.width, SCENE.height);
+      fxContext.globalAlpha = 1;
+    }
+  };
+  const brownout = element("div", "layer brownout", overlay);
+  const flash = element("div", "layer flash", overlay);
+  element("div", "layer vignette", overlay);
+  const grain = element("canvas", "layer grain", overlay);
+  grain.width = SCENE.width;
+  grain.height = SCENE.height;
+  const grainContext = grain.getContext("2d");
+  const grainPattern = grainContext.createPattern(makeGrain(), "repeat");
 
-  const grid = document.createElement("div");
-  grid.style.cssText = "position:absolute;inset:0;display:flex;align-items:center;justify-content:center";
-  const gridContent = document.createElement("div");
-  grid.appendChild(gridContent);
-  layer.appendChild(grid);
+  const captions = element("div", "captions", overlay);
+  const captionNodes = SCENE.captions.map((caption) => element("p", "caption", captions, caption.text));
 
-  const status = document.createElement("div");
-  status.style.cssText = "position:absolute;top:230px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:0;font-family:Inter,sans-serif;font-weight:800;font-size:96px";
-  const statusBolt = document.createElement("div");
-  const statusText = document.createElement("div");
-  status.append(statusBolt, statusText);
-  layer.appendChild(status);
+  const end = element("div", "endcard", overlay);
+  const wordmark = element("div", "wordmark", end, "StudySprint");
+  const tagline = element("div", "tagline", end);
+  element("span", "focus", tagline, "Focus in. ");
+  const charge = element("span", "charge", tagline);
+  element("span", "charge-off", charge, "Charge up.");
+  const chargeOn = element("span", "charge-on", charge, "Charge up.");
+  const head = element("i", "wipe-head", charge);
+  const url = element("div", "url", end, "getstudysprint.vercel.app");
 
-  const meter = document.createElement("div");
-  meter.style.cssText = "position:absolute;bottom:20px;left:0;right:0;display:none;justify-content:center";
-  layer.appendChild(meter);
+  const render = (time) => {
+    drawElectrics(fxContext, time);
+    brownout.style.opacity = brownoutAt(time).toFixed(3);
+    flash.style.opacity = flashAt(time).toFixed(3);
+
+    const frame = frameAt(time);
+    grainContext.setTransform(1, 0, 0, 1, 0, 0);
+    grainContext.clearRect(0, 0, grain.width, grain.height);
+    const shift = mulberry32(hash(frame, 5));
+    grainContext.translate(-Math.floor(shift() * 256), -Math.floor(shift() * 256));
+    grainContext.fillStyle = grainPattern;
+    grainContext.fillRect(0, 0, grain.width + 256, grain.height + 256);
+
+    SCENE.captions.forEach((caption, index) => {
+      const opacity = captionOpacity(caption, time);
+      captionNodes[index].style.opacity = opacity.toFixed(3);
+      captionNodes[index].style.visibility = opacity > 0 ? "visible" : "hidden";
+    });
+
+    const inEnd = time >= T.end;
+    end.style.visibility = inEnd ? "visible" : "hidden";
+    if (!inEnd) return;
+    wordmark.style.opacity = powerOn(time - (T.end + 0.3), 11).toFixed(3);
+    tagline.style.opacity = powerOn(time - (T.end + 0.6), 12).toFixed(3);
+    url.style.opacity = powerOn(time - (WIPE.end + 0.35), 13).toFixed(3);
+    const progress = clamp01((time - WIPE.start) / (WIPE.end - WIPE.start));
+    const eased = 1 - (1 - progress) ** 2;
+    chargeOn.style.clipPath = `inset(0 ${((1 - eased) * 100).toFixed(2)}% 0 0)`;
+    head.style.left = `${(eased * 100).toFixed(2)}%`;
+    head.style.opacity = progress > 0 && progress < 1 ? "1" : "0";
+    chargeOn.classList.toggle("lit", progress >= 1);
+
+    // The bolt powers the tagline: an arc from its tip, a wipe, then sparks.
+    const box = offsetIn(charge, stage);
+    fxContext.setTransform(1, 0, 0, 1, 0, 0);
+    fxContext.globalCompositeOperation = "lighter";
+    if (time >= WIPE.arc[0] && time <= WIPE.end) {
+      const tip = tipOnScreen(time);
+      const target = { x: box.x + box.width * eased, y: box.y + box.height * 0.45 };
+      const fade = time < WIPE.arc[1] ? 1 : 0.55;
+      drawArcBetween(fxContext, { x: tip.x, y: tip.y }, target, hash(Math.floor(frame / 2), 31), fade);
+    }
+    drawScreenSparks(fxContext, { x: box.x + box.width, y: box.y + box.height * 0.5 }, time - WIPE.end, 909);
+  };
+  const renderWithBloom = (time) => {
+    render(time);
+    applyBloom();
+  };
 
   const state = { time: 0 };
-  const counterStart = T.B4.from + 40 / 30;
   timeline.to(state, {
-    time: T.TOTAL_SECONDS,
-    duration: T.TOTAL_SECONDS,
+    time: SCENE.duration,
+    duration: SCENE.duration,
     ease: "none",
-    onUpdate: () => {
-      const time = state.time;
-      stage.style.backgroundPosition = `${(time / T.TOTAL_SECONDS) * 100}% 0%`;
-      // Scroll the stripes inside the layer; moving the layer itself slid it off the frame.
-      phosphorTexture.style.backgroundPosition = `${time * 96}px 0`;
-      const inGarden = time >= T.B5.from;
-      grid.style.display = time < T.B6.from ? "flex" : "none";
-      gridContent.innerHTML = buildGridSvg(litCountAt(time));
-      gridContent.style.opacity = inGarden ? interpolateClamped(time, [[T.B5.from, 1], [T.B5.from + 0.8, 0]]) : 1;
-      const creep = 1 + Math.min(time, T.B5.from) * 0.0015;
-      // The grid clears the counter row before the counters fade in.
-      const gridLift = [[T.B4.from, 0], [counterStart, 1]];
-      const linearLift = interpolateClamped(time, gridLift);
-      const lift = linearLift * linearLift * (3 - 2 * linearLift);
-      gridContent.style.transform = `scale(${(1 - 0.28 * lift) * creep}) translateY(${-260 * lift}px)`;
-
-      const charge = chargeAt(time);
-      status.style.display = time < T.B4.from ? "flex" : "none";
-      statusBolt.innerHTML = buildBatterySvg(charge, { size: 200, time, id: "status" });
-      statusText.textContent = `${charge}% charged`;
-      statusText.style.color = charge === 0 ? "rgba(255,255,255,.35)" : chargeToFillColor(charge);
-
-      const inMeter = time >= T.B4.from && time < T.B5.from;
-      meter.style.display = inMeter ? "flex" : "none";
-      if (inMeter) meter.innerHTML = buildBatterySvg(charge, { size: 340, time, id: "meter" });
-      if (time >= T.B5.from && time < T.B6.from) gardenBolt.innerHTML = buildBatterySvg(100, { size: 260, time, id: "garden" });
-      if (time >= T.B6.from) endBolt.innerHTML = buildBatterySvg(100, { size: 260, time, id: "end" });
-    },
+    onUpdate: () => renderWithBloom(state.time),
   }, 0);
-
-  const textLayer = document.createElement("div");
-  // One grid cell for every caption, so hidden captions don't push the visible one off center.
-  textLayer.style.cssText = "position:absolute;inset:0;display:grid;place-items:end center;padding-bottom:120px";
-  layer.appendChild(textLayer);
-  const captionSize = 64;
-  timeline.add(mountBeatText(textLayer, "One session.", { size: captionSize, startOffset: T.B1.from, beatDuration: T.B1.duration }), 0);
-  timeline.add(mountBeatText(textLayer, "Most people stop here.", { size: captionSize, startOffset: T.B2.from + 40 / 30, beatDuration: T.B2.duration - 40 / 30 }), 0);
-  // Ends when the meter bolt takes the bottom of the frame, not when B3's overlap does.
-  timeline.add(mountBeatText(textLayer, "The only job is making day two easier.", { size: captionSize, startOffset: T.B3.from + 1, beatDuration: T.B4.from - T.B3.from - 1 }), 0);
-
-  const counter = document.createElement("div");
-  counter.style.cssText = "position:absolute;top:560px;left:0;right:0;display:none;justify-content:center;gap:72px";
-  layer.appendChild(counter);
-  const counterState = { progress: 0 };
-  timeline.to(counterState, { progress: 1, duration: T.B4.duration - 80 / 30, ease: "none", onUpdate: () => {
-    counter.innerHTML = [stat(`${Math.round(T.REAL_STATS.totalHours * counterState.progress)}h`, "studied"), stat(`${Math.round(T.REAL_STATS.totalSessions * counterState.progress)}`, "sessions"), stat(`${T.REAL_STATS.daysSinceEmpty}d`, "since empty")].join("");
-  } }, counterStart);
-  timeline.set(counter, { display: "flex", opacity: 0 }, counterStart)
-    .to(counter, { opacity: 1, duration: 0.4, ease: "none" }, counterStart)
-    .set(counter, { display: "none" }, T.B5.from);
-
-  const garden = document.createElement("div");
-  garden.style.cssText = "position:absolute;inset:0;display:none;align-items:center;justify-content:center";
-  garden.innerHTML = `${subjectDonutSvg()}<div></div><div style="position:absolute;bottom:140px"></div>`;
-  const gardenBolt = garden.children[1];
-  layer.appendChild(garden);
-  timeline.set(garden, { display: "flex" }, T.B5.from).set(garden, { display: "none" }, T.B6.from);
-  timeline.add(mountBeatText(garden.lastElementChild, "Every subject. Every hour you actually studied.", { size: 56, startOffset: T.B5.from, beatDuration: T.B5.duration }), 0);
-
-  const invitation = document.createElement("div");
-  invitation.style.cssText = "position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;opacity:0";
-  invitation.innerHTML = `<div><div></div><div style="margin-top:8px;font-family:Inter,sans-serif;font-weight:800;font-size:120px;color:white;letter-spacing:-3px;line-height:1">StudySprint</div><div style="margin-top:28px;font-family:Inter,sans-serif;font-weight:700;font-size:64px;color:rgba(255,255,255,.85);letter-spacing:-1px">Focus in. <span style="color:${LIME}">Charge up.</span></div><div style="margin-top:36px;font-family:Inter,sans-serif;font-weight:600;font-size:44px;color:white">getstudysprint.vercel.app</div></div>`;
-  const endBolt = invitation.firstElementChild.firstElementChild;
-  layer.appendChild(invitation);
-  timeline.set(invitation, { display: "flex" }, T.B6.from).to(invitation, { opacity: 1, duration: 1 }, T.B6.from).to(invitation, { scale: 1.012, duration: 2, repeat: -1, yoyo: true, ease: "sine.inOut" }, T.B6.from);
-
-  audio.volume = 0;
-  const volume = { value: 0 };
-  const setVolume = () => { audio.volume = volume.value; };
-  timeline.to(volume, { value: 0.5, duration: 1, ease: "none", onUpdate: setVolume }, 0)
-    .to(volume, { value: 0.62, duration: 40 / 30, ease: "none", onUpdate: setVolume }, T.B4.from - 1)
-    .to(volume, { value: 0, duration: 2, ease: "none", onUpdate: setVolume }, T.TOTAL_SECONDS - 2);
-
+  renderWithBloom(0);
   return timeline;
 }

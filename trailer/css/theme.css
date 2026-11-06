@@ -1,5 +1,6 @@
 :root {
   --lime: #ccff00;
+  --lime-hot: #ecffaa;
   --near-black: #0a0a0a;
 }
 #stage {
@@ -7,6 +8,119 @@
   height: 1080px;
   position: relative;
   overflow: hidden;
-  background: var(--near-black);
+  background: #000;
   font-family: "Inter", sans-serif;
+}
+#board {
+  position: absolute;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  object-fit: cover;
+  z-index: 0;
+}
+#overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  pointer-events: none;
+}
+.brownout {
+  background: #000;
+  opacity: 0;
+}
+.flash {
+  background: radial-gradient(circle at 50% 50%, #fbffe6 0%, #e9ff9a 45%, #ccff00 100%);
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+.vignette {
+  background: radial-gradient(ellipse 75% 70% at 50% 48%, transparent 55%, rgba(0, 0, 0, 0.62) 100%);
+}
+.grain {
+  mix-blend-mode: overlay;
+  opacity: 0.07;
+}
+.captions {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: end center;
+  padding-bottom: 92px;
+  box-sizing: border-box;
+}
+.caption {
+  grid-area: 1 / 1;
+  margin: 0;
+  max-width: 1500px;
+  font-weight: 600;
+  font-size: 56px;
+  letter-spacing: -0.012em;
+  color: rgba(255, 255, 255, 0.94);
+  text-align: center;
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.85), 0 0 2px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  visibility: hidden;
+}
+.endcard {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 500px;
+  box-sizing: border-box;
+  visibility: hidden;
+}
+.wordmark {
+  font-weight: 800;
+  font-size: 128px;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  color: #fff;
+}
+.tagline {
+  margin-top: 34px;
+  font-weight: 700;
+  font-size: 62px;
+  letter-spacing: -0.015em;
+  color: rgba(255, 255, 255, 0.86);
+}
+.charge {
+  position: relative;
+  display: inline-block;
+}
+.charge-off {
+  color: rgba(255, 255, 255, 0.18);
+}
+.charge-on {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--lime);
+  text-shadow: 0 0 18px rgba(204, 255, 0, 0.75), 0 0 46px rgba(204, 255, 0, 0.35);
+  white-space: nowrap;
+}
+.wipe-head {
+  position: absolute;
+  top: 6%;
+  bottom: 6%;
+  width: 4px;
+  margin-left: -2px;
+  background: #f6ffd6;
+  box-shadow: 0 0 14px 4px rgba(204, 255, 0, 0.9), 0 0 40px 10px rgba(204, 255, 0, 0.45);
+  opacity: 0;
+}
+.url {
+  margin-top: 46px;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 600;
+  font-size: 40px;
+  color: rgba(255, 255, 255, 0.9);
 }
