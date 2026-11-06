@@ -16,6 +16,10 @@
 
 > **Gamified study tracker that turns focused time into a battery charge.** Set goals, run Pomodoro timers, keep your charge above empty, and study together in virtual rooms.
 
+<p align="center">
+  <img src="docs/screenshot.png" alt="The StudySprint home screen: the headline Focus in. Charge up. above a 3D lightning bolt inside an orbit of 30, 60 and 90 minute timer markers, with a strip of weekdays below." width="880">
+</p>
+
 ## 💡 What is StudySprint?
 
 Staying motivated while studying alone is tough. StudySprint turns daily study sessions into a battery that charges when you study and drains when you step away.
