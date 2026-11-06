@@ -362,11 +362,15 @@ function drawReadouts(ctx, m, time) {
     const ex = project(m, [readout.x + 1, readout.y, 0.02]);
     const ey = project(m, [readout.x, readout.y + 1, 0.02]);
     if (!origin.visible || !ex.visible || !ey.visible) continue;
+    // Fade out before the crane push carries the readout off the right edge.
+    const edge = project(m, [readout.x + 4.0, readout.y, 0.02]).x;
+    const exit = clamp01((1880 - edge) / 140);
+    if (exit <= 0) continue;
     const k = 0.01;
     ctx.save();
     ctx.setTransform((ex.x - origin.x) * k, (ex.y - origin.y) * k, -(ey.x - origin.x) * k, -(ey.y - origin.y) * k,
       origin.x, origin.y);
-    const glow = on * (1 + 0.35 * beatPulse(time) + crashBoost(time) * 0.5);
+    const glow = on * exit * (1 + 0.35 * beatPulse(time) + crashBoost(time) * 0.5);
     ctx.font = `800 ${readout.size * 100}px "JetBrains Mono"`;
     ctx.textBaseline = "alphabetic";
     const text = String(value);
@@ -377,9 +381,9 @@ function drawReadouts(ctx, m, time) {
     ctx.shadowBlur = 0;
     ctx.fillStyle = rgba(HOT, 0.55 * glow);
     ctx.fillText(text, 0, 0);
-    ctx.font = `600 ${0.5 * 100}px "JetBrains Mono"`;
-    ctx.fillStyle = rgba([210, 220, 200], 0.75 * on);
-    ctx.fillText(readout.label, 6, 0.85 * 100);
+    ctx.font = `600 ${0.42 * 100}px "JetBrains Mono"`;
+    ctx.fillStyle = rgba([210, 220, 200], 0.75 * on * exit);
+    ctx.fillText(readout.label, 6, 0.75 * 100);
     ctx.restore();
   }
 }

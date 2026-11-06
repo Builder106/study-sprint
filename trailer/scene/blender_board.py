@@ -459,6 +459,15 @@ for obj in BOARD_OBJECTS:
     obj.keyframe_insert("hide_render", frame=end_frame)
 
 
+# The SW1 silkscreen would sit under the stall caption, so it sits out shot B.
+sw1 = bpy.data.objects["Label 1"]
+for frame, hidden in [(round(B.T_STALL * B.FPS) - 1, False), (round(B.T_STALL * B.FPS), True),
+                      (round(B.T_WEEK * B.FPS) - 1, True), (round(B.T_WEEK * B.FPS), False)]:
+    sw1.hide_render = hidden
+    sw1.keyframe_insert("hide_render", frame=frame)
+sw1.hide_render = False
+
+
 def linearize(owner):
     animation = owner.animation_data
     if animation and animation.action:

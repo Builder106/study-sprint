@@ -124,9 +124,9 @@ LABELS = [
 # Readouts sit in the board's free east wing, lit only during the surge.
 READOUT_ZONE = (12.5, 24.0, -8.0, 4.0)
 READOUTS = [
-    {"id": "hours", "x": 11.6, "y": 1.2, "size": 2.0, "label": "HOURS STUDIED"},
-    {"id": "sessions", "x": 11.6, "y": -2.6, "size": 2.0, "label": "SESSIONS"},
-    {"id": "days", "x": 11.6, "y": -6.4, "size": 2.0, "label": "DAYS ABOVE EMPTY"},
+    {"id": "hours", "x": 11.0, "y": 0.8, "size": 1.8, "label": "HOURS STUDIED"},
+    {"id": "sessions", "x": 11.0, "y": -2.8, "size": 1.8, "label": "SESSIONS"},
+    {"id": "days", "x": 11.0, "y": -6.4, "size": 1.8, "label": "DAYS ABOVE EMPTY"},
 ]
 
 # --- Timing --------------------------------------------------------------------
@@ -281,7 +281,10 @@ def camera_at(t: float) -> dict:
         return look(loc, target, 45.0, dist(loc, target), 2.0)
     if t < T_SURGE:
         # C: tracking the weekday terminals as they ignite.
-        tx = max(-12.5, min(12.5, -9.0 + 3.0 * (t - T_DAYS[0])))
+        # Hold on SUN after it ignites instead of drifting onto empty board.
+        tx = max(-12.5, -9.0 + 3.0 * (t - T_DAYS[0]))
+        if tx > WEEK_X[-1]:
+            tx = WEEK_X[-1] + 1.0 * smooth((t - T_DAYS[-1]) / (T_SURGE - T_DAYS[-1]))
         loc = (tx - 2.0, -12.2, 2.6)
         target = (tx + 0.4, -4.2, 0.85)
         return look(loc, target, 34.0, dist(loc, (tx, WEEK_ROW_Y, 0.0)), 4.0)
