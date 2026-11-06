@@ -139,8 +139,9 @@ for arc in SCENE["arcs"]:
         crackle(arc["start"], arc["end"] + 0.2, 1.0)
         boom(arc["start"], 0.8)
     elif kind == "terminal":
-        zap(arc["start"], 0.12, 0.35, 2400, 300)
-        crackle(arc["start"], arc["end"], 0.45)
+        clack(arc["start"], 0.8)
+        zap(arc["start"], 0.14, 0.7, 2400, 300)
+        crackle(arc["start"], arc["end"], 0.6)
     elif kind == "storm":
         crackle(arc["start"], arc["end"], 0.5)
     elif kind == "casing":
@@ -148,6 +149,20 @@ for arc in SCENE["arcs"]:
 
 zap(T["crash"], 0.7, 1.2, 2000, 60)
 boom(T["crash"], 1.0)
+# Sub drop under the crash so the overload has weight.
+add(T["crash"], [math.sin(2 * math.pi * 42 * i / RATE) * math.exp(-i / (0.5 * RATE)) for i in range(int(1.6 * RATE))], 0.9)
+
+# Readout counters tick like relays, slowing as the count settles (ease-out over 4 s).
+for offset in (0.0, 0.25, 0.5):
+    start = T["surge"] + 0.4 + offset
+    previous = -1
+    for step in range(1, 241):
+        u = step / 240
+        value = int(40 * (1 - (1 - u) ** 3))
+        if value != previous:
+            previous = value
+            tick = [math.sin(2 * math.pi * 3200 * i / RATE) * math.exp(-i / (0.0015 * RATE)) for i in range(int(0.01 * RATE))]
+            add(start + 4.0 * u, tick, 0.18)
 
 # End card: the tagline powers up with a rising whine and lands on a snap.
 wipe_start, wipe_end = T["end"] + 1.0, T["end"] + 1.9
