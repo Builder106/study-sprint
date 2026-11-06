@@ -3,7 +3,8 @@
 
 const covDir = 'cov_profile';
 // Deno includes preload modules in coverage even though this one is test plumbing.
-const coverageExclude = '--exclude=(test\\.(js|mjs|ts|jsx|tsx)|scripts/test-warning-gate\\.ts)$';
+// Also exclude marketing/demo video assets (trailer/) which run in Node / mix-audio.sh.
+const coverageExclude = '--exclude=(test\\.(js|mjs|ts|jsx|tsx)|scripts/test-warning-gate\\.ts|trailer/.*)$';
 
 // 1. Run tests with coverage collection
 const testCmd = new Deno.Command(Deno.execPath(), {
