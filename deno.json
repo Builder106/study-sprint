@@ -112,7 +112,7 @@
     "tailwindcss": "npm:tailwindcss@4.3.3",
     "typescript": "npm:typescript@~7.0.2",
     "vite": "npm:vite@8.3.5",
-    "supabase": "npm:supabase@^2.122.0",
+    "supabase": "npm:supabase@^3.0.0",
     "@axe-core/playwright": "npm:@axe-core/playwright@^4.14.0"
   },
   "compilerOptions": {
