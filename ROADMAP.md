@@ -1,6 +1,6 @@
 # StudySprint Roadmap
 
-High-level feature roadmap and technical milestones for StudySprint.
+Planned features and technical milestones for StudySprint.
 
 The product direction is a study timer that knows your syllabus: focused time
 is measured against the deadlines parsed from your courses, and the battery
@@ -10,8 +10,8 @@ lack: focus time measured against parsed deadlines.
 
 ## v1.1 — Battery & Economy Mechanics
 
-- **Battery System Integration**: Implement dynamic energy economy and visual battery degradation models per [`docs/specs/2026-08-12-battery-economy-plan.md`](docs/specs/2026-08-12-battery-economy-plan.md).
-- **HUD Micro-Interactions**: Real-time energy meters and animated battery state transitions per [`docs/specs/2026-08-13-battery-visual-plan.md`](docs/specs/2026-08-13-battery-visual-plan.md).
+- **Battery System Integration**: Implement the energy economy and battery degradation model in [`docs/specs/2026-08-12-battery-economy-plan.md`](docs/specs/2026-08-12-battery-economy-plan.md).
+- **HUD Micro-Interactions**: Add real-time energy meters and animated battery transitions from [`docs/specs/2026-08-13-battery-visual-plan.md`](docs/specs/2026-08-13-battery-visual-plan.md).
 
 ## v1.2 — Deadline Pace & Readiness
 

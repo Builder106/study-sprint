@@ -24,7 +24,7 @@
 
 Staying motivated while studying alone is tough. StudySprint turns daily study sessions into a battery that charges when you study and drains when you step away.
 
-Students can import syllabi directly using AI to automatically schedule exam prep goals, log study sessions with built-in ambient sounds, visualize their productivity with heatmaps, and join virtual study rooms with friends.
+Students can import syllabi with AI assistance to schedule exam preparation goals, log study sessions with ambient sounds, review their activity in heatmaps, and join virtual study rooms with friends.
 
 **Live app:** [getstudysprint.vercel.app](https://getstudysprint.vercel.app)
 
