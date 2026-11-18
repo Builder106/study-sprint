@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { GripVerticalIcon } from 'lucide-react';
-// @ts-ignore
+// @ts-expect-error upstream react-resizable-panels type export compatibility
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
 import { cn } from './utils';
