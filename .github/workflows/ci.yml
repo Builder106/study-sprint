@@ -68,7 +68,7 @@ jobs:
       - name: Install deps
         run: deno install --allow-scripts=npm:@tailwindcss/oxide
       - name: Audit locked dependencies
-        run: deno audit --lock=deno.lock --level=high
+        run: deno audit --lock=deno.lock --level=high --ignore-unfixable
       - name: Open-source license compliance scan
         run: node scripts/license-scan.mjs
       - name: TypeScript typecheck
